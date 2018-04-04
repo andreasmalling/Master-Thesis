@@ -1,41 +1,50 @@
 \chapter{Implementation}
 \label{cha:implementation}
-
-Whereas the previous chapter concerned itself with the overall plan in
-the abstract, this is where the actual experiment in the form of an
-implementation is taking form.  It is not the purpose of the
-implementation to fully realise the design described in the previous
-chapter. It is the exclusive purpose of the implementation (a subset
-of the design) to either validate or refute the hypotheses put forth
-in the introduction. This, and nothing else. If it does less, you have
-posed questions you are not prepared to answer; if it does more, you
-should be coding less or asking additional questions.
-
-The primary purpose of this chapter is to clearly communicate what has
-been built, and how it works. This can, \eg include architectural
-diagrams, software and hardware overviews and specifics.
-
-If it illustrates core aspects, \eg the inner working of a particular
-important algorithm or function, code segments are welcome in this
-chapter, as long as they are short, to the point, well-commented and
--formatted.  For algorithms, pseudo code is often clearer than actual
-code, and for, \eg \acs{API} examples the reverse holds true.  It is
-also a good idea to provide the reader with a general overview of the
-structure of the code, as well as how communication between various
-parts takes place.  As in the previous chapter, I recommend using
-\ac{UML} for this purpose.  The complete code (as well as your data)
-should be included separately with your report in the form of a
-zip-file or USB-stick.
-
-Overall, the implementation is the computer scientist's equivalent of
-lab equipment carefully arranged into an experimental setup, and just
-as the validity of an experimental investigation will be judged in
-part on the craftsmanship of the setup, so will the quality of your
-implementation. It is therefore important to clearly communicate how
-your system works and how it was built, so that the reader may have
-confidence in your evaluation and conclusions.
+\section{Overview}
+The system  contains multiple microservices realized in a docker network:
+\begin{itemize}
+    \item Bootstrap runs an IPFS daemon and is responsible for initializing the IPFS network, all other participants in the network connect through this node. 
+    The Go implementation of \acs{IPFS} (go-ipfs\footnote{\url{https://github.com/ipfs/go-ipfs}}) is used as back-end instead the JavaScript implementation, due to performance. This is due to the goal being performance measurings, where go should perform better. The go-ipfs must run as a daemon in the background. This is tolerable, due to the vision of having IPFS implemented and running natively in the browser.
+    \item Client represents the users of the system, and there can be arbitrarily many of them depending on the test. The clients run an IPFS daemon and a browser that is controlled through Splinter, they then plat various videos hosted in the network through the DASH.js video player with different viewing patterns and connection conditions.
+    \item Host hosts the HTML website that the DASH.js player resides on, each client could host this themselves, but having it a single place makes the system more mutable.
+    \item Metric is a client to the Mongo database that is contacted by the client, the clients reguarly report data regarding their viewing session to Metric which then forwards this to the database, this data includes latency for getting a segment, whether the video halted and more.
+    \item Mongo is a dockerized Mongo database.
+    \item Plot is a Mongo client that processes the data stored in the Mongo database and presents it with various plots, it can also export this to a csv format.
+    \item Pumba is a chaos engineering tool that is used to manipulate the Client instances in terms of their download and upload speed, latency and even shutting them down.
+\end{itemize}
+Relation between these services is also  illustrated in %\fig{some_figure}
 
 
+\section{Video preprocessing}
+
+\subsection{Video quality metrics}
+
+\url{http://videoclarity.com/wpunderstandingjnddmospsnr/}. 
+MOS (mean acceptance score), evaluated by humans
+error types:
+    The digital transmission path can fall below acceptable levels and cause a complete loss – i.e. no picture and no audio.
+    The amount and quality of the compression can lend itself to poor quality.
+I frames: independentely coded reference frame
+P frames motion changes from last frame
+B frames motion changes from last or next reference
+depending on which frame is lost in network affects how many frames are affected (i.e. losing an I frame causes all frames until next I frame to lose quality, losing a P affects all until next I, losing B only affects B).
+error metrics: PSNR (peak singal-to-noise ratio) MSE (mean squared error) both compare processed input to an unprocessed
+
+
+\subsection{Tools}
+
+\subsubsection{FFmpeg}
+The commandline program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was used for transcoding videos.
+
+\subsubsection{MP4Box multimedia packager}
+MP4Box from the GPAC framework\footnote{\url{https://github.com/gpac/gpac}}.
+
+Live encoding to enforce flow streaming through IPFS, due to queued segment requests.
+
+
+\section{User Emulation}
+\subsection{Splinter}
+Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas will be interacting with the website through a chrome browser by utilizing this library, and thereby emulating different types of user behaviour.
 
 %%% Local Variables:
 %%% mode: latex

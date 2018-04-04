@@ -1,141 +1,21 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
 
-Having built the equivalent of a experimental setup, it is time to use
-the implementation to test the hypotheses.
-
-This is usually broken down in stages and subquestions.
-
-A structured approach to performing and reporting on experiments is
-to follow this pattern for every single experiment:
-
-\begin{enumerate}
-\item What is the purpose of the experiment?
-\item What is the expected outcome?
-\item What are the parameters under which the experiment takes place?
-\item What are the results?
-\item How do the results align with the expected outcome? If they do not
-  align, why is that so?
-\end{enumerate}
-
-Results should be presented summarised. For quantitative experiments, this
-will usually be in the form of tables and graphs.  Remember to note the
-number of times experiments were repeated, as well as averages, and standard
-deviations (in percent of the mean).  There is much more to the proper
-evaluation of experimental data than can be expounded upon here, but I turn
-the reader's attention to \citep{Downey2011:TSPASFP2011}, which is freely
-available.
-
-If your results are of a qualitative nature, the summaries will depend on
-the type of investigation you have done. It can be carefully annotated
-recordings of specific incidents of the system in use; analysis with quotes
-from interviews; or results from questionnaires and other investigations.
-Whole transcripts belong in an appendix, but excerpts are fine in the main
-text.
-
-
 
 \begin{figure}
-  \myfloatalign
-  \begin{tikzpicture}
-    \begin{axis} [xlabel=$x$, ylabel=$\bar{y}$]
-      \addplot[
-      sharp plot,
-      error bars,
-      y dir=both,
-      y explicit,
-      error bar style={red}
-      ] table[
-      x=x,
-      y=avgy,
-      y error=stddevp]{./data/example.csv};
-    \end{axis}
-  \end{tikzpicture}
-  \caption{A graph with error bars}
-  \label{fig:pretty-graph}
+    \myfloatalign
+    \begin{tikzpicture}
+        \begin{axis} [xlabel=$seg$, ylabel=$\bar{latency}$]
+            \addplot[
+            sharp plot] table[
+            x=seg,
+            y=latency
+            ]{./data/plot.csv};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Test figure of plotting from .csv file}
+    \label{fig:my_label}
 \end{figure}
-
-
-
-\begin{table}
-  \myfloatalign
-  \pgfplotstabletypeset[
-  every head row/.style={
-    before row=\toprule,
-    after row=\midrule,
-  },
-  every even row/.style={
-    before row={\rowcolor[gray]{0.95}}},
-  every last row/.style={
-    after row=\bottomrule
-  },
-  columns={x, avgy, stddevpp},
-  columns/x/.style={
-    column name=x,
-    dec sep align,
-    fixed,
-    fixed zerofill,
-    precision=2
-  },
-  columns/avgy/.style={
-    column name=$\bar{y}$,
-    dec sep align,
-    fixed,
-    fixed zerofill,
-    precision=2
-  },
-  columns/stddevpp/.style={
-    column name=$\sigma\%$,
-    dec sep align,
-    fixed,
-    fixed zerofill,
-    precision=1
-  },
-  ]{./data/example.csv}
-  % \tableheadline{labitur bonorum pri no} & \tableheadline{que vista}
-  % & \tableheadline{human} \\ \midrule
-  \caption{An auto-generated table} \label{tab:pretty-table}
-\end{table}
-
-
-
-\section{Some Notes on Tables, Graphs, and Figures}
-\label{sec:some-notes-tables}
-
-It is paramount that you clearly and concisely present your results, and
-that usually entails documentation in the form of tables or figures.  Such
-things are more informative if they are clearly formatted and legible.
-
-There are many tools with which you can plot graphs of your data. I would
-suggest that you use something that can be scripted, so you can tweak your
-parameters, run the evaluation, and see the fresh results, again and
-again. Having to, \eg copy and paste or import data into an application will
-slow you down, and might well lead to confusion---is this the new data or
-not? A small investment upfront in scripting everything will lead to
-savings in both time and frustration later on.
-
-If you are fluent in Python,
-Matplotlib\footnote{\url{http://matplotlib.org/}} is very good, and can be
-used interactively in
-Jupyter\footnote{\url{http://jupyter.org/}}. Gnuplot\footnote{\url{http://gnuplot.info/}}
-is another powerful choice, and probably easier to get started with. If you
-know R\footnote{\url{https://www.r-project.org/}},
-ggplot2\footnote{\url{http://ggplot2.org/}} is the obvious route.  For
-web-based systems, D3.js\footnote{\url{http://d3jsp.org/}} is quite popular.
-
-As long as your tool of choice can generate PDFs, you should be golden.
-
-If you output your data to comma or tab separated files, you can even
-generate your plots and tables directly in \LaTeX\ using
-\textsc{Pgfplots}\footnote{\url{http://pgfplots.sourceforge.net/}}
-   (further
-   examples\footnote{\url{http://pgfplots.net/tikz/examples/all/}}--\autoref{fig:pretty-graph}
-   was generated using \textsc{Pgfplots}) and
-\textsc{PgfplotsTable}\footnote{\url{http://pgfplots.sourceforge.net/pgfplotstable.pdf}}.
-Doing this can quickly save you time, as especially \LaTeX\ tables, while
-pretty, are tedious and error prone to edit. See
-\autoref{tab:pretty-table} for an auto-generated example. For more help on
-tables, see the \LaTeX\ wiki books\footnote{\url{https://en.wikibooks.org/wiki/LaTeX/Tables}}.
 
 
 %%% Local Variables:

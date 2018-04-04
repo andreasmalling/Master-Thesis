@@ -1,17 +1,9 @@
 \chapter{Analysis}
 \label{cha:analysis}
 
-This is where the authors can answer the question of what use we can
-derive from all the works described in
-\autoref{cha:related-work}. Ideally, the summary of the related work
-will show that there is room unexplored for what the authors have in
-mind. If there are differences between the included works on key
-aspects in the approach to be taken, this is where this should be
-identified, and a decision reached.
+\acs{IPFS} is an unexplored technology for the purpose of video streaming. Many have build video streaming services based on \acs{P2P} technologies such as BitTorrent and \acs{DHT}s \cite{gazdar2017toward}.
 
-Having written the analysis, the author has all the tools needed to
-complete \autoref{cha:design-and-method}.
-
+A common theme is that the videos are split into smaller segments, which can be distributed between peers. An assumption none of the referenced work has made is that some pieces can become rare because they are simply skipped. For example the last segments of a video could not have been buffered if the user closed the stream prematurely. How the user interacts with the system can wary greatly and is unexplored by other works, therefore is one of the major focus points of our testing.
 
 
 %%% Local Variables:
