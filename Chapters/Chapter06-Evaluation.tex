@@ -1,20 +1,10 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
 
-
-\begin{figure}
-    \myfloatalign
-    \begin{tikzpicture}
-        \begin{axis} [xlabel=$seg$, ylabel=$\bar{latency}$]
-            \addplot[
-            sharp plot] table[
-            x=seg,
-            y=latency
-            ]{./data/plot.csv};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Test figure of plotting from .csv file}
-    \label{fig:my_label}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/xkcd/688.png}
+    \caption*{Source: \href{https://xkcd.com/688/}{xkcd}}
 \end{figure}
 
 

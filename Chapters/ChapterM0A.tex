@@ -4,8 +4,54 @@
 % If problems with the headers: get headings in appendix etc. right
 %\markboth{\spacedlowsmallcaps{Appendix}}{\spacedlowsmallcaps{Appendix}}
 \chapter{Appendix Test}
+\section{Test of .csv plotting}
+As you can see in figure \ref{fig:csv_test} it just works! 
+
+\begin{figure}[h]
+    \myfloatalign
+    \begin{tikzpicture}
+        \begin{axis} [
+            xlabel={File Segment},
+            ylabel={Latency (ms)}]
+            \addplot[
+            sharp plot] table[
+            x=seg,
+            y=latency
+            ]{./data/plot.csv};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Test figure of plotting from .csv file}
+    \label{fig:csv_test}
+\end{figure}
 
 
+\begin{table}[h]
+  \myfloatalign
+  \pgfplotstabletypeset[
+  every head row/.style={
+    before row=\toprule,
+    after row=\midrule,
+  },
+  every even row/.style={
+    before row={\rowcolor[gray]{0.95}}},
+  every last row/.style={
+    after row=\bottomrule
+  },
+  columns={seg, latency},
+  columns/seg/.style={
+    column name=Segment,
+    dec sep align,
+  },
+  columns/latency/.style={
+    column name=Latency (ms),
+    dec sep align,
+    fixed zerofill,
+    precision=1
+  },
+  ]{./data/plot.csv}
+  \caption{Test table auto-generated from .csv file}
+  \label{tab:csv_test}
+\end{table}
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../ClassicThesis"

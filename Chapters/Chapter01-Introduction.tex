@@ -8,14 +8,14 @@ This report will try to answer the following hypothesis:
 
 \begin{displayquote}
     \textit{
-        Can the \acl{IPFS} be utilized as a feasible back-end for the \acl{DASH} while still delivering a good \acl{UX}. \\ \\
-        As a measurement for \acl{UX} videos are expected to be available in their entirety, viewable without stutter and being persistent. It is expected that popular content will perform better than lesser known, and thereby watched, videos.
+        Can the \acl{IPFS} be utilized as a feasible back-end for the \acl{DASH} while still delivering a good \ac{UX}, though no adaptive bit rate is utilized? \\ \\
+        As a measurement for \acs{UX} videos are expected to be available in their entirety, viewable without stalling or re-buffering and being persistent. It is expected that popular content will perform better than lesser known, and thereby lesser watched, videos.
     }
 \end{displayquote}
 
-By utilizing the \ac{IPFS} as a base for hosting videos, a server-less video hosting website will be implemented.
+By utilizing the \ac{IPFS} as a base for hosting videos, a server-less video hosting website will be implemented. The network setup will be exposed to various network obstacles, such as low bandwidth, lost connections and others. This will be done in the fashion of Chaos Engineering.
 
-The \ac{DASH} will be tested in simulation of different demands, different segments of the videos watched and different sizes/qualities of the videos.
+The \ac{DASH} will be tested in simulation of different demands, different segments of the videos watched and different bit rates of the videos. This will be done without multiple bit rate sources, forcing IPFS to only download from a single stream of video and audio, making it more available to the \ac{P2P} network.
 
 The results will be theoretically compared with other video streaming systems, centralized as well as distributed (eg. with BitTorent as a back-end).
 
