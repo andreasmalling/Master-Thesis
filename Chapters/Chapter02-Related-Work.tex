@@ -1,16 +1,16 @@
 \chapter{Related Work}
 \label{cha:related-work}
-\citeauthor{aloman2015performance} \cite{aloman2015performance} have evaluated \acs{DASH} and two other streaming protocols (RTSP and RTMP) in both on-demand and live in both 4F and Wi-fi conditions. Evaluation is done in terms of \ac{QOE} metrics with a large amount of parameters including: Resolution, bitrate, framerate, interval between key frames, packet loss rate and delay. QoE was estimated through the quality of service through an algorithmic model, rather than user based scores.\\
-In terms of results when introduction pack loss and delays DASH sacrifices throughput in order to maintain good QoE where as the other instead resort to re-buffering, but DASH did have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that RTSP is more efficient for starting the video initially but at the expense of packet loss in the video played stream. They claim this is due to RTSP is a UDP based protocol where DASH is TCP. But they claim the extra time buffering is worth it as rebuffering events are almost entirely eliminated. In their results QoE (measured in MOS) is noticably higher when using DASH in the same scenarios. In their testing packet loss affected QoE more than delay.
+\citeauthor{aloman2015performance} \cite{aloman2015performance} have evaluated \acs{DASH} and two other streaming protocols (\acs{RTSP} and \acs{RTMP}) in both on-demand and live in both 4G and Wi-Fi conditions. Evaluation is done in terms of \ac{QOE} metrics with a large amount of parameters including: Resolution, bitrate, framerate, interval between key frames, packet loss rate and delay. \acs{QOE} was estimated through the quality of service through an algorithmic model, rather than user based scores.\\
+In terms of results when introduction packet loss and delays \acs{DASH} sacrifices throughput in order to maintain good \acs{QOE} where as the other instead resort to re-buffering, but \acs{DASH} did have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \acs{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video played stream. They claim this is due to \acs{RTSP} is a UDP based protocol where \acs{DASH} is TCP. But they claim the extra time buffering is worth it as rebuffering events are almost entirely eliminated. In their results \acs{QOE} (measured in MOS) is noticably higher when using \acs{DASH} in the same scenarios. In their testing packet loss affected \acs{QOE} more than delay.
 
 % uses ITU-T Rec P-1201.1\footnote{\url{https://www.itu.int/rec/T-REC-P.1201.1/en}} for non intrusive monitoring of the video.
 
 
 
-\citeauthor{gazdar2017toward} \cite{gazdar2017toward} have build a streaming system based on BitTorrent instead of \acs{IPFS}, also using \acs{DASH} as the video format. To accomplish this they needed to make small adjustments to the \acs{MPD} file by adding information about the tracker. This way the \acs{MPD} file alone is enough to start the video streaming process. For tests in the system they focused on segment missing rate and user experience. With a variety of number of peers, start delay and cache sizes. The system got worse performance as the network grew, by having more missed segments and more waiting time on playback. user experience also suffered the most when viewing at a high quality. These conclusions contradict our hypotheses that a large network should help offload the system, but this might be due to BitTorrent not being suitable for this purpose, or that their peer selection algorithm is lacking which they themselves point out might be the case.
+\citeauthor{gazdar2017toward} \cite{gazdar2017toward} have built a streaming system based on BitTorrent instead of \acs{IPFS}, also using \acs{DASH} as the video format. To accomplish this they needed to make small adjustments to the \acs{MPD} file by adding information about the tracker. This way the \acs{MPD} file alone is enough to start the video streaming process. For tests in the system they focused on segment missing rate and user experience. With a variety of number of peers, start delay and cache sizes. The system got worse performance as the network grew, by having more missed segments and more waiting time on playback. user experience also suffered the most when viewing at a high quality. These conclusions contradict our hypotheses that a large network should help offload the system, but this might be due to BitTorrent not being suitable for this purpose, or that their peer selection algorithm is lacking which they themselves point out might be the case.
 
 
-\citeauthor{nguyen2009p2p} \cite{nguyen2009p2p} argues that 60\% of the commonly used bandwidth cost can be saved using their \ac{P2P} system as opposed to a client-server model. Their \acs{P2P} uses the \ac{DHT} chord as their network architecture, and the video files are broken into multiple smaller pieces which are then dispersed across peers in the network with redundant copies. To ensure that files are not lost as peers leave and join the network, the new peers share the burden of storing files of the rare pieces, so that it is always possible to reconstruct the video. When streaming a video their system prefers pieces from different peers as this creates multiple internet routes, resulting in higher quality. In their testing they store the packets in two ways and compare. The first is to distribute the packets as is (non-NC) and the other is having the packets be random linear combinations of the original packets (RNC). Their testing results focused on the probability of being able to retrieve a piece and the latency to do so. Where the RNC scheme performed best in both.
+\citeauthor{nguyen2009p2p} \cite{nguyen2009p2p} argues that 60\% of the commonly used bandwidth cost can be saved using their \ac{P2P} system as opposed to a client-server model. Their \acs{P2P} uses the \ac{DHT} chord as their network architecture, and the video files are broken into multiple smaller pieces which are then dispersed across peers in the network with redundant copies. To ensure that files are not lost as peers leave and join the network, the new peers share the burden of storing files of the rare pieces, so that it is always possible to reconstruct the video. When streaming a video their system prefers pieces from different peers as this creates multiple internet routes, resulting in higher bit rate. In their testing they store the packets in two ways and compare. The first is to distribute the packets as is (non-\acs{NC}) and the other is having the packets be random linear combinations of the original packets (\ac{RNC}). Their testing results focused on the probability of being able to retrieve a piece and the latency to do so. Where the \acs{RNC} scheme performed best in both.
 
 \citeauthor{qiu2004modeling} \cite{qiu2004modeling} performs a theoretical evaluation of a BitTorrent network, and lists four issues that have to be addressed to understand the system.
 Peer evolution is how many peers are in the network and how they are in terms of arrival, departure and bandwidth.
@@ -24,7 +24,7 @@ Based on these issues the construct a flow model of a BitTorrent network from wh
 
 \section{Frameworks and Technologies}
 \label{sec:fram-techn}
-In this section frameworks and technologies crucial to or relevant for the thesis will be presented.
+In this section frameworks and technologies crucial to or relevant for the thesis are presented.
 
 \subsection{\acl{IPFS} (\acs{IPFS})}
 The \acs{IPFS} is a \acs{P2P} distributed file system, as specified in \cite{benet2014ipfs} and implemented by Protocol Labs\footnote{\url{https://ipfs.io/}}.
@@ -43,17 +43,18 @@ The protocol also incentivises seeding even when the peer does not currently nee
 Nodes also keep ledgers accounting transfers with the other nodes, to track history. When a connection is established Ledger information is exchanged, if it does not match exactly the ledger is recreated from scratch and all accrued trust and debt is reset. The authors claim that malicious users can purposefully lose their debt but is should not be worth the loss in trust.
 
 \subsubsection{Objects}
-The individual blocks are linked together using Mergle \acs{DAG}s, which is a directed acyclic graph where the each node has a cryptographic hash, and the hash of the parent verifies the children. This structure is a generalization of their Git data structure and provides. Addressing of content using the hashes, tamper resistance since it can be detected and deduplication as data that holds the same content will also hash the the same thereby only needing to be stored once. From the hash addresses files can also be traversed with a traditional UNIX file system path if the hash is that of a folder.
+The individual blocks are linked together using Merkle \acs{DAG}s, which is a directed acyclic graph where the each node has a cryptographic hash, and the hash of the parent verifies the children. This structure is a generalization of the Git data structure and provides. Addressing of content using the hashes, tamper resistance since it can be detected and deduplication as data that holds the same content will also hash to the same thereby only needing to be stored once. From the hash addresses files can also be traversed with a traditional UNIX file system path if the hash is that of a folder.
 Since hashes a used to address files, newer versions of a file will hash differently, tracking these is done using additional versioning.
 
 
 \subsection{\acl{DASH} (\acs{DASH})}
-\ac{DASH} is an adaptive bitrate streaming technique that enables high quality streaming over \acs{HTTP}. This is done by breaking the content into smaller file segments, each containing a short playback interval. Each of these segments are served at different bitrates, allowing the \acs{DASH}-client to choose the next segment to download, based on it's current network conditions.
+
+\ac{DASH} is an adaptive bitrate streaming technique that enables high quality streaming over \acs{HTTP}. This is done by breaking the content into smaller file segments, each containing a short playback interval. Each of these segments are served at different bitrates, allowing the \acs{DASH}-client to choose the next segment to download, based on its current network conditions.
 This makes it possible to serve a stream that adapts seamless to deliver streams with high quality and few stalls and re-bufferings, based on the changing conditions of the network.
 
-The segments are described by an \ac{MPD} file, in which information about the files, such as timing, \acs{URL}'s, bit rates and resolution resides. From the \acs{MPD} the multimedia selection can then be made based on user preferences (such as specific language audio streams), device capabilities (such as hardware decoding) and the previous mentioned conditions of the network.
+The segments are described by an \ac{MPD} file, in which information about the files, such as timing, \acs{URL}s, bit rates and resolution resides. From the \acs{MPD} the multimedia selection can then be made based on user preferences (such as specific language audio streams), device capabilities (such as hardware decoding) and the previous mentioned conditions of the network.
 
-The DASH Industry Forum (DASH-IF), consisting of Netflix, Google and Microsoft among others, helps push to implementation of the specification\cite{ISO23009}. This is done by creating guidelines for usage and libraries such as \texttt{dash.js}\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js}} that adds DASH compatibility in a HTML5 video player using JavaScript.
+The \acs{DASH} Industry Forum (DASH-IF), consisting of Netflix, Google and Microsoft among others, helps push to implementation of the specification\cite{ISO23009}. This is done by creating guidelines for usage and libraries such as \texttt{dash.js}\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js}} that adds \acs{DASH} compatibility in a HTML5 video player using JavaScript.
 
 \subsection{Docker}
 Docker\footnote{\url{https://docs.docker.com/}} allows for operating-system-level virtualization, also known as containerization, meaning that the kernel space is shared among instance (containers), but individual user spaces are provided. This makes each container seem like real computers from the point of view of the programs running inside. 
@@ -61,22 +62,23 @@ The shared kernel, result in less overhead per container when compared to other 
 
 By running programs in containers hardware independence is achieved due to the abstraction layer of Docker, while also gaining easy access to CPU and memory management.
 
-
+\section{Testing Framework}
 \subsection{Chaos Engineering \& Pumba}
 Chaos Engineering is the discipline of experimenting on a distributed system in order to build confidence in the system’s capability to withstand turbulent conditions in production\footnote{\url{http://principlesofchaos.org/}}.
 
 The philosophy behind Chaos Engineering is that even though each part in a distributed system works correct, systemic weaknesses can exist, and to discover these we emulate and manage chaos inherent in the system. This emperical, systems-based approach builds confidence in the ability of these systems to withstand real conditions, through observations of controlled experiments.
 
 Using Chaos engineering is done by fascillitating an experiment to uncover systemic weakness.
-First a \emph{steady state} is defined by some measureable output, that indicates normal behaviour. The hypothesis is that the \emph{steady state} will continue throughout the experiment.
+First, a \emph{steady state} is defined by some measureable output, that indicates normal behaviour. The hypothesis is that the \emph{steady state} will continue throughout the experiment.
 Secondly, variables that reflect real world events are introduced (eg. server crashes, low bandwidth, spike in traffic, etc.).
 Thirdly the hypothesis is tried disproved by examining the \emph{steady state} data.
 The harder it is to disrupt a \emph{steady state}, the more confidence is gained in the behaviour of the system, and discovered weaknesses can be targeted for improvement, before the behaviour manifests system-wide.
 
-Netflix developed this practice with their program Chaos Monkey which would randomly shut down services, and later expanded to a set of open sourced tools called Simian Army\footnote{\url{https://github.com/Netflix/SimianArmy}} build for different turbulent conditions, but targeted at \acs{VM}'s.
+Netflix developed this practice with their program Chaos Monkey which would randomly shut down services, and later expanded to a set of open sourced tools called Simian Army\footnote{\url{https://github.com/Netflix/SimianArmy}} built for different turbulent conditions, but targeted at \acs{VM}'s.
 
 Pumba\footnote{\url{https://github.com/gaia-adm/pumba}} is a chaos testing tool for containers in Docker. It can manipulate processes, their performance and network.
 
+summary
 
 %%% Local Variables:
 %%% mode: latex

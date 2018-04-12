@@ -42,7 +42,7 @@
 % ****************************************************************************************************
 % 2. Personal data and user ad-hoc commands
 % ****************************************************************************************************
-\newcommand{\myTitle}{Distributed system of video streaming using IPFS and DASH (Draft 1)\xspace}
+\newcommand{\myTitle}{Distributed system of video streaming using IPFS and DASH (Draft 2)\xspace}
 \newcommand{\mySubtitle}{Evaluating performance of DASH streaming with decentralized video content delivered with IPFS\xspace}
 \newcommand{\myDegree}{Master's Thesis\xspace}
 \newcommand{\myName}{Andreas Østergaard Nielsen\xspace}
@@ -86,7 +86,7 @@
 \usepackage{microtype}
 \usepackage{csquotes}
 \usepackage{ragged2e}
-\usepackage[dvipsnames]{xcolor}
+\usepackage[dvipsnames, table]{xcolor}
 \usepackage{pgf-umlsd}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
@@ -96,6 +96,8 @@
 \usepackage{colortbl}
 % \usepackage{color}
 
+% custom:
+\usepackage{svg}
 
 
 %\usepackage[square,numbers,sort&compress]{natbib}
@@ -201,7 +203,7 @@
 \pdfadjustspacing=1 
 \PassOptionsToPackage{pdftex}{graphicx}
     \usepackage{graphicx} 
- 
+\graphicspath{ {gfx/} } 
 
 % ********************************************************************
 % Hyperreferences

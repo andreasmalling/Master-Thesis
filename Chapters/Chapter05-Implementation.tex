@@ -5,23 +5,24 @@
 The system  contains multiple microservices realized in a docker network:
 \begin{itemize}
     \item \texttt{bootstrap} runs an IPFS daemon and is responsible for initializing the IPFS network, all other participants in the network connect through this node. 
-    The Go implementation of \acs{IPFS} (go-ipfs\footnote{\url{https://github.com/ipfs/go-ipfs}}) is used as back-end instead the JavaScript implementation, due to performance. This is due to the goal being performance measurings, where go should perform better. The go-ipfs must run as a daemon in the background. This is tolerable, due to the vision of having IPFS implemented and running natively in the browser.
+    The Go implementation of \acs{IPFS} (go-ipfs\footnote{\url{https://github.com/ipfs/go-ipfs}}) is used as back-end instead the JavaScript implementation, due to performance. This is due to the goal being performance measurings, where Go should perform better. The go-ipfs must run as a daemon in the background. This is tolerable, due to the vision of having IPFS implemented and running natively in the browser.
     \item \texttt{client} represents the users of the system, and there can be arbitrarily many of them depending on the test. The clients run an IPFS daemon and a browser that is controlled through Splinter, they then play various videos hosted in the network through the IPFS \acs{API} from the \texttt{dash.js} video player with different viewing patterns and connection conditions.
     \item \texttt{host} hosts the HTML website that the DASH.js player resides on, each client could host this themselves, but having it a single place makes the system more mutable.
     \item \texttt{metric} is a client to the Mongo database that is contacted by the client, the clients reguarly report data regarding their viewing session to Metric which then forwards this to the database, this data includes latency for getting a segment, whether the video halted and more.
     \item \texttt{mongo} is a dockerized Mongo database.
     \item \texttt{plot} is a Mongo client that processes the data stored in the Mongo database and presents it with various plots, it can also export this to a csv format.
-    \item \texttt{pumba} is a chaos engineering tool that is used to manipulate the \texttt{client} instances in terms of their download and upload speed, latency and even shutting them down.
+    \item \texttt{pumba} is a chaos engineering tool that is used to manipulate the \texttt{client} instances in terms of their download and upload speed, latency and even shutting them down. While \texttt{pumba} could be use as a container, it's opted to use as a binary for ease of automation. 
 \end{itemize}
 Relation between these services is also  illustrated in figure \ref{fig:uml_docker-compose}.
 
 \begin{figure}[bth]
-       \includegraphics[width=\linewidth]{gfx/uml_docker_setup.png}
+       \includegraphics[width=\linewidth]{UML/uml_docker_setup_v2.png}
        \caption[Diagram of the experimental test  setup]{Diagram of the experimental test setup, illustrating the relations between the Docker containers described in section \ref{sec:impl-overview}.}
         \label{fig:uml_docker-compose}
 \end{figure}
 
-\section{Video Tools}
+\section{Video Content Tools}
+Using the Python script \texttt{encode.py}, video content for testing were generated for sharing and streaming in the experimentation. The following tools were used to generate the content, defined in more details in section \ref{sec:video-encoding}.
 
 \subsection{FFmpeg}
 The commandline program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was used for transcoding videos to the proper codecs. The used codecs is chossen to H.264 for video and AAC for audio. 
@@ -30,9 +31,42 @@ The commandline program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was u
 \subsection{MP4Box multimedia packager}
 The tool MP4Box from the GPAC framework\footnote{\url{https://github.com/gpac/gpac}} was used to split the streams into segment files and generate a \acs{MPD}.
 
-\section{User Emulation Tools}
+\subsection{encode.py}
+The Python script can take a number of options, in which it, among others, is possible to alter the quality (and thereby bitrate) of the produced video and also set the duration of the segments dashed.
+
+The script operates in 4 steps:
+\begin{enumerate}
+    \item Encode video and audio to correct media container and codecs using \texttt{ffmpeg}.
+    \item Format the newly encoded media container to the wanted DASH profile of specified segment length using \texttt{MP4Box}.
+    \item Generate \acs{IPFS} hash addresses of the formatted media using \texttt{ipfs}.
+    \item Replace location of segments in \acs{MPD} with hash addresses.
+\end{enumerate}
+
+Since the hash addresses always will be the same for the content, it is possible to pre-generate and add the addresses to the \acs{MPD} before any files are shared in \acs{IPFS}, no matter which client latter will add them (See section \ref{sec:ipfs-file-names} for more information).
+
+\section{Experimentation Setup}
+The following section describes how the experiments were set up, making it possible to recreate the experiments and generated data.
+
+\subsection{\acl{VM} (\acs{VM})}
+Experimentation is performed on a VMware \acs{VM} with 4 cores\footnote{Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz}, 16 GB memory running Ubuntu 16.04\footnote{Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-104-generic x86\_64)}.
+
+\subsection{Docker}
+The \acs{VM} runs Docker at version 18.03\footnote{Docker version 18.03.0-ce, build 0520e24} and Docker Compose at version 1.20.1\footnote{docker-compose version 1.20.1, build 5d8c71b}.
+
+\subsection{Pumba}
+The \acs{VM} runs pumba at version 0.4.8\footnote{Pumba version 0.4.8, build 537d77d}.
+
+% Following is possibly unnecessary since "contained" in docker images
+
+\subsection{IPFS}
+The containers run \acs{IPFS} at version 0.4.14\footnote{go-ipfs version 0.4.14, build 5db3846}.
+
+\subsection{Python}
+The containers run Python at version 3.5.2.
+
 \subsection{Splinter}
 Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas will be interacting with the website through a chrome browser by utilizing this library, and thereby emulating different types of user behaviour.
+The package splinter used is at version 0.7.7.
 
 %%% Local Variables:
 %%% mode: latex

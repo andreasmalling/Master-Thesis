@@ -4,8 +4,38 @@
 % If problems with the headers: get headings in appendix etc. right
 %\markboth{\spacedlowsmallcaps{Appendix}}{\spacedlowsmallcaps{Appendix}}
 \chapter{Appendix Test}
-\section{Test of .csv plotting}
-As you can see in figure \ref{fig:csv_test} it just works! 
+\section{Code Repository}
+\label{app:code}
+
+\url{https://github.com/andreasmalling/flixtube}
+
+\section{Getting Started}
+\begin{enumerate}
+    \item Install \href{https://docs.docker.com/install/}{Docker} and \href{https://docs.docker.com/compose/install/}{Docker Compose}
+    \item \href{https://github.com/andreasmalling/flixtube/archive/master.zip}{Download} and unzip the project from the GitHub repository
+    \item Navigate into root folder of project
+    \item Run \lstinline[columns=fixed]{sudo docker-compose -f docker-compose-net.yml up}
+    \item ????
+    \item PROFIT!!!
+\end{enumerate}
+
+\section{Docker Images}
+\begin{table}[ht]
+\centering
+\rowcolors{2}{white}{gray!10}
+\begin{tabular}{ll}
+\toprule Container & URL \\\midrule
+\texttt{client}     & \url{https://hub.docker.com/r/andreasmalling/flixtube/} \\
+\texttt{bootstrap}  & \url{https://hub.docker.com/r/andreasmalling/flixtube_bootstrap/}    \\
+\texttt{metric}     & \url{https://hub.docker.com/r/kgoyo/flixmetric/}   \\
+\texttt{host}       & \url{https://hub.docker.com/r/kgoyo/flixtube_host/} \\\bottomrule
+\end{tabular}
+
+\end{table}
+
+ 
+\section{Test of .csv import}
+As you can see in figure \ref{fig:csv_test} and table \ref{tab:csv_test} it just works! 
 
 \begin{figure}[h]
     \myfloatalign
@@ -33,7 +63,7 @@ As you can see in figure \ref{fig:csv_test} it just works!
     after row=\midrule,
   },
   every even row/.style={
-    before row={\rowcolor[gray]{0.95}}},
+    before row={\rowcolor{gray!10}}},
   every last row/.style={
     after row=\bottomrule
   },
