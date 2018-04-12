@@ -1,7 +1,10 @@
 \chapter{Related Work}
+
+indledning rød tråd
+
 \label{cha:related-work}
 \citeauthor{aloman2015performance} \cite{aloman2015performance} have evaluated \acs{DASH} and two other streaming protocols (\acs{RTSP} and \acs{RTMP}) in both on-demand and live in both 4G and Wi-Fi conditions. Evaluation is done in terms of \ac{QOE} metrics with a large amount of parameters including: Resolution, bitrate, framerate, interval between key frames, packet loss rate and delay. \acs{QOE} was estimated through the quality of service through an algorithmic model, rather than user based scores.\\
-In terms of results when introduction packet loss and delays \acs{DASH} sacrifices throughput in order to maintain good \acs{QOE} where as the other instead resort to re-buffering, but \acs{DASH} did have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \acs{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video played stream. They claim this is due to \acs{RTSP} is a UDP based protocol where \acs{DASH} is TCP. But they claim the extra time buffering is worth it as rebuffering events are almost entirely eliminated. In their results \acs{QOE} (measured in MOS) is noticably higher when using \acs{DASH} in the same scenarios. In their testing packet loss affected \acs{QOE} more than delay.
+In terms of results when introduction packet loss and delays \acs{DASH} sacrifices throughput in order to maintain good \acs{QOE} whereas the other instead resort to re-buffering, but \acs{DASH} did have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \acs{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video played stream. They claim this is due to \acs{RTSP} is a UDP based protocol where \acs{DASH} is TCP. But they claim the extra time buffering is worth it as rebuffering events are almost entirely eliminated. In their results \acs{QOE} (measured in MOS) is noticably higher when using \acs{DASH} in the same scenarios. In their testing packet loss affected \acs{QOE} more than delay.
 
 % uses ITU-T Rec P-1201.1\footnote{\url{https://www.itu.int/rec/T-REC-P.1201.1/en}} for non intrusive monitoring of the video.
 
@@ -38,7 +41,7 @@ All nodes are identified by a public key of a SHA-256 cryptographic hash. To ins
 The routing system is capable of finding other peers' addresses in the network and determine which peers serves a wanted object. Using a \acs{DSHT} based on S/Kademlia and Coral \cite{baumgart2007skademlia, freedman2004coral}. A distinction of objects size and use patterns determines where values are stored. If they are less than 1KB they are stored directly on the \acs{DHT}, else a reference of the identity of peers serving the block is stored instead. 
 
 \subsubsection{Exchange}
-distribution of data happens by exchanging blocks with a protocol they call BitSwap, which is inspired by the way BitTorrent exchanges blocks of data. Each peer has a list of blocks they want and a list for which they already have similar to BitTorrent but instead it is for the entire network. In BitSwap value is given to each block, meaning to get something from a another peer something usually has to be given in exchange, if a peer has little or nothing the other peers want it seeks blocks they want prioritized over what is wants itself. Which helps reduce the amount of rare blocks in the network.
+Distribution of data happens by exchanging blocks with a protocol they call BitSwap, which is inspired by the way BitTorrent exchanges blocks of data. Each peer has a list of blocks they want and a list for which they already have similar to BitTorrent but instead it is for the entire network. In BitSwap value is given to each block, meaning to get something from a another peer something usually has to be given in exchange, if a peer has little or nothing the other peers want it seeks blocks they want prioritized over what is wants itself. Which helps reduce the amount of rare blocks in the network.
 The protocol also incentivises seeding even when the peer does not currently need any blocks. The idea is that this debt will be repaid in the future, and as such each peer tracks how much the owe, and they send more blocks to their debtors. The debt is also used as a measure of trusts, which protects versus malicious users.
 Nodes also keep ledgers accounting transfers with the other nodes, to track history. When a connection is established Ledger information is exchanged, if it does not match exactly the ledger is recreated from scratch and all accrued trust and debt is reset. The authors claim that malicious users can purposefully lose their debt but is should not be worth the loss in trust.
 
@@ -48,7 +51,6 @@ Since hashes a used to address files, newer versions of a file will hash differe
 
 
 \subsection{\acl{DASH} (\acs{DASH})}
-
 \ac{DASH} is an adaptive bitrate streaming technique that enables high quality streaming over \acs{HTTP}. This is done by breaking the content into smaller file segments, each containing a short playback interval. Each of these segments are served at different bitrates, allowing the \acs{DASH}-client to choose the next segment to download, based on its current network conditions.
 This makes it possible to serve a stream that adapts seamless to deliver streams with high quality and few stalls and re-bufferings, based on the changing conditions of the network.
 
