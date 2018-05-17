@@ -48,48 +48,62 @@ Possible user behaviours can be used in the experiment, they wary between collec
 Collective behaviours affect the entire network and how the video is watched over time.
 \subsection{Collective behaviours}
 \begin{itemize}
-    \item Social:
+    \item \textbf{Social:}
     Videos accessed through direct link (shared socially). Candidates for becoming viral, these videos tend to peak in views and then fall of drastically
-    \item Non-social:
+    \item \textbf{Non-social:}
     Videos found through searching or related videos internally on site, these videos have more stable views over time in comparison to social.
 \end{itemize}
 
 \subsection{Individual behaviours}
+\label{sec:individual-behavious}
 Behaviours can also vary depending on the individual user, the following are possible different kinds of users that could use the system.
 \begin{itemize}
-    \item Seeder:
+    \item \textbf{Seeder:}
     Is the user that is sharing content, either being the origin poster of said content or re-hosting it after having watched it themselves.
-    \item Leecher:
+    \item \textbf{Leecher:}
     Is a user that tries to exploit the system, by minimizing the content shared with the other peers %use a different peer as gateway, maybe bootstrap
-    \item Mobile User:
+    \item \textbf{Mobile User:}
     Is a user similar to the seeder, but is more unreliable due to fluctuating network connections
-    \item Binge:
+    \item \textbf{Binge:}
     Is a user that watches all content in chronological order
-    \item Skipper:
+    \item \textbf{Skipper:}
     Is a user that watches many small segments of the video, by watching a small segment and then skipping forwards to watch another small segment.
-    \item Incognito:
+    \item \textbf{Incognito:}
     Is a user only available in the network for a short time, watching a single video (or part of video) and deletes all of their content afterwards
+    \item \textbf{Idle:}
+    Is a user that is inside the network but does not actively interact with video content, and as such instead fulfills the roll of padding the other clients \acs{DHT}s
 \end{itemize}
 
 \section{Evaluation Experiments}
 Experiments for measuring \ac{QOE}, meaning no re-buffering and stalls of streams;
 \begin{itemize}
     \item \textbf{Bandwidth:}
-    Both the upload and download speeds of the client can be manipulated, and at which point does these become to low to get a pleasant viewing experience, meaning that the video does not halt after it has initially started. Also how does the low upload affect the other peers, and what innfluence does fluctuating bandwidth capacity have such as that of a mobile client.
+    Both the upload and download speeds of the client can be manipulated, and at which point does these become to low to get a pleasant viewing experience, meaning that the video does not halt after it has initially started. Also how does the low upload affect the other peers, and what influence does fluctuating bandwidth capacity have such as that of a mobile client.
     \textit{Cases of eg. mobile devices.}
     \item \textbf{Churn rate:}
     What effect does clients leaving the network have on the video, and can videos partially or entirely disappear from the network, can a video be popular enough that this cannot reasonably occur. IT makes sense to see influence, due to the novelty of IPFS.
     \item \textbf{Segments availability:}
-    What impact does the popularity of the video have in terms of availability
-    \textit{Cases of spike in users, unpopular video performance. }
+    How does the socialness and availability of the video impact the user experience and network. The socialness shows the availability over time, while very social videos also have sudden increases in viewership that suddenly drops off. Segments availability alone can be adjusted by the amount of seeders in the network and can be considered seperate from evaluating the impact of different levels of socialness.
     \item \textbf{Video Quality:}
-    Influence of resolution, \acs{FPS}, I-Frame interval, bit rate as in \cite{aloman2015performance}.
+    Influence of video resolution, \acs{FPS}, time between I-Frames and bit rate as the testing done by \citeauthor{aloman2015performance}.
+    \item \textbf{segments size}
+    How does different segment sizes affect the performance, it is expected that if it is too large, one does not properly load balance the requests but if it is too small, enough bytes are not given for the amount of traffic trying to locate the segment.
     \item \textbf{Buffer size:}
-    Influence of changing DASH preferred buffer size. %Done dynamically already, so maybe not that interesting. 
+    Influence of changing \acs{DASH} player's preferred buffer size, meaning that less of the video can be stored in advance putting more pressure on the network for getting the individual segments fast, before the player stalls. %Done dynamically already, so maybe not that interesting. 
     \item \textbf{Public IPFS:}
     How does IPFS perform in a small environment dedicated only to running the tests versus running the test in the global IPFS network that is also used for other unrelated services.
     \textit{Case of "in the wild" performance.} 
+    \item \textbf{Population behaviour}
+    How does the behaviour of the clients in the network affect the network and clients, both themselves and others, with different populations.
 \end{itemize}
+These tests are to be performed by setting up a \acs{P2P} network containing clients with \acs{IPFS} installed. Each client has a persona, and tests can be done with different populations of these personas.\\
+%
+%some kind of transition
+%
+Different percentages of users being seeders, a large amount of Seeders increases the availability of the video segments, without other clients have to get them themselves before others can.
+Different percentages of users being Leechers, a large amount of Leechers is expected to put a high amount of stress on the network as the amount of peers that request files is dis disproportionally larger than the amount that can supply them.
+Different percentages of users being idle, this pads the size of the network and can potentially fill up the hash tables of the active peers resulting in slower traffic.
+Different kinds of user behaviours and how they impact the network compared to each other, this can be tested by having similar networks but the active video watching clients wary between them. The users where this would be relevant for are the Binge, Skipper and the Incognito personas. Between these users stalling is more tolerable on the Skipper and Incognito persona as they manually jump to a different point of the video and it is expected upon doing so the video will stall while the buffer is being filled with the relevant segments.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../ClassicThesis"

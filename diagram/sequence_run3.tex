@@ -1,0 +1,28 @@
+\begin{figure}
+    \centering\footnotesize\sffamily
+    \caption[Sequence diagram for run script (3/3)]{Sequence diagram of run script (Part 3 of 3), illustrating the plotting and export of data at the end of each experiment}
+    \label{fig:run_sequence_plot}
+    \begin{sequencediagram}
+    \newthread{run}{\normalsize Run.py}
+    \newinst[1]{dc}{\normalsize Docker compose}
+    \newinst[1]{doc}{\normalsize Docker}
+    
+    \begin{call}{run}{\textit{run plot}}{dc}{}
+        \begin{messcall}{dc}{run mongo}{doc}{}
+            \begin{messcall}{dc}{run plot}{doc}{}
+            \end{messcall}
+        \end{messcall}
+    \end{call}
+    
+    \begin{call}{run}{\textit{export data}}{dc}{}
+        \begin{call}{dc}{exec mongodump}{doc}{}
+        \end{call}
+    \end{call}
+    
+    \begin{messcall}{run}{down}{dc}{}
+        \begin{messcall}{dc}{kill \textit{all containers}}{doc}{}
+        \end{messcall}
+    \end{messcall}
+    
+    \end{sequencediagram}
+\end{figure}

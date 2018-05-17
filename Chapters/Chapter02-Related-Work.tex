@@ -1,10 +1,10 @@
 \chapter{Related Work}
 
-indledning rød tråd
+Multiple authors have already evaluated \acs{DASH} video streaming both in relation to other protocols as seen in \citeauthor{aloman2015performance} but also in a \acs{P2P} network as done by \citeauthor{gazdar2017toward}. In terms of performance of \acs{P2P} networks, \citeauthor{nguyen2009p2p} has evaluated video acquisition with a \acs{DHT} network and \citeauthor{qiu2004modeling} has done a theoretical approach while also listing important aspects to consider when building a \acs{P2P} network. Since the focus of this thesis is on video viewing performance it is also important to consider how videos are watched, which \citeauthor{broxton2013catching} has done by defining a socialness factor to videos, based on how viral they are. Which affects how a video is watched over time in a \acs{P2P} network.
 
 \label{cha:related-work}
 \citeauthor{aloman2015performance} \cite{aloman2015performance} have evaluated \acs{DASH} and two other streaming protocols (\acs{RTSP} and \acs{RTMP}) in both on-demand and live in both 4G and Wi-Fi conditions. Evaluation is done in terms of \ac{QOE} metrics with a large amount of parameters including: Resolution, bitrate, framerate, interval between key frames, packet loss rate and delay. \acs{QOE} was estimated through the quality of service through an algorithmic model, rather than user based scores.\\
-In terms of results when introduction packet loss and delays \acs{DASH} sacrifices throughput in order to maintain good \acs{QOE} whereas the other instead resort to re-buffering, but \acs{DASH} did have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \acs{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video played stream. They claim this is due to \acs{RTSP} is a UDP based protocol where \acs{DASH} is TCP. But they claim the extra time buffering is worth it as rebuffering events are almost entirely eliminated. In their results \acs{QOE} (measured in MOS) is noticably higher when using \acs{DASH} in the same scenarios. In their testing packet loss affected \acs{QOE} more than delay.
+In terms of results when introduc   tion packet loss and delays \acs{DASH} sacrifices throughput in order to maintain good \acs{QOE} whereas the other instead resort to re-buffering, but \acs{DASH} did have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \acs{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video played stream. They claim this is due to \acs{RTSP} is a UDP based protocol where \acs{DASH} is TCP. But they claim the extra time buffering is worth it as rebuffering events are almost entirely eliminated. In their results \acs{QOE} (measured in MOS) is noticably higher when using \acs{DASH} in the same scenarios. In their testing packet loss affected \acs{QOE} more than delay.
 
 % uses ITU-T Rec P-1201.1\footnote{\url{https://www.itu.int/rec/T-REC-P.1201.1/en}} for non intrusive monitoring of the video.
 
@@ -29,6 +29,8 @@ Based on these issues the construct a flow model of a BitTorrent network from wh
 \label{sec:fram-techn}
 In this section frameworks and technologies crucial to or relevant for the thesis are presented.
 
+IPFS figure
+
 \subsection{\acl{IPFS} (\acs{IPFS})}
 The \acs{IPFS} is a \acs{P2P} distributed file system, as specified in \cite{benet2014ipfs} and implemented by Protocol Labs\footnote{\url{https://ipfs.io/}}.
 
@@ -51,6 +53,14 @@ Since hashes a used to address files, newer versions of a file will hash differe
 
 
 \subsection{\acl{DASH} (\acs{DASH})}
+
+\begin{figure}[bth]
+    \includegraphics[width=\linewidth]{mpd_structure.png}
+    \caption{Structure of the \acs{MPD}.}
+    \label{fig:mpd_structure}
+    \source{\cite[Figure 3 on p. 65]{sodagar2011mpeg}}
+\end{figure}
+
 \ac{DASH} is an adaptive bitrate streaming technique that enables high quality streaming over \acs{HTTP}. This is done by breaking the content into smaller file segments, each containing a short playback interval. Each of these segments are served at different bitrates, allowing the \acs{DASH}-client to choose the next segment to download, based on its current network conditions.
 This makes it possible to serve a stream that adapts seamless to deliver streams with high quality and few stalls and re-bufferings, based on the changing conditions of the network.
 
@@ -66,6 +76,7 @@ By running programs in containers hardware independence is achieved due to the a
 
 \section{Testing Framework}
 \subsection{Chaos Engineering \& Pumba}
+\label{sec:framework_pumba}
 Chaos Engineering is the discipline of experimenting on a distributed system in order to build confidence in the system’s capability to withstand turbulent conditions in production\footnote{\url{http://principlesofchaos.org/}}.
 
 The philosophy behind Chaos Engineering is that even though each part in a distributed system works correct, systemic weaknesses can exist, and to discover these we emulate and manage chaos inherent in the system. This emperical, systems-based approach builds confidence in the ability of these systems to withstand real conditions, through observations of controlled experiments.

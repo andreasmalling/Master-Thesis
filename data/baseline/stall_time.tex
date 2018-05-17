@@ -1,0 +1,71 @@
+\begin{figure}[h]
+    \myfloatalign
+    \begin{tikzpicture}
+        \begin{axis} [
+            xlabel={Experiment Time (ms)},
+            ylabel={Stall time (ms)}]
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x1,
+            y=y1
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x2,
+            y=y2
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x3,
+            y=y3
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x4,
+            y=y4
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x5,
+            y=y5
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x6,
+            y=y6
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x7,
+            y=y7
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x8,
+            y=y8
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x9,
+            y=y9
+            ]{./data/baseline/stall_time.csv};
+            \addplot[
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x10,
+            y=y10
+            ]{./data/baseline/stall_time.csv};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{plot}
+    \label{fig:baseline_stall_time}
+\end{figure}

@@ -1,0 +1,53 @@
+\begin{figure}
+    \centering\footnotesize\sffamily
+    \caption[Sequence diagram for run script (2/3)]{Sequence diagram of run script (Part 2 of 3), illustrating the setup of a stable network and the execution of an experiment.}
+    \label{fig:run_sequence_exp}
+    \begin{sequencediagram}
+    \newthread{run}{\normalsize Run.py}
+    \newinst[3]{dc}{\normalsize Docker compose}
+    \newinst[1]{doc}{\normalsize Docker}
+    \newinst[1]{pum}{\normalsize Pumba}
+        
+    \begin{call}{run}{extract scales from \textit{stable} env file}{run}{}
+    \end{call}
+    
+    \begin{messcall}{run}{set \textit{stable} env file as environment}{dc}{}
+    \end{messcall}
+    
+    \begin{messcall}{run}{scale \textit{stable service(s)}}{dc}{}
+        \begin{sdblock}{loop}{\shortstack{Iterate through services and scale\\according to  the \textit{stable} env}}\postlevel
+            \begin{messcall}{dc}{run \textit{stable image}}{doc}{}
+            \end{messcall}
+        \end{sdblock}
+    \end{messcall}
+    
+    \begin{call}{run}{busy wait until network is stabilized}{run}{}
+    \end{call}
+    
+    \begin{call}{run}{extract scales from \textit{exp} env file}{run}{}
+    \end{call}
+    
+    \begin{messcall}{run}{set \textit{exp} env file as environment}{dc}{}
+    \end{messcall}
+    
+    \begin{messcall}{run}{scale \textit{exp service(s)}}{dc}{}
+        \begin{sdblock}{loop}{\shortstack{Iterate through services and scale\\ additionally with scales from \textit{exp} env}}\postlevel
+            \begin{messcall}{dc}{run \textit{exp image}}{doc}{}
+            \end{messcall}
+        \end{sdblock}
+    \end{messcall}
+    
+    \begin{messcall}{run}{Manipulate network for all \textit{users}}{pum}{}
+        \begin{call}{pum}{adjust network}{doc}{}
+        \end{call}
+        \begin{call}{run}{busy wait for chosen length of experiment}{run}{}
+        \end{call}
+    \end{messcall}
+    
+    \begin{messcall}{run}{down}{dc}{}
+        \begin{messcall}{dc}{kill \textit{all}}{doc}{}
+        \end{messcall}
+    \end{messcall}
+    
+    \end{sequencediagram}
+\end{figure}

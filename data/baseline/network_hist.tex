@@ -1,0 +1,21 @@
+\begin{figure}[h]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        bar width = 4pt,
+        xlabel={users},
+        xtick=data,
+        xticklabels from table={./data/baseline/network_hist.csv}{users},
+        x tick label style={rotate=70, anchor=east},
+        ylabel=bytes,
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={rx}]{./data/baseline/network_hist.csv};
+        \addplot table [x expr=\coordindex, y={tx}]{./data/baseline/network_hist.csv};
+        \legend{received,transmitted}
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption{plot}
+    \label{fig:baseline_stall_time}
+\end{figure}

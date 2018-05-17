@@ -1,0 +1,38 @@
+\begin{figure}
+    \centering\footnotesize\sffamily
+    \caption[Sequence diagram for clients]{Sequence diagram of client requesting video pieces in the \acs{IPFS} network}
+    \label{fig:entrypoint_sequence}
+    \begin{sequencediagram}
+        \newthread{p1}{\normalsize Client}
+        \newinst[4]{p2}{\normalsize IPFS gateway}
+        \newinst[1]{p3}{\normalsize Host}
+        \begin{sdblock}{optional}{Leecher does not run IPFS}
+            \begin{call}{p1}{IPFS init}{p1}{}
+            \end{call}
+            \begin{call}{p1}{IPFS Daemon}{p1}{}
+            \end{call}
+        \end{sdblock}
+        \begin{call}{p1}{launch browser}{p1}{}
+        \end{call}
+        \begin{messcall}{p1}{request website}{p3}
+            \begin{messcall}{p3}{send website}{p1}
+            \end{messcall}
+        \end{messcall}
+        \begin{call}{p1}{start video player}{p1}{}
+        \end{call}
+        \begin{messcall}{p1}{request MPD file}{p2}
+            \begin{messcall}{p2}{send MPD file}{p1}
+            \end{messcall}
+        \end{messcall}
+        \begin{sdblock}{loop}{}
+            \begin{messcall}{p1}{request segment}{p2}
+                \begin{messcall}{p2}{send segment}{p1}
+                \end{messcall}
+            \end{messcall}
+        \end{sdblock}
+        \begin{sdblock}{loop}{}
+            \begin{call}{p1}{busy wait}{p1}{}
+            \end{call}
+        \end{sdblock}
+    \end{sequencediagram}
+\end{figure}

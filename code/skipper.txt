@@ -1,0 +1,5 @@
+jumpTo = 0
+While jumpTo < videoDuration
+    skip to jumpTo
+    watch video for watchTime seconds
+    jumpto <- timeInVideo + skipLength
