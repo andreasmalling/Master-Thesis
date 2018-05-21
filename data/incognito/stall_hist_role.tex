@@ -1,0 +1,19 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        bar width=0.75,
+        enlarge x limits={abs=1},
+        xtick=data,
+        xticklabels from table={./data/incognito/stall_hist_role.csv}{users},
+%        x tick label style={rotate=60, anchor=east},
+        ylabel={Total stall time (ms)},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={time}]{./data/incognito/stall_hist_role.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption{mean stall time for binge users compared to incognito}
+    \label{bar:incognito_stall_role}
+\end{figure}

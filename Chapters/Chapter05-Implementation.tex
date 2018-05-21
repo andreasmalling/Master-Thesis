@@ -7,7 +7,7 @@ The system  contains multiple microservices realized in a docker network:
     \item \texttt{bootstrap} runs an IPFS daemon and is responsible for initializing the IPFS network, all other participants in the network connect through this node. 
     The Go implementation of \acs{IPFS} (go-ipfs\footnote{\url{https://github.com/ipfs/go-ipfs}}) is used as back-end instead the JavaScript implementation, due to performance. This is due to the goal being performance measurings, where Go should perform better. The go-ipfs must run as a daemon in the background. This is tolerable, due to the vision of having IPFS implemented and running natively in the browser.
     \item \texttt{client} represents the users of the system, and there can be arbitrarily many of them depending on the test. The clients run an IPFS daemon and a browser that is controlled through Splinter, they then play various videos hosted in the network through the IPFS \acs{API} from the \texttt{dash.js} video player with different viewing patterns and connection conditions.
-    \item \texttt{host} hosts the HTML website that the DASH.js player resides on, each client could host this themselves, but having it a single place makes the system more mutable.
+    \item \texttt{host} hosts the \ac{HTML} website that the DASH.js player resides on, each client could host this themselves, but having it a single place makes the system more mutable.
     \item \texttt{metric} is a client to the Mongo database that is contacted by the client, the clients reguarly report data regarding their viewing session to Metric which then forwards this to the database, this data includes latency for getting a segment, whether the video stalled and more.
     \item \texttt{Network logger} accesses the docker \acs{API} to get network stats for all the clients, these stats are then stored in the database
     \item \texttt{mongo} is a dockerized Mongo database.
@@ -80,31 +80,48 @@ Since the hash addresses always will be the same for the content, it is possible
     firstline=25, 
     lastline=30]{code/hashed.mpd}
 
+
+
 \section{Experimentation Setup}
 The following section describes how the experiments were set up, making it possible to recreate the experiments and generated data.
 
+
 \subsection{\acl{VM} (\acs{VM})}
-Experimentation is performed on a VMware \acs{VM} with 16 cores\footnote{Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz}, 16 GB memory running Ubuntu 16.04\footnote{Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-104-generic x86\_64)}.
+Experimentation is performed on a VMware \acs{VM} with 16 cores\footnote{Intel\textregistered Xeon\textregistered CPU E5-2697A v4 @ 2.60GHz}, 16 GB memory running Ubuntu 16.04\footnote{Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-104-generic x86\_64)}.
+
 
 \subsection{Docker}
 \label{sec:setup_docker}
 \label{sec:setup_docker-compose}
-The \acs{VM} runs Docker at version 18.03\footnote{Docker version 18.03.0-ce, build 0520e24} and Docker Compose at version 1.20.1\footnote{docker-compose version 1.20.1, build 5d8c71b}. \textbf{TODO: EXPLAIN compose file}
+The \acs{VM} runs Docker at version 18.03\footnote{Docker CE version 18.03.0-ce, build 0520e24} and Docker Compose at version 1.20.1\footnote{docker-compose version 1.20.1, build 5d8c71b}. \textbf{TODO: EXPLAIN compose file}
+
 
 \subsection{Pumba}
 \label{sec:setup_pumba}
-The \acs{VM} runs pumba at version 0.4.8\footnote{Pumba version 0.4.8, build 537d77d}. \textbf{TODO: EXPLAIN DOCKER API n stuff}
+The \acs{VM} runs pumba at version 0.4.8\footnote{pumba version 0.4.8, build 537d77d}. \textbf{TODO: EXPLAIN DOCKER API n stuff}
+
 
 \subsection{IPFS}
+\label{sec:setup_ipfs}
 The containers run \acs{IPFS} at version 0.4.14\footnote{go-ipfs version 0.4.14, build 5db3846}.
 
+
+\subsection{dash.js}
+\label{sec:setup_dash.js}
+The \texttt{website} container uses dash.js\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js/}} at version v2.6.8\footnote{dash.all.min.js version 2.6.8, build 888cdcc4}, which adds the \ac{DASH} compatibility to the \acs{HTML}5 video player using JavaScript.
+
+
 \subsection{Python}
-The containers run Python at version 3.5.2.
+\label{sec:setup_python}
+The containers run Python at version 3.5.2, for running the entrypoints of the containers (See section \ref{sec:setup_docker}).
+
 
 \subsection{Splinter}
 \label{sec:setup_splinter}
 Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See section \ref{sec:individual-behavious}) will be interacting with the website through a chrome browser by utilizing this library, and thereby emulating different types of user behaviour.
 The package splinter used is at version 0.7.7.
+
+
 
 \section{Experiment flow}
 Experiments are first started by setting up a stable network of the required services for the experiment. This stable setup is given an initialization time to ensure it's stabilized, meaning that an IPFS network has formed and seeders have added their files to the network.
@@ -152,16 +169,18 @@ Finally all services are killed, to stop the data collection of the experiment.
 
 \input{diagram/sequence_run2.tex}
 
-The third stage consists of plotting the results and export the data to an archive (See figure \ref{fig:run_sequence_plot}).
+The third stage consists of plotting the results and export the data to an archive (See figure \ref{fig:run_sequence_plot}). Since plot isn't a part of the experiment it's defined in a separate compose file (\textit{plot-compose.yml}), which is used with docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when docker compose is asked to run the \texttt{plot} service, the dependencies is also started. Since plot terminates when all plots are done, we wait for it to exit after generating the following:
 
-The service \texttt{plot} generates the following:
 \begin{itemize}
-    \item Latency and download time for every segment from the perspective of the Dash.js player. This data is collected both for video and audio segments.
-    \item latency and download over time, this is done since not every client requests the segments at the same time. These plots are also generated for the mean and standard deviation of the role.
-    \item The amount of failures is also plotted the failures we log is when we do not get a response code: 200 on retrieving a segment, and the amount of time the video stalls for each segment.
-    \item Plots are also generated for the overall network where the amount of bytes and packets received and transmitted is plotted.
-    \item Plot also generates \acs{CSV} files with every plot it generates.
+    \item Latency and download time for every segment from the perspective of the dash.js player. This data is collected both for video and audio segments.
+    \item Latency and download over time, this is done since not every client requests the segments at the same time. These plots are also generated for the mean and standard deviation of the role.
+    \item The amount of failures is also plotted. The failures logged is the amount of time the video stalls for each segment  and when the response code on retrieving a segment is different from 200\footnote{\url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200}}.
+    \item Plots are also generated for the overall network traffic between containers, where the amount of bytes and packets received and transmitted is plotted.
+    \item \acs{CSV} files with every plot it generates.
 \end{itemize}
+
+After the termination of \texttt{plot}, the data from the still present \texttt{mongo} service is exported to a gzip\footnote{\url{https://www.gnu.org/software/gzip/}} archive using the utility mongodump\footnote{\url{https://docs.mongodb.com/manual/reference/program/mongodump/}}. 
+
 
 \input{diagram/sequence_run3.tex}
 

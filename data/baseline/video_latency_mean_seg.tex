@@ -1,0 +1,26 @@
+\begin{table}[h]
+    \caption{Means of latencies, measured in milliseconds}
+    \label{tab:binge_latency_mean}
+    \myfloatalign
+    \pgfplotstabletypeset[
+        every head row/.style={
+            before row=\toprule,
+            after row=\midrule,
+        },
+        every even row/.style={
+            before row={\rowcolor{gray!10}}
+        },
+        every last row/.style={
+            after row=\bottomrule
+        },
+        columns={user,latency},
+        columns/user/.style={
+            column name={Clients},
+            string type,
+        },
+        columns/latency/.style={
+            column name={Latency (\acs{ms})},
+            column type = r,
+        },
+    ]{./data/baseline/video_latency_mean_seg.csv}
+\end{table}

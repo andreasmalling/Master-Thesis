@@ -1,0 +1,20 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        bar width=0.35,
+        enlarge x limits={abs=0.75},
+        xtick=data,
+        xticklabels from table={./data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.csv}{users},
+        ylabel=Mean bandwidth (bytes),
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={rx}]{./data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.csv};
+        \addplot table [x expr=\coordindex, y={tx}]{./data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.csv};
+        \legend{received,transmitted}
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption{Mean bandwidth for 5 bingers with or without 5 incognito users in the network}
+    \label{bar:incognito_hist_net}
+\end{figure}

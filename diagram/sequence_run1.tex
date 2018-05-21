@@ -7,8 +7,8 @@
     \newinst[1]{dc}{\normalsize Docker compose}
     \newinst[1]{doc}{\normalsize Docker}
     
-    \begin{call}{run}{\shortstack{\textit{clean db}\\run mongo}}{dc}{}
-        \begin{messcall}{dc}{run mongo}{doc}{}
+    \begin{call}{run}{\shortstack{run \textit{mongo}}}{dc}{}
+        \begin{messcall}{dc}{run \textit{mongo}}{doc}{}
             \begin{sdblock}{loop}{Until exit 0}
                 \begin{call}{dc}{exec drop db}{doc}{}
                 \end{call}

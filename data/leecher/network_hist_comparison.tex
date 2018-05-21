@@ -3,9 +3,10 @@
     \begin{tikzpicture}
     \begin{axis}[
         ybar,
-        bar width = 4pt,
+        bar width=0.3,
+        enlarge x limits={abs=0.4},
         xtick=data,
-        xticklabels from table={./data/baseline/network_hist.csv}{users},
+        xticklabels from table={./data/leecher/network_hist_comparison.csv}{users},
         x tick label style={rotate=60, anchor=east},
         ylabel=Mean bandwidth (bytes),
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
@@ -13,21 +14,29 @@
             table [
                 x expr=\coordindex,
                 y={rx},
-            ]{./data/baseline/network_hist.csv};
+            ]{./data/leecher/network_hist_comparison.csv};
         \addplot
             table [
                 x expr=\coordindex,
                 y={tx},
-            ]{./data/baseline/network_hist.csv};
+            ]{./data/leecher/network_hist_comparison.csv};
         \addplot [
                 black, 
                 sharp plot, 
                 update limits=false
             ] coordinates{(-1, 55992320) (11, 55992320)};
-        \legend{received,transmitted}
+        
+        
+        \addlegendentry{received}
+        \addlegendentry{transmitted}
+                
+        \addlegendimage{empty legend}
+        \addlegendimage{empty legend}
+        \addlegendentry{\hspace{-17pt}(1) 0 leechers}
+        \addlegendentry{\hspace{-12pt}(2) 5 leechers}
     \end{axis}
-    \draw (8,1) node {video size};
+    \draw (8,2.2) node {video size};
     \end{tikzpicture}
-    \caption{Recieved and transmitted bytes per client, from the baseline experiment}
+    \caption{Mean bandwidth for each type of user in the 5 binger experiment (1), and the 5 binger and 5 leecher experiment (2)}
     \label{bar:baseline_network_hist}
 \end{figure}

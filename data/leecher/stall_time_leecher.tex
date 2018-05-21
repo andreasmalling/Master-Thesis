@@ -3,69 +3,73 @@
     \begin{tikzpicture}
         \begin{axis} [
             xlabel={Experiment Time (ms)},
-            ylabel={Stall time (ms)}]
+            ylabel={Stall time (ms)},
+            legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
+            ]
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x1,
             y=y1
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
+            \addplot[
+            color=red,
+            unbounded coords=jump,
+            sharp plot] table[
+            x=x10,
+            y=y10
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x2,
             y=y2
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x3,
             y=y3
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x4,
             y=y4
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x5,
             y=y5
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x6,
             y=y6
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x7,
             y=y7
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x8,
             y=y8
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
             x=x9,
             y=y9
-            ]{./data/baseline/stall_time.csv};
-            \addplot[
-            unbounded coords=jump,
-            sharp plot] table[
-            x=x10,
-            y=y10
-            ]{./data/baseline/stall_time.csv};
+            ]{./data/leecher/stall_time_leecher.csv};
+            \legend{1-9:BINGE,10:LEECHER}
         \end{axis}
     \end{tikzpicture}
-    \caption{Stalls over time in the baseline experiment}
-    \label{plot:baseline_stall_time}
+    \caption{Stalls over time from the 1 leecher experiment}
+    \label{plot:leecher_stall_time}
 \end{figure}

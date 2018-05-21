@@ -1,0 +1,18 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+%        bar width = 4pt,
+        xtick=data,
+        xticklabels from table={./data/leecher/stall_hist_leecher.csv}{users},
+        x tick label style={rotate=60, anchor=east},
+        ylabel={\# Stalls},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={stalls}]{./data/leecher/stall_hist_leecher.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption{Total number of stalls per client, from the 5 leechers experiment}
+    \label{bar:leecher_stall_hist}
+\end{figure}

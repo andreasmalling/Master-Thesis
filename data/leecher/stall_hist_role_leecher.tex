@@ -1,0 +1,28 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+            ybar,
+            bar width=0.3,
+            enlarge x limits={abs=0.4},
+            xtick=data,
+            xticklabels from table={./data/leecher/stall_hist_role_leecher.csv}{users},
+    %        x tick label style={rotate=60, anchor=east},
+            ylabel=Total stall time (ms),
+            legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
+        ]
+        \addplot table [x expr=\coordindex, y={mean}]{./data/leecher/stall_hist_role_leecher.csv};
+        \addplot table [x expr=\coordindex, y={stddev}]{./data/leecher/stall_hist_role_leecher.csv};
+        \addlegendimage{empty legend}
+        \addlegendimage{empty legend}
+
+        \addlegendentry{Mean}
+        \addlegendentry{Std. Dev.}
+        \addlegendentry{\hspace{-17pt}(1) 5 leechers}
+        \addlegendentry{\hspace{-12pt}(2) 10 leechers}
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption{Stall time per client, from the 5 leechers and 5 binges experiment (1) and the 10 leechers experiment (2)}
+    \label{bar:leecher_stall_hist_role}
+\end{figure}

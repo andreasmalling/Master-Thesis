@@ -1,29 +1,66 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{xkcd/688.png}
+    \caption*{Source: \href{https://xkcd.com/688/}{xkcd}}
+\end{figure}
+
+
 some kind of introduction
 
 %=min(A2,C2,E2,G2,I2,K2,M2,O2,Q2,S2,U2)
 
-\section{baseline experiment}    
+\section{Baseline experiment}    
 The first experiments consists of the stable network with 10 Binge persona client added afterwards, with a uniform randomized delay before they start between 0 and 60 seconds. The bandwidth for the clients is set at 20 \acs{MBit} and no artificial latency is added. The network used is closed meaning only the relevant peers are present. It is expected to perform well with almost no stalls or failures, and segments are expected to be retrieved with low latency. Clients are expected to download about 56 \acs{MB} which is the size of the video, which is 90 seconds long. \\
-In the experiment every client stalled exactly once, which happened when the video was being initially started and the buffer was getting filled, this can therefore not be considered a failure, meaning the users got a good quality of experience.\\ \input{data/baseline/stall_time}
-In terms of amount of data received on the clients, a single peer downloaded about the expected amount, and every other peer downloaded more and more. In the worst case about 7 times more. \input{data/baseline/network_hist}
-Since the video segments are the only files being distributed in the network the extra data being downloaded must be duplicate data. We can also observe that the ones downloading the least are also the clients that get to watch the video first, where the files are least distributed.\\ %network_rx_bytes_time
-In terms of latency in acquiring the files, it is varies greatly between each segment and no pattern can be observed, but for the average latency of every client the best performing client has an average of 1053\acs{ms} and the worst has an average of 912\acs{ms}. %video_latency_seg
+In the experiment every client stalled exactly once (See figure \ref{plot:baseline_stall_time}), which happened when the video was being initially started and the buffer was getting filled, this can therefore not be considered a failure, meaning the users got a good quality of experience.\\ 
+
+\input{data/baseline/stall_time}
+
+In terms of amount of data received on the clients, a single peer downloaded about the expected amount, and every other peer downloaded more and more. In the worst case about 7 times more (See figure \ref{plot:baseline_network_rx_bytes_time}).
+
+\input{data/baseline/network_hist}
+
+Since the video segments are the only files being distributed in the network the extra data being downloaded must be duplicate data. We can also observe that the ones downloading the least are also the clients that get to watch the video first, where the files are least distributed.\\ 
+
+\input{data/baseline/network_rx_bytes_time}
+
+In terms of latency in acquiring the files, it is varies greatly between each segment and no pattern can be observed, but for the average latency of every client the best performing client has an average of 1053\acs{ms} and the worst has an average of 912\acs{ms}. \input{data/baseline/video_latency_mean_seg}
 So even though the worst performing downloads 7 times the data it does not seem to impact it negatively, this might change however as it is expected that the network could get flooded if this factor increases more with even more peers.
 
 \subsection{Smaller network experiments}
 The baseline experiment is also repeated with smaller amounts of Binge users in the network, this is primarily used for comparison in the future experiments.
 
-\section{leecher population experiment}
+\section{Leecher population experiment}
 In this experiment we alter the percentage of leechers versus bingers that the network contains, otherwise the conditions are the same as the baseline experiment.
 Based on the first experiment adding leechers to the network should decrease the amount of duplicate data being sent, but it also means more requests to the holders of the video segments potentially as there is fewer sources to get them from. Therefore the network is expected to perform better as long as the Seeder can keep up.\\
-The results however were different from expected, having a single leecher in the network, had no real impact on the bingers, but the leecher user got very high stall time, over 17 seconds with stalls spread across the video rather than just at the beginning. %stall_time and stall_time_hist (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_16:21:32.688486)
-Scaling the network to having half of the users being leechers and the other half bingers, negatively impacted the all the clients, as the 5 bingers now had an average stall time of about 13 seconds while the stall time for the leechers became much worse with an average of about 53 seconds. For both types of clients the standard deviation of stall time was around 10 seconds, meaning the users got vastly different performances, and even two of the binger only stall once at the beginning of the video, meaning they got a good quality of experience. %stall_hist, stall_hist_role_mean and stall_hist_role_stdev (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:51:32.232356)
-Scaling the amount of leechers further, to all the clients being leechers, increased the bad quality of experience further, and the total mean stall time became 100 seconds, that occured frequently during the video. %stall_time and stall_time_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_16:41:32.810778)
+The results however were different from expected, having a single leecher in the network, had no real impact on the bingers, but the leecher user got very high stall time, over 17 seconds with stalls spread across the video rather than just at the beginning. 
+
+%stall_time and stall_time_hist (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_16:21:32.688486)
+
+\input{data/leecher/stall_time_leecher.tex}
+
+\input{data/leecher/stall_time_hist_leecher.tex}
+
+Scaling the network to having half of the users being leechers and the other half bingers, negatively impacted all the clients, as the 5 bingers now had an average stall time of about 13 seconds while the stall time for the leechers became much worse with an average of about 53 seconds. For both types of clients the standard deviation of stall time was around 10 seconds, meaning the users got vastly different performances, and even two of the binger only stall once at the beginning of the video, meaning they got a good quality of experience.
+
+%stall_hist, stall_hist_role_mean and stall_hist_role_stdev (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:51:32.232356)
+
+\input{data/leecher/stall_hist_leecher.tex}
+
+\input{data/leecher/stall_hist_role_leecher.tex}
+
+%stall_time and stall_time_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_16:41:32.810778)
+% added in data/leecher/stall_hist_role_leecher.tex and the stall_time_hist below instead of stall_time
+%\input{data/leecher/stall_time_hist_leecher10.tex}
+
+Scaling the amount of leechers further, to all the clients being leechers, increased the bad quality of experience further, and the total mean stall time became 100 seconds, that occured frequently during the video.
+
 These results show that leeching off of a public \acs{IPFS} gateway is punished compared to the users retrieving the files themselves and using their own gateway. And the tit-for-tat principle is enforced. Unfortunately leechers still impacted the well behaving binge users's quality of experience as they experience more stalling as the percentage of leechers in the network grew.\\
-In terms of data downloaded leecher users were much more efficient, in the half binger half leecher experiment. The leechers only downloaded on average about 60\acs{MB} which is only slightly higher than the file size of the video files. While the bingers on average downloaded about 140\acs{MB}, which is more than double of what the leechers did. % network_rx_bytes_tx_bytes_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:51:32.232356)
-Having a network of only 5 binger users in comparison gave an average of about 120\acs{MB} of downloaded data, as both cases had fairly high standard deviation this is within the margin of error. But adding leechers to the network does not seem to harm the binger users in terms of the amount of data they have to download but instead it might lower it as they get less access to the Seeder, meaning they have to rely on the other users more. % network_rx_bytes_tx_bytes_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:41:30.566469)
+In terms of data downloaded leecher users were much more efficient, in the half binger half leecher experiment. The leechers only downloaded on average about 60\acs{MB} which is only slightly higher than the file size of the video files. While the bingers on average downloaded about 140\acs{MB}, which is more than double of what the leechers did. 
+\input{data/leecher/network_hist_comparison.tex}
+
+Having a network of only 5 binger users in comparison gave an average of about 120\acs{MB} of downloaded data, as both cases had fairly high standard deviation this is within the margin of error. But adding leechers to the network does not seem to harm the binger users in terms of the amount of data they have to download but instead it might lower it as they get less access to the Seeder, meaning they have to rely on the other users more.
 
 \section{Impact of skipper personas experiment}
 This experiment has another client behaviour in the skipper persona, the goal is to see what kind of impact the skipper has on the network as a whole and if it can negatively impact a Binge user. We also want to see what kind of performance a skipper gets when watching a video, the video should stall every time the client skips in the video. But the amount of time spent in the stalling state should ideally be small, but based on the latency seen in the baseline experiment, it is likely that it stalls for more than a second after every skip as this is the latency seen when acquiring segments. The configuration of the skipper is to watch for 3 seconds and then skip ahead 10 seconds. If the only stalls are because of skips, they should have exactly 7 stalls each.
@@ -40,10 +77,10 @@ The watch time is expected to have little impact as the dash player buffer shoul
 \section{Impact of incognito personas experiment}
 This experiment has the incognito behaviour in the network, which is expected to only impact a small amount of segment of the video, the segments that are watched by the incognito users. For the rest of the segments we should see similar results to the baseline experiment with equal amount of binge users. Based on the experiments with the skipper user, the binge users are not expected to be affected by the incognito user in terms of quality of experience.\\
 In the experiment incognito users performed like binge users that just watched a shorter video. They stalled exactly once like binge users, and users that watched segments late had to download more like binge users. %stall_hist and network_rx_bytes_tx_bytes_hist 
-Unlike binge users the initial stall was much longer, in the 5 binge users and 5 incognito users experiment. Bingers stalled for an average about 4 seconds while incognito was at 20 seconds. This delay might be because of the incognito user initially downloads the first segments of the video and then skips to the end of the video and starts downloading new ones. The dash player also has to determine which segment correspond to the specific timestamp, which can add to the stalling time. %stall_hist_role
-In terms of downloaded data the binge users had to download slightly more compared to the baseline experiments, for instance 5 binge users with 5 incognito users meant that the bingers downloaded on average 145\acs{MB}, compared to having 5 bingers alone downloading 84\acs{MB}. This can be explained by the later segments of the video being more available, leading to an increase in duplicate data, which is in line with the other results. %network_rx_bytes_tx_bytes_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_20:21:34.641795) (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:21:30.856270)
-
-84MB
+Unlike binge users the initial stall was much longer, in the 5 binge users and 5 incognito users experiment. Bingers stalled for an average about 0.4 seconds while incognito was at 2 seconds. This delay might be because of the incognito user initially downloads the first segments of the video and then skips to the end of the video and starts downloading new ones. The dash player also has to determine which segment correspond to the specific timestamp, which can add to the stalling time.
+\input{data/incognito/stall_hist_role.tex}
+In terms of downloaded data the binge users had to download slightly more compared to the baseline experiments, for instance 5 binge users with 5 incognito users meant that the bingers downloaded on average 145\acs{MB}, compared to having 5 bingers alone downloading 84\acs{MB}. This can be explained by the later segments of the video being more available, leading to an increase in duplicate data, which is in line with the other results.
+\input{data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.tex}
 
 \section{Impact of idle users}
 In this experiment we measure how adding a few idle users to the network affects bingers, this experiment functions as a smaller scale global \acs{IPFS} as the irrelevant peers in that network functions somewhat like the idle users in this test. It is expected that having idle users fill up the \acs{DHT}s on the binge user should increase the amount of latency in the network slightly. But otherwise it should stay about the same.
@@ -72,13 +109,6 @@ The other experiments are focused on having all clients watch the video at the s
 
 \section{Global IPFS}
 In the other experiments all clients in the \acs{IPFS} network were relevant to the video files, contrary to the intended design of \acs{IPFS} where all users of \acs{IPFS} are in a shared network regardless of the content they have. This experiment runs the same configuration as the baseline but in the global \acs{IPFS} instead, it is expected to perform similar to increasing the latency as having larger network means larger hash tables, which results in having longer lookup times for the video segments.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{xkcd/688.png}
-    \caption*{Source: \href{https://xkcd.com/688/}{xkcd}}
-\end{figure}
-
 
 %%% Local Variables:
 %%% mode: latex
