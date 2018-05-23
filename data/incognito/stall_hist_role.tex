@@ -3,6 +3,7 @@
     \begin{tikzpicture}
     \begin{axis}[
         ybar,
+        ymin=0,
         bar width=0.75,
         enlarge x limits={abs=1},
         xtick=data,
@@ -14,6 +15,6 @@
     \end{axis}
 
     \end{tikzpicture}
-    \caption{mean stall time for binge users compared to incognito}
+    \caption[Mean stall time from 5 Incognito exp.]{Mean stall time for Binge clients compared to Incognito clients, from the 5 Incognito experiment. Incognito users stall much longer before they start playing the video.}
     \label{bar:incognito_stall_role}
 \end{figure}

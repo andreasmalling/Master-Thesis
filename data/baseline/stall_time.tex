@@ -2,8 +2,10 @@
     \myfloatalign
     \begin{tikzpicture}
         \begin{axis} [
-            xlabel={Experiment Time (ms)},
-            ylabel={Stall time (ms)}]
+            xlabel={Experiment Time (seconds)},
+            ylabel={Accumulated stall time (\acs{ms})},
+            x filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
+            ]
             \addplot[
             unbounded coords=jump,
             sharp plot] table[
@@ -66,6 +68,6 @@
             ]{./data/baseline/stall_time.csv};
         \end{axis}
     \end{tikzpicture}
-    \caption{Stalls over time in the baseline experiment}
+    \caption[Stalls over time from baseline exp.]{Stalls over time from the baseline experiment.}
     \label{plot:baseline_stall_time}
 \end{figure}

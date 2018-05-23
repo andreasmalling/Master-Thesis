@@ -1,0 +1,30 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+        bar width = 4pt,
+        xtick=data,
+        xticklabels from table={./data/skipper/bytes_hist.csv}{users},
+        x tick label style={rotate=60, anchor=east},
+        ylabel={Total bandwidth (\acs{MB})},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [
+            x expr=\coordindex,
+            y={rx},
+            ]{./data/skipper/bytes_hist.csv};
+        \addplot table [
+            x expr=\coordindex, 
+            y={tx}
+            ]{./data/skipper/bytes_hist.csv};
+        \addplot[black, sharp plot, update limits=false]
+                coordinates{(-1, 55992320) (11, 55992320)};
+        \legend{received,transmitted}
+    \end{axis}
+    \draw (8,1.2) node {video size};
+    \end{tikzpicture}
+    \caption[Total bandwidth from default 5 Skipper exp.]{Received and transmitted bytes per client, from the 5 Skipper experiment with 3 seconds watch time and 10 seconds skips. Binge users tended to download more than skipper users.}
+    \label{bar:skipper_bytes_hist}
+\end{figure}

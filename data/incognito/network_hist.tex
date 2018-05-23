@@ -1,0 +1,34 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+        bar width = 4pt,
+        xtick=data,
+        xticklabels from table={./data/incognito/network_hist.csv}{users},
+        x tick label style={rotate=60, anchor=east},
+        ylabel=Total bandwidth (bytes),
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot 
+            table [
+                x expr=\coordindex,
+                y={rx},
+            ]{./data/incognito/network_hist.csv};
+        \addplot
+            table [
+                x expr=\coordindex,
+                y={tx},
+            ]{./data/incognito/network_hist.csv};
+        \addplot [
+                black, 
+                sharp plot, 
+                update limits=false
+            ] coordinates{(-1, 55992320) (11, 55992320)}
+            node[above] at (axis cs:5,55992320) {video size};
+        \legend{received,transmitted}
+    \end{axis}
+    \end{tikzpicture}
+    \caption[Bandwidth per client, from 10 Incognito exp.]{Recieved and transmitted bytes or each client, from the 10 Incognito users experiment. Like the baseline the first users download significantly less, and most download less than the video size.}
+    \label{bar:incognito_network_hist}
+\end{figure}

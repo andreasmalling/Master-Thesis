@@ -3,31 +3,25 @@
     \begin{tikzpicture}
     \begin{axis}[
         ybar,
+        ymin=0,
         bar width = 4pt,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
         xtick=data,
         xticklabels from table={./data/baseline/network_hist.csv}{users},
         x tick label style={rotate=60, anchor=east},
-        ylabel=Mean bandwidth (bytes),
+        ylabel={Accumulated bandwidth (\acs{MB})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
-        \addplot 
-            table [
-                x expr=\coordindex,
-                y={rx},
+        \addplot table [
+            x expr=\coordindex,
+            y={rx},
             ]{./data/baseline/network_hist.csv};
-        \addplot
-            table [
-                x expr=\coordindex,
-                y={tx},
-            ]{./data/baseline/network_hist.csv};
-        \addplot [
-                black, 
-                sharp plot, 
-                update limits=false
-            ] coordinates{(-1, 55992320) (11, 55992320)};
+        \addplot table [x expr=\coordindex, y={tx}]{./data/baseline/network_hist.csv};
+        \addplot[black, sharp plot, update limits=false]
+                coordinates{(-1, 55992320) (11, 55992320)};
         \legend{received,transmitted}
     \end{axis}
-    \draw (8,1) node {video size};
+    \draw (8,0.75) node {video size};
     \end{tikzpicture}
-    \caption{Recieved and transmitted bytes per client, from the baseline experiment}
+    \caption[Total bandwidth from baseline exp.]{Recieved and transmitted bytes per client, from the baseline experiment. Download overhead is as large as factor 1:7 as exemplified by \textit{8:BINGE} recieving 389 \ac{MB} while asking for a 56 \acs{MB} video.}
     \label{bar:baseline_network_hist}
 \end{figure}

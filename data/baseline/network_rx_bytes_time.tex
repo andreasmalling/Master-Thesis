@@ -2,9 +2,11 @@
     \myfloatalign
     \begin{tikzpicture}
         \begin{axis} [
-            xlabel={Experiment Time (ms)},
-            ylabel={Stall time (ms)},
-            legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+            xlabel={Experiment Time (seconds)},
+            ylabel={Recieved data (\acs{MB})},
+            legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
+            y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+            ]
             \addplot[color=red,
             unbounded coords=jump,
             sharp plot] table[
@@ -68,6 +70,6 @@
             \legend{1:BINGE,2-10:BINGE}
         \end{axis}
     \end{tikzpicture}
-    \caption{Recieved bytes over time from the baseline experiment}
+    \caption[Recieved data from baseline exp.]{Recieved data over time from the baseline experiment.}
     \label{plot:baseline_network_rx_bytes_time}
 \end{figure}

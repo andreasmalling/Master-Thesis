@@ -3,40 +3,42 @@
     \begin{tikzpicture}
     \begin{axis}[
         ybar,
+        ymin=0,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
         bar width=0.3,
         enlarge x limits={abs=0.4},
         xtick=data,
         xticklabels from table={./data/leecher/network_hist_comparison.csv}{users},
-        x tick label style={rotate=60, anchor=east},
-        ylabel=Mean bandwidth (bytes),
+%        x tick label style={rotate=60, anchor=east},
+        ylabel=Mean bandwidth (\acs{MB}),
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot 
             table [
                 x expr=\coordindex,
                 y={rx},
             ]{./data/leecher/network_hist_comparison.csv};
+        \addlegendentry{received}
+        
         \addplot
             table [
                 x expr=\coordindex,
                 y={tx},
             ]{./data/leecher/network_hist_comparison.csv};
+        \addlegendentry{transmitted}
+        
+        \addlegendimage{empty legend}terms
+        \addlegendimage{empty legend}
+        \addlegendentry{\hspace{-17pt}(1) 0 Leecher}
+        \addlegendentry{\hspace{-17pt}(2) 5 Leecher}
+        
         \addplot [
                 black, 
                 sharp plot, 
                 update limits=false
             ] coordinates{(-1, 55992320) (11, 55992320)};
-        
-        
-        \addlegendentry{received}
-        \addlegendentry{transmitted}
-                
-        \addlegendimage{empty legend}
-        \addlegendimage{empty legend}
-        \addlegendentry{\hspace{-17pt}(1) 0 leechers}
-        \addlegendentry{\hspace{-12pt}(2) 5 leechers}
     \end{axis}
-    \draw (8,2.2) node {video size};
+    \draw (8,2) node {video size};
     \end{tikzpicture}
-    \caption{Mean bandwidth for each type of user in the 5 binger experiment (1), and the 5 binger and 5 leecher experiment (2)}
-    \label{bar:baseline_network_hist}
+    \caption[Mean bandwidth per client from Leecher exps.]{Mean bandwidth for each type of client for  (1) a network with 5 Binge, (2) a network with 5 Leecher and 5 Binge.}
+    \label{bar:leecher_network_hist_comparison}
 \end{figure}

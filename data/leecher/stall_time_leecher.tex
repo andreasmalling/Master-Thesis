@@ -2,9 +2,11 @@
     \myfloatalign
     \begin{tikzpicture}
         \begin{axis} [
-            xlabel={Experiment Time (ms)},
-            ylabel={Stall time (ms)},
+            xlabel={Experiment Time (seconds)},
+            ylabel={Stall time (seconds)},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
+            x filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
+            y filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
             ]
             \addplot[
             unbounded coords=jump,
@@ -70,6 +72,6 @@
             \legend{1-9:BINGE,10:LEECHER}
         \end{axis}
     \end{tikzpicture}
-    \caption{Stalls over time from the 1 leecher experiment}
+    \caption[Stalls over time from 1 Leecher exp.]{Stalls over time from the 1 Leecher experiment}
     \label{plot:leecher_stall_time}
 \end{figure}

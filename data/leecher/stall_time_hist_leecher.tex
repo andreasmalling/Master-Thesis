@@ -4,16 +4,16 @@
     \begin{axis}[
         ybar,
         ymin=0,
-%        bar width = 4pt,
+        y filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
         xtick=data,
         xticklabels from table={./data/leecher/stall_time_hist_leecher.csv}{users},
         x tick label style={rotate=60, anchor=east},
-        ylabel=Total stall time (ms),
+        ylabel=\shortstack{Accumulated stall time\\(seconds)},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={rx}]{./data/leecher/stall_time_hist_leecher.csv};
     \end{axis}
 
     \end{tikzpicture}
-    \caption{Total stall time per client, from the 1 leecher experiment}
+    \caption[Total stall time from 1 Leecher exp.]{Total stall time per client, from the 1 Leecher experiment}
     \label{bar:leecher_stall_time_hist}
 \end{figure}
