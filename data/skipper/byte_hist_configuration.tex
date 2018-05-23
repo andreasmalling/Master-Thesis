@@ -4,11 +4,12 @@
     \begin{axis}[
         ybar,
         ymin=0,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
         bar width = 4pt,
         xtick=data,
         xticklabels from table={./data/skipper/byte_hist_configuration.csv}{users},
         x tick label style={rotate=60, anchor=east},
-        ylabel=Total bandwidth (bytes),
+        ylabel=Accumulated bandwidth (\acs{MB}),
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [
             x expr=\coordindex,
@@ -24,6 +25,7 @@
     \end{axis}
     \draw (8,1) node {video size};
     \end{tikzpicture}
-    \caption[Total bandwidth from configured 5 Skipper exp.]{Received and transmitted bytes per client, from the 5 Skipper experiment with 1 second watch time, and 25 seconds skips. \textit{2:SKIPPER} downloads less than the video size, meaning that some video segments were not downloaded.}
+    \caption[Total bandwidth from configured 5 Skipper exp.]{Received and transmitted data per client, from the 5 Skipper experiment with 1 second watch time, and 25 seconds skips.\\
+    \textit{2:SKIPPER} downloads less than the video size, meaning that some video segments were not downloaded.}
     \label{bar:skipper_bytes_hist_configuration}
 \end{figure}

@@ -3,9 +3,15 @@
 
 \colorbox{yellow}{\textbf{TODO:} Add some kind of introduction.}
 
+\section{Problems encountered}
+Scalabilty due to high CPU usage.
+
+Bug\footnote{\url{https://github.com/ipfs/go-ipfs/issues/3802}} illustrated and explained in \autoref{sec:eval_baseline}.
+
 %=min(A2,C2,E2,G2,I2,K2,M2,O2,Q2,S2,U2)
 
-\section{Baseline experiment}    
+\section{Baseline experiment}
+\label{sec:eval_baseline}
 The first experiment consists of the stable network with 10 Binge persona client added afterwards, with a uniform randomized delay before they start between 0 and 60 seconds. The bandwidth for the clients is set at 20 \ac{Mbps} and no artificial latency is added. The network used is closed meaning only the relevant peers are present. It is expected to perform well with almost no stalls or failures, and segments are expected to be retrieved with low latency. Clients are expected to download about 56 \ac{MB} which is the size of the video, which is 90 seconds long.
 
 In the experiment every client stalled exactly once (See \autoref{plot:baseline_stall_time}), which happened when the video was being initially started and the buffer was getting filled, this can therefore not be considered a failure, meaning the users got a good quality of experience.

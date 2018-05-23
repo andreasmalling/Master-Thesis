@@ -9,12 +9,12 @@
         xtick=data,
         xticklabels from table={./data/incognito/stall_hist_role.csv}{users},
 %        x tick label style={rotate=60, anchor=east},
-        ylabel={Total stall time (ms)},
+        ylabel={Mean of accumulated stall time (\acs{ms})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={time}]{./data/incognito/stall_hist_role.csv};
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Mean stall time from 5 Incognito exp.]{Mean stall time for Binge clients compared to Incognito clients, from the 5 Incognito experiment. Incognito users stall much longer before they start playing the video.}
+    \caption[Mean stall time from 5 Incognito exp.]{Mean of sccumulated stall time for Binge clients compared to Incognito clients, from the 5 Incognito experiment. Incognito users stall much longer before they start playing the video.}
     \label{bar:incognito_stall_role}
 \end{figure}

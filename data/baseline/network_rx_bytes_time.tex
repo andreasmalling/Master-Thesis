@@ -3,9 +3,11 @@
     \begin{tikzpicture}
         \begin{axis} [
             xlabel={Experiment Time (seconds)},
-            ylabel={Recieved data (\acs{MB})},
+            ylabel={Accumulated recieved data (\acs{MB})},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
             y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+            xmax=130,
+            ymax=150,
             ]
             \addplot[color=red,
             unbounded coords=jump,
@@ -70,6 +72,6 @@
             \legend{1:BINGE,2-10:BINGE}
         \end{axis}
     \end{tikzpicture}
-    \caption[Recieved data from baseline exp.]{Recieved data over time from the baseline experiment.}
+    \caption[Recieved data from baseline exp.]{Accumulated recieved data over time from the baseline experiment. The binge user that started first (\textit{1:BINGE}) had to download less data compared to the other users.}
     \label{plot:baseline_network_rx_bytes_time}
 \end{figure}

@@ -4,11 +4,12 @@
     \begin{axis}[
         ybar,
         ymin=0,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
         bar width=0.35,
         enlarge x limits={abs=0.75},
         xtick=data,
         xticklabels from table={./data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.csv}{users},
-        ylabel=Mean bandwidth (bytes),
+        ylabel=Mean accumulated bandwidth (\acs{MB}),
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={rx}]{./data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.csv};
         \addplot table [x expr=\coordindex, y={tx}]{./data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.csv};
@@ -16,6 +17,6 @@
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Mean bandwidth of Binge with and without Incognito]{Mean of the received and transmitted bytes for 5 Binge with and without 5 Incognito users in the network. With incognito users the amount downloaded data is increased by around 50\%.}
+    \caption[Mean bandwidth of Binge with and without Incognito]{Mean of the accumulated data received and transmitted for 5 Binge with and without 5 Incognito users in the network. With incognito users the amount downloaded data is increased by around 50\%.}
     \label{bar:incognito_hist_net}
 \end{figure}
