@@ -1,0 +1,27 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+            ybar,
+            ymin=50,
+            bar width=0.3,
+            y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+            enlarge x limits={abs=0.75},
+            xtick=data,
+            xticklabels from table={./data/global/bytes_hist_role.csv}{users},
+    %        x tick label style={rotate=60, anchor=east},
+            ylabel={Accumulated received bandwidth (\acs{MB})},
+            legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
+        ]
+        \addplot table [x expr=\coordindex, y={mean}]{./data/global/bytes_hist_role.csv};
+        \addplot table [x expr=\coordindex, y={stddev}]{./data/global/bytes_hist_role.csv};
+
+        \addlegendentry{Mean}
+        \addlegendentry{Std. Dev.}
+
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Received bandwidth per client from \expid{B10} and \expid{B10G}]{}
+    \label{bar:global_bytes_hist_role}
+\end{figure}

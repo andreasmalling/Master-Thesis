@@ -28,8 +28,8 @@
         
         \addlegendimage{empty legend}terms
         \addlegendimage{empty legend}
-        \addlegendentry{\hspace{-17pt}(1) 0 Leecher}
-        \addlegendentry{\hspace{-17pt}(2) 5 Leecher}
+        \addlegendentry{\hspace{-34pt}(1) \hspace{17pt} B5}
+        \addlegendentry{\hspace{-29pt}(2) \hspace{9pt} L5B5}
         
         \addplot [
                 black, 
@@ -39,6 +39,9 @@
     \end{axis}
     \draw (8,2) node {video size};
     \end{tikzpicture}
-    \caption[Mean bandwidth per client from Leecher exps.]{Mean bandwidth for each type of client for  (1) a network with 5 Binge, (2) a network with 5 Leecher and 5 Binge. Leechers are more efficient in the amount of data they download while bingers downloads duplicate data, bingers had very similar amount of received data regardless if there are leechers present or not.}
+    \caption[Mean bandwidth per client from Leecher exps.]{Mean bandwidth for each type of client for; \newline
+    (1) a network with 5 Binge (\expid{B5}), \newline
+    (2) a network with 5 Leecher and 5 Binge (\expid{L5B5}). \newline 
+    Leechers are more efficient in the amount of data they download while Binges downloads duplicate data, Binges had very similar amount of received data regardless if there are Leechers present or not.}
     \label{bar:leecher_network_hist_comparison}
 \end{figure}

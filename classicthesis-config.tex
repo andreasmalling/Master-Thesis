@@ -110,7 +110,10 @@
 \definecolor{darkred}{rgb}{0.6,0.0,0.0}
 
 % custom:
-\usepackage{svg}
+\newcommand{\setexpid}[1] {\label{exp:#1}#1}
+
+\newcommand{\expid}[1] {\hyperref[exp:#1]{Exp.ID #1}}
+
 
 
 %\usepackage[square,numbers,sort&compress]{natbib}

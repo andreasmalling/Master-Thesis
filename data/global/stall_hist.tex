@@ -1,0 +1,19 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+%        bar width = 4pt,
+        xtick=data,
+        xticklabels from table={./data/global/stall_hist.csv}{users},
+        x tick label style={rotate=60, anchor=east},
+        ylabel={\# Stalls},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={stalls}]{./data/global/stall_hist.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Total number stalls from \expid{B10G}]{}
+    \label{bar:global_stall_hist}
+\end{figure}
