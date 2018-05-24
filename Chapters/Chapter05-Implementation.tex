@@ -18,23 +18,23 @@ The system  contains multiple microservices realized in a docker network:
     \item \texttt{plot} is a Mongo client that processes the data stored in the Mongo database and presents it with various plots, it can also export this to a csv format.
     \item \texttt{pumba} is a chaos engineering tool that is used to manipulate the \texttt{client} instances in terms of their download and upload speed, latency and even shutting them down. While \texttt{pumba} could be use as a container, it's opted to use as a binary for ease of automation. 
 \end{itemize}
-Relation between these services is also illustrated in figure \ref{fig:uml_docker-compose}.
+Relation between these services is also illustrated in \autoref{fig:uml_docker-compose}.
 
 \begin{figure}[bth]
     \includegraphics[width=\linewidth]{UML/uml_docker_setup_v3.png}
-    \caption[Diagram of the experimental test  setup]{Diagram of the experimental test setup, illustrating the relations between the Docker containers described in section \ref{sec:impl-overview}.}
+    \caption[Diagram of the experimental test  setup]{Diagram of the experimental test setup, illustrating the relations between the Docker containers described in \autoref{sec:impl-overview}.}
     \label{fig:uml_docker-compose}
 \end{figure}
 
 \section{Personas}
-The clients viewing patterns are determined by their persona, the different types of personas are described in section \ref{sec:individual-behavious}, in these section how these personas are realised will be described.
+The clients viewing patterns are determined by their persona, the different types of personas are described in \autoref{sec:individual-behavious}, in these section how these personas are realised will be described.
 All personas function by giving them a hash that functions as a path to an \acs{MPD} file
 \begin{itemize}
     \item \texttt{Idle} simply does nothing actively, but instead just participates in the network, which is implemented by having the client sleep, while the \acs{IPFS} daemon runs in the background.
     \item \texttt{Seeder} behaves like a Idle persona, but stores the video that the other peers request. When the seeder is started it immediatly adds the video files to the network.
     \item \texttt{Binge} The binge persona uses splinter to view the video for the \acs{MPD} file, this is done through its local \acs{IPFS} gateway thereby forcing the \acs{IPFS} client to retrieve the video and store it in the peer. The data is not pinned, meaning that if the assigned storage runs out the video data will eventually be deleted.
     \item \texttt{Leecher} behaves like the binge persona but instead of using its own local \acs{IPFS} gateway it uses one of the seeder's instead, this way it can download the video files without using \acs{IPFS} to retrieve them and instead does it through the browser
-    \item \texttt{Skipper} is like binge, but instead of viewing the entirety of the video without interacting with it, it watches small segments at a time. By watching a small configurable amount of seconds and then skipping forward another configurable amount of seconds  in the video. This pattern is repeated until the end of the video is reached. This is also illustrated in the pseudocode (Listing \ref{lst:skipper_pseudo}), where skipLength and watchTime are configurable and timeInVideo, is how far into the video the persona are (in seconds).
+    \item \texttt{Skipper} is like binge, but instead of viewing the entirety of the video without interacting with it, it watches small segments at a time. By watching a small configurable amount of seconds and then skipping forward another configurable amount of seconds  in the video. This pattern is repeated until the end of the video is reached. This is also illustrated in the pseudocode (\autoref{lst:skipper_pseudo}), where skipLength and watchTime are configurable and timeInVideo, is how far into the video the persona are (in seconds).
     \lstinputlisting[
     language=pseudo,
     caption={Skipper pseudocode},label={lst:skipper_pseudo}]
@@ -44,7 +44,7 @@ All personas function by giving them a hash that functions as a path to an \acs{
 The remaining Mobile user persona is achieved differently as it is not necessarily a different view pattern but instead different network conditions. Mobile user is then achieved by using one of the above personas but giving it reduced bandwith through Pumba.
 
 \section{Video Content Tools}
-Using the Python script \texttt{encode.py}, video content for testing were generated for sharing and streaming in the experimentation. The following tools were used to generate the content, defined in more details in section \ref{sec:video-encoding}.
+Using the Python script \texttt{encode.py}, video content for testing were generated for sharing and streaming in the experimentation. The following tools were used to generate the content, defined in more details in \autoref{sec:video-encoding}.
 
 \subsection{FFmpeg}
 The commandline program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was used for transcoding videos to the proper codecs. The used codecs is chossen to H.264 for video and AAC for audio. 
@@ -64,13 +64,13 @@ The script operates in 4 steps:
     \item Replace location of segments in \acs{MPD} with hash addresses.
 \end{enumerate}
 
-Since the hash addresses always will be the same for the content, it is possible to pre-generate and add the addresses to the \acs{MPD} before any files are shared in \acs{IPFS}, no matter which client latter will add them (See section \ref{sec:ipfs-objects} for more information).
+Since the hash addresses always will be the same for the content, it is possible to pre-generate and add the addresses to the \acs{MPD} before any files are shared in \acs{IPFS}, no matter which client latter will add them (See \autoref{sec:ipfs-objects} for more information).
 
 \lstinputlisting[
     language=MPD,
     caption={
         [\acs{MPD} snippet with location addresses]
-        Snippet of \acs{MPD} using the file path addresses. For the \acs{MPD} in its entirety, see appendix \ref{app:mpd}},
+        Snippet of \acs{MPD} using the location addresses based on file path. For the \acs{MPD} in its entirety, see \autoref{app:mpd}},
     firstnumber=25, 
     firstline=25, 
     lastline=30]{code/dashed.mpd}
@@ -78,8 +78,8 @@ Since the hash addresses always will be the same for the content, it is possible
 \lstinputlisting[
     language=MPD,
     caption={
-        [\acs{MPD} snippet with \acs{IPFS} hash addresses]
-        Snippet of \acs{MPD} using \acs{IPFS} hashing addresses},
+        [\acs{MPD} snippet with content addresses]
+        Snippet of \acs{MPD} using the content addresses based on \acs{IPFS} hashing of file},
     firstnumber=25, 
     firstline=25, 
     lastline=30]{code/hashed.mpd}
@@ -118,26 +118,26 @@ The \texttt{website} container uses dash.js\footnote{\url{https://github.com/Das
 
 \subsection{Python}
 \label{sec:setup_python}
-The containers run Python at version 3.5.2, for running the entrypoints of the containers (See section \ref{sec:setup_docker}).
+The containers run Python at version 3.5.2, for running the entrypoints of the containers (See \autoref{sec:setup_docker}).
 
 
 \subsection{Splinter}
 \label{sec:setup_splinter}
-Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See section \ref{sec:individual-behavious}) will be interacting with the website through a chrome browser by utilizing this library, and thereby emulating different types of user behaviour.
+Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a chrome browser by utilizing this library, and thereby emulating different types of user behaviour.
 The package splinter used is at version 0.7.7.
 
 
 
 \section{Experiment flow}
 Experiments are first started by setting up a stable network of the required services for the experiment. This stable setup is given an initialization time to ensure it's stabilized, meaning that an IPFS network has formed and seeders have added their files to the network.
-After a configurable delay the clients are added to the network, and start performing the actions that their persona and the entrypoint program describes (As described in section \ref{sec:experiment_entrypoint} and figure \ref{fig:entrypoint_sequence}).
-The experiment then runs for a configurable amount of time that should give enough time for all clients to finish viewing the video. When the time is up every microservice is terminated and the plot service is started to graph the collected from the experiment (As seen in figure \ref{fig:run_sequence_plot}).
+After a configurable delay the clients are added to the network, and start performing the actions that their persona and the entrypoint program describes (As described in \autoref{sec:experiment_entrypoint} and \autoref{fig:entrypoint_sequence}).
+The experiment then runs for a configurable amount of time that should give enough time for all clients to finish viewing the video. When the time is up every microservice is terminated and the plot service is started to graph the collected from the experiment (As seen in \autoref{fig:run_sequence_plot}).
 
-The orchestration of this is handled by the run script \texttt{run.py}, as described in the following section \ref{sec:experiment_run} and can be seen in the sequence diagrams; figure \ref{fig:run_sequence_clean}, \ref{fig:run_sequence_exp} and \ref{fig:run_sequence_plot}.
+The orchestration of this is handled by the run script \texttt{run.py}, as described in the following \autoref{sec:experiment_run} and can be seen in the sequence diagrams; \autoref{fig:run_sequence_clean}, \ref{fig:run_sequence_exp} and \ref{fig:run_sequence_plot}.
 
 \subsection{Experimental Environments}
 \label{sec:experiment_env}
-Each experiment is designed by creating two environment files, describing which services should run, which options should they run with and how many instances shall be created. The reason two environment files is needed is that one defines the stable network and the other defines the clients add for the experiment. An example of a environment files can be seen at listing \ref{lst:env_stable} and \ref{lst:env_exp}.
+Each experiment is designed by creating two environment files, describing which services should run, which options should they run with and how many instances shall be created. The reason two environment files is needed is that one defines the stable network and the other defines the clients add for the experiment. An example of a environment files can be seen at \autoref{lst:env_stable} and \ref{lst:env_exp}.
 
 \noindent\begin{minipage}[t]{.35\textwidth}
 \lstinputlisting[language=env,
@@ -153,28 +153,28 @@ Each experiment is designed by creating two environment files, describing which 
                 {code/env_exp.env}
 \end{minipage}\bigskip
 
-The experiments are run with a default stable network which includes one instance of every role listed in section \ref{sec:impl-overview} except \texttt{client} and \texttt{plot}, which is handled differently. The \texttt{client}s are initialized based on their persona, and only the seeder personas are added to the stable part of the network.
+The experiments are run with a default stable network which includes one instance of every role listed in \autoref{sec:impl-overview} except \texttt{client} and \texttt{plot}, which is handled differently. The \texttt{client}s are initialized based on their persona, and only the seeder personas are added to the stable part of the network.
 
 \subsection{run.py}
 \label{sec:experiment_run}
-The experiments are executed using the the script \texttt{run.py}, which takes the two environment files (See section \ref{sec:experiment_env}) as arguments. The run script consists of 3 overall stages.
+The experiments are executed using the the script \texttt{run.py}, which takes the two environment files (See \autoref{sec:experiment_env}) as arguments. The run script consists of 3 overall stages.
 
-The first stage consists of the database being dropped, should there be any data left from a previous or failed experiment (See figure \ref{fig:run_sequence_clean}). This is done by running the \texttt{mongo} service solely, followed by an docker-compose exec command which runs mongo shell command, dropping the database. This have to be done, due to the data being stored on the host machine of Docker, to easy access and ensure persistence. Since the \texttt{mongo} service needs time to start before the command can be executed, we have to try multiple times until  we receive a correct return code. Afterwards all services are killed, to stop the mongo instance, avoid other hanging services interference and ensure a fresh start for the new experiment. This stage is also run at the end of each experiment.
+The first stage consists of the database being dropped, should there be any data left from a previous or failed experiment (See \autoref{fig:run_sequence_clean}). This is done by running the \texttt{mongo} service solely, followed by an docker-compose exec command which runs mongo shell command, dropping the database. This have to be done, due to the data being stored on the host machine of Docker, to easy access and ensure persistence. Since the \texttt{mongo} service needs time to start before the command can be executed, we have to try multiple times until  we receive a correct return code. Afterwards all services are killed, to stop the mongo instance, avoid other hanging services interference and ensure a fresh start for the new experiment. This stage is also run at the end of each experiment.
 
 
 \input{diagram/sequence_run1.tex}
 
-The second stage consists of the set up of the stable network, followed by the experiment after it's stabilization (See figure \ref{fig:run_sequence_exp}). First the scales defined in the environment file for the stable network are extracted. The scales are needed by \texttt{run.py}, since the scaling is done through the \ac{CLI} of docker-compose's up command, which have a scale option \footnote{\url{https://docs.docker.com/compose/reference/up/}}. As default \textit{run.py} sets the scale of all services to 0, which is then overwritten by environmental files in two sittings.
+The second stage consists of the set up of the stable network, followed by the experiment after it's stabilization (See \autoref{fig:run_sequence_exp}). First the scales defined in the environment file for the stable network are extracted. The scales are needed by \texttt{run.py}, since the scaling is done through the \ac{CLI} of docker-compose's up command, which have a scale option \footnote{\url{https://docs.docker.com/compose/reference/up/}}. As default \textit{run.py} sets the scale of all services to 0, which is then overwritten by environmental files in two sittings.
 After importing the scales, the environmental file as soft linked to \texttt{.env}, which is as an environment for the compose file used by docker-compose\footnote{\url{https://docs.docker.com/compose/env-file/}}.
 The user behaviours from the environment file is then used along with the compose file by docker-compose when calling the run command on docker.
 When the scaling of the stable network have begun, \textit{run.py} busy waits for a configurable amount of time until all services are running and are stabilized, which is based on empirical data from the \acs{VM}.
-After the stabilization the \textit{clients} are added to measure their influence on the network and their individual \acs{UX}. This is mainly done with the same procedure as the stable network, but from another environment file. The only difference in the procedure are pumba (See section \ref{sec:framework_pumba}
+After the stabilization the \textit{clients} are added to measure their influence on the network and their individual \acs{UX}. This is mainly done with the same procedure as the stable network, but from another environment file. The only difference in the procedure are pumba (See \autoref{sec:framework_pumba}
  and \ref{sec:setup_pumba}) is run to influence the network for all clients, before busy waiting for the length of the experiment.
 Finally all services are killed, to stop the data collection of the experiment.
 
 \input{diagram/sequence_run2.tex}
 
-The third stage consists of plotting the results and export the data to an archive (See figure \ref{fig:run_sequence_plot}). Since plot isn't a part of the experiment it's defined in a separate compose file (\textit{plot-compose.yml}), which is used with docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when docker compose is asked to run the \texttt{plot} service, the dependencies is also started. Since plot terminates when all plots are done, we wait for it to exit after generating the following:
+The third stage consists of plotting the results and export the data to an archive (See \autoref{fig:run_sequence_plot}). Since plot isn't a part of the experiment it's defined in a separate compose file (\textit{plot-compose.yml}), which is used with docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when docker compose is asked to run the \texttt{plot} service, the dependencies is also started. Since plot terminates when all plots are done, we wait for it to exit after generating the following:
 
 \begin{itemize}
     \item Latency and download time for every segment from the perspective of the dash.js player. This data is collected both for video and audio segments.
@@ -192,7 +192,7 @@ After the termination of \texttt{plot}, the data from the still present \texttt{
 \subsection{entrypoint}
 \label{sec:experiment_entrypoint}
 
-The entrypoint is illustrated in \ref{fig:entrypoint_sequence} the client starts by performing the initialization of the IPFS peer, here the peer solves a crypto-puzzle in order to generate a peer id, and key-pairs used for secure communication.
+The entrypoint is illustrated in \autoref{fig:entrypoint_sequence} the client starts by performing the initialization of the IPFS peer, here the peer solves a crypto-puzzle in order to generate a peer id, and key-pairs used for secure communication.
 Next the client starts a local daemon and connects to the peers listed in it's list of bootstrap peers, which can either be ones limited to a small network entirely for the experiment or the bootstrap peers that one would use to connect to the global \acs{IPFS} network.
 Starting a daemon also starts a new thread that handles \acs{IPFS} related requests, these are not illustrated in the figure. In order to preserve clarity. These two \acs{IPFS} \acs{API} calls are not performed by the clients with the entrypoint persona, as they do not need it to retrieve the video segments.\\
 The client then launches a Google Chrome\footnote{\url{https://www.google.com/chrome/}} browser that is controlled through Splinter and requests the website containing the video player from the Host container, the website is stored in a separate container to ease modifications during development.

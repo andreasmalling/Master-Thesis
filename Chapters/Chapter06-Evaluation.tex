@@ -6,7 +6,7 @@
 \section{Problems encountered}
 Scalabilty due to high CPU usage.
 
-Bug\footnote{\url{https://github.com/ipfs/go-ipfs/issues/3802}} illustrated and explained in \autoref{sec:eval_baseline}.
+Bug\footnote{\url{https://github.com/ipfs/go-ipfs/issues/4588}} illustrated and explained in \autoref{sec:eval_baseline}.
 
 %=min(A2,C2,E2,G2,I2,K2,M2,O2,Q2,S2,U2)
 
@@ -36,6 +36,22 @@ So even though the worst performing downloads 7 times the data it does not seem 
 The baseline experiment is also repeated with smaller amounts of Binge users in the network, this is primarily used for comparison in the future experiments.
 
 \section{Leecher population experiment}
+
+\begin{table}[ht]
+\myfloatalign
+\caption{\colorbox{yellow}{Leecher experiments}}
+\label{tab:exp_leecher}
+\begin{tabularx}{\textwidth}{ll}
+\toprule
+\tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network}     \\
+\midrule
+L10     & 10 Leecher in default stable network                              \\
+L9B1    & 9 Leecher and 1 Binge in default stable network                   \\
+L1B9    & 1 Leecher and 9 Binge in default stable network                   \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 In this experiment we alter the percentage of leechers versus bingers that the network contains, otherwise the conditions are the same as the baseline experiment.
 Based on the first experiment adding leechers to the network should decrease the amount of duplicate data being sent, but it also means more requests to the holders of the video segments potentially as there is fewer sources to get them from. Therefore the network is expected to perform better as long as the Seeder can keep up.
 
