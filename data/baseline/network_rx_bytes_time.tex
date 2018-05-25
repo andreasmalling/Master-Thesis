@@ -2,7 +2,7 @@
     \myfloatalign
     \begin{tikzpicture}
         \begin{axis} [
-            xlabel={Experiment Time (seconds)},
+            xlabel={Experiment Time (\acs{s})},
             ylabel={Accumulated recieved data (\acs{MB})},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
             y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
@@ -72,6 +72,6 @@
             \legend{1:BINGE,2-10:BINGE}
         \end{axis}
     \end{tikzpicture}
-    \caption[Recieved data from baseline exp.]{Accumulated recieved data over time from the baseline experiment. The binge user that started first (\textit{1:BINGE}) had to download less data compared to the other users.}
+    \caption[Recieved data from \expid{B10}]{Accumulated recieved data over time from the baseline experiment (\expid{B10}). The Binge client that started first (\textit{1:BINGE}) had to download less data compared to the other clients.}
     \label{plot:baseline_network_rx_bytes_time}
 \end{figure}

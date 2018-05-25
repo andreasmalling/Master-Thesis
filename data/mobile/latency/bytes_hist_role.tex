@@ -8,14 +8,14 @@
             y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
             enlarge x limits={abs=0.75},
             xtick=data,
-            xticklabels from table={./data/global/bytes_hist_role.csv}{users},
+            xticklabels from table={./data/mobile/latency/bytes_hist_role.csv}{users},
     %        x tick label style={rotate=60, anchor=east},
             ylabel={Accumulated received bandwidth (\acs{MB})},
-            xlabel={\ac{IPFS} network},
+            xlabel={Added latency (\acs{ms})},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
         ]
-        \addplot table [x expr=\coordindex, y={mean}]{./data/global/bytes_hist_role.csv};
-        \addplot table [x expr=\coordindex, y={stddev}]{./data/global/bytes_hist_role.csv};
+        \addplot table [x expr=\coordindex, y={mean}]{./data/mobile/latency/bytes_hist_role.csv};
+        \addplot table [x expr=\coordindex, y={stddev}]{./data/mobile/latency/bytes_hist_role.csv};
 
         \addlegendentry{Mean}
         \addlegendentry{Std. Dev.}
@@ -23,6 +23,6 @@
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Received bandwidth per client from \expid{B10} and \expid{B10-g}]{}
-    \label{bar:global_bytes_hist_role}
+    \caption[Received bandwidth per client from \expid{B10} and \expid{B10-m2}]{Received bandwidth from the \expid{B10} compared to \expid{B10-m2}, the mean increases slightly while the standard deviation lowers.}
+    \label{bar:mobile_latency_bytes_hist_role}
 \end{figure}

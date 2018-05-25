@@ -2,8 +2,8 @@
     \myfloatalign
     \begin{tikzpicture}
         \begin{axis} [
-            xlabel={Experiment Time (seconds)},
-            ylabel={Stall time (seconds)},
+            xlabel={Experiment Time (\acs{s})},
+            ylabel={Stall time (\acs{s})},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
             x filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
             y filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
@@ -72,6 +72,6 @@
             \legend{1-9:BINGE,10:LEECHER}
         \end{axis}
     \end{tikzpicture}
-    \caption[Stalls over time from (\expid{L1B9})]{Stalls over time from the 1 Leecher and 9 Binge experiment (\expid{L1B9}). The leecher stalls multiple times during the experiment and not only at the beginning like the binge users.}
+    \caption[Stalls over time from \expid{L1B9}]{Stalls over time from the 1 Leecher and 9 Binge experiment (\expid{L1B9}). The leecher stalls multiple times during the experiment and not only at the beginning like the binge users.}
     \label{plot:leecher_stall_time}
 \end{figure}
