@@ -8,7 +8,7 @@
         xtick=data,
         xticklabels from table={./data/leecher/stall_time_hist_leecher.csv}{users},
         x tick label style={rotate=60, anchor=east},
-        ylabel={Accumulated stall time \acs{s}},
+        ylabel={Accumulated stall time (\acs{s})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={rx}]{./data/leecher/stall_time_hist_leecher.csv};
     \end{axis}

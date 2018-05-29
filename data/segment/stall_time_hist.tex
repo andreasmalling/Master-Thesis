@@ -1,0 +1,21 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+        y filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
+        bar width=0.75,
+        enlarge x limits={abs=1},
+        xtick=data,
+        xticklabels from table={./data/segment/stall_time_hist.csv}{users},
+        xlabel={Approx. Segment duration (\acs{s})},
+        ylabel=\shortstack{Mean of accumulated stall time (\acs{s})},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={time}]{./data/segment/stall_time_hist.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Mean stall time for \expid{B10-v9}]{Mean of accumulated stall time from the baseline experiment  (\expid{B10}) and the segment experiment (\expid{B10-v9}). Increasing the segment duration results in longer wait time spent on the initial stall.}
+    \label{bar:segment_stall_time_hist}
+\end{figure}

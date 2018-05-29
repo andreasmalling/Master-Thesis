@@ -155,6 +155,7 @@ Each experiment is designed by creating two environment files, describing which 
 \end{minipage}\bigskip
 
 The experiments are run with a default stable network which includes one instance of every role listed in \autoref{sec:impl-overview} except \texttt{client} and \texttt{plot}, which is handled differently. The \texttt{client}s are initialized based on their persona, and only the seeder personas are added to the stable part of the network.
+The seeder holds the \ac{MPD} file as well as the video segments in the \ac{IPFS} network, for the other users to retrieve. 
 
 \subsection{run.py}
 \label{sec:experiment_run}

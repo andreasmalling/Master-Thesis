@@ -1,0 +1,21 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+        bar width = 0.7,
+        enlarge x limits={abs=0.75},
+        xtick=data,
+        xticklabels from table={./data/social/bytes_hist.csv}{users},
+        xlabel={Maximum startup delay (\acs{s})},
+        ylabel={Mean Accumulated bandwidth (\acs{MB})},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={mean}]{./data/social/bytes_hist.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Mean received \ac{MB} from socialness experiments]{Mean of accumulated received data from \expid{B10-s1}, \expid{B10}, \expid{B10-s2}. Decreasing socialness gives reduces the amount of duplicate data the users receive.}
+    \label{bar:social_bytes_hist}
+\end{figure}

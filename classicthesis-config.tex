@@ -108,12 +108,14 @@
 \definecolor{lightblue}{rgb}{0.0,0.0,0.9}
 \definecolor{cyan}{rgb}{0.0,0.6,0.6}
 \definecolor{darkred}{rgb}{0.6,0.0,0.0}
+\definecolor{lightyellow}{rgb}{1,1,0.8}
 
 % custom:
 \newcommand{\setexpid}[1] {\label{exp:#1}#1}
 
 \newcommand{\expid}[1] {\hyperref[exp:#1]{Exp.ID #1}}
 
+\usepackage{media9}
 
 %\usepackage[square,numbers,sort&compress]{natbib}
 %\bibliographystyle{abbrvnat}
@@ -178,6 +180,20 @@
 \captionsetup{font=small} % format=hang,
 \usepackage{subfig}
 \usepackage{multirow}
+
+
+\newcommand{\repeatcaption}[2]{%
+  \renewcommand{\thefigure}{\ref{#1}}%
+  \captionsetup{list=no}%
+  \caption{#2 (repeated from \autopageref{#1})}%
+}
+
+\newcommand{\rptcaption}[1]{%
+  \renewcommand{\thefigure}{\ref{#1}}%
+  \captionsetup{list=no}%
+  \caption{\nameref*{#1} (repeated from \autopageref{#1})}%
+}
+
 % ****************************************************************************************************
 
 

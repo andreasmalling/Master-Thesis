@@ -1,0 +1,19 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+%        bar width = 4pt,
+        xtick=data,
+        xticklabels from table={./data/mobile/bandwidth/stall_hist.csv}{users},
+        x tick label style={rotate=60, anchor=east},
+        ylabel={\# Stalls},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={stalls}]{./data/mobile/bandwidth/stall_hist.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Total number stalls from \expid{B10-m1}]{Total number of stalls for each user in \expid{B10-m1}, half of the users stalled once more after the initial required stall.}
+    \label{bar:mobile_bandwidth_stall_hist}
+\end{figure}

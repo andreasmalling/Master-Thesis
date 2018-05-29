@@ -1,0 +1,20 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+        bar width = 0.7,
+        enlarge x limits={abs=0.75},
+        xtick=data,
+        xticklabels from table={./data/social/stall_hist.csv}{users},
+        xlabel={Maximum startup delay (\acs{s})},
+        ylabel={Mean \# Stalls},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        \addplot table [x expr=\coordindex, y={stalls}]{./data/social/stall_hist.csv};
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Mean stalls from socialness experiments]{Mean number of stalls from \expid{B10-s1}, \expid{B10}, \expid{B10-s2}. Decreasing socialness gives better \ac{UX} as the number of stalls decreases to the single required one during startup of the video.}
+    \label{bar:social_stall_hist}
+\end{figure}

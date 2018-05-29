@@ -1,0 +1,27 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        ymin=0,
+        y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+        bar width = 0.35,
+        enlarge x limits={abs=0.75},
+        xtick=data,
+        xticklabels from table={./data/segment/bytes_hist.csv}{users},
+        xlabel={Approx. Segment duration (\acs{s})},
+        ylabel={Mean Accumulated bandwidth (\acs{MB})},
+        legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+        
+        \addplot table [x expr=\coordindex, y={mean}]{./data/segment/bytes_hist.csv};
+        \addplot table [x expr=\coordindex, y={stddev}]{./data/segment/bytes_hist.csv};
+        
+        \addlegendentry{Mean}
+        \addlegendentry{Std. Dev.}
+        
+    \end{axis}
+
+    \end{tikzpicture}
+    \caption[Mean received \acs{MB} from \expid{B10-v9}]{Mean of accumulated received data from the baseline experiment (\expid{B10}) and the segment experiment (\expid{B10-v9}). Larger segments results in a significant reduction of received duplicate data.}
+    \label{bar:segment_bytes_hist}
+\end{figure}

@@ -1,48 +1,29 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
+This chapter evaluates the results of experiments based on the implementation described in \autoref{cha:implementation}.
 
-The evaluation of the experiments are done on the basis of the \ac{QOE} of the clients and in regard to network traffic \cite{nguyen2009p2p}.
+All referenced experiments in the following sections are outlined in a table for category. All tables can be found at the beginning of the section and in \autoref{app:exp_overviews}. Unless else is stated in the tables, a default stable network is used for the introduction of the experiment (See \autoref{sec:experiment_env}). The default network consists of a; \texttt{bootstrap} used for a local \ac{IPFS} network, \texttt{network logger} for measuring transfer rates, \texttt{host} for serving the website, \texttt{mongo} for storing collected data, and \texttt{seeder} for seeding the \ac{MPD} as well as the video segments in the \ac{IPFS} network (See  \autoref{sec:impl-overview} for all roles).
 
-\colorbox{yellow}{\textbf{TODO:} Add some kind of introduction.}
+All experimental clients introduced to the stable network, are introduced in a uniform randomized way, with a default delay ranging from 0 and 60 \ac{s} before participating actively in the network.
+The bandwidth rate for the clients is as standard at 20 \ac{Mbps} and with no artificial latency is added on a closed \ac{IPFS} network, meaning that the only peers present are set up by the experiment.
 
-%stable network
-The seeder holds the \ac{MPD} file as well as the video segments in the \ac{IPFS} network, for the other users to retrieve. 
-
-% Default client setup.
-Uniform randomized delay before they start between 0 and 60 \acs{s}.
-The bandwidth for the clients is set at 20 \ac{Mbps} and no artificial latency is added.
-The network used is closed meaning only the relevant peers are present.
-
-Video used is Big Buck Bunny, first 90 \acs{s}, approximately 3000 \acs{ms} segments, with a size of 55.99 \acs{MB} (55992320 bytes).
+The video used in all experiments is Big Buck Bunny\footnote{\url{https://peach.blender.org/download/}}, shortened to show only the first 90 \ac{s} of playback and thereby making the experiments faster to run. The video is by default divided in a segment size of approximately 3000 \ac{ms} resulting in 30 segments of video data plus an inittial container file. All segments amounts to the size of 55.99 \ac{MB} (55992320 bytes), with individual segments ranging from below 450 \ac{kB} to as high as 4.1 \ac{MB}.
 
 % High CPU usage
-Scalabilty is limited to 10 clients due to high CPU usage, though run on a powerful \ac{VM} (See \autoref{sec:setup_vm}). This is done to avoid \textit{false} stalls, with scheduling as cause, and 10 clients have been selected relying on empirical basis.  
+Scalabilty is limited to 10 clients due to high CPU usage, even though the experiments are run on a powerful \ac{VM} (See \autoref{sec:setup_vm}). This is done to avoid \textit{false} stalls, with thread scheduling as the cause, and 10 clients have been selected relying on empirical basis. During testing each user used around 100 percent CPU (out of 1600 percent) 40 to 60 percent of this was due to the chrome browser viewing the video, and 30 to 40 percent was because of the \ac{IPFS} daemon. The seeders daemon used less CPU at around 10 to 20 percent. Having a substitute to the \ac{DASH} player that only retrieved the pieces without viewing them could potentially double the number of users, but this has been omitted this this would no longer evaluate the \ac{DASH} component, and the evaluating would be reduced to just how fast the system could retrieve the segments. But this feature could be added with more time available for the project.
 
 \section{Baseline experiments}
 \label{sec:eval_baseline}
 A Binge persona user, is a user that watches a video and does not interact with the player after the video is started, binge users also use send their \ac{HTTP} requests for retrieving the video segments to their own \ac{IPFS} gateway. This is considered the least complex and most desired usage of the system, and is therefore used as a baseline for the other experiments.
 
-The first experiment consist of the stable network with 10 Binge persona clients added afterwards  (\expid{B10}). It is expected to perform well with almost no stalls or failures, and segments are expected to be retrieved with low latency. Clients are expected to download about 56 \ac{MB} which is the size of the video, which is 90 \acs{s} long.
-
-\begin{table}[ht]
+\begin{table}[!htbp]
     \myfloatalign
-    \caption{Experimental Setup of \nameref{sec:eval_baseline}}
+    \caption[Experimental Setup of Baseline]{Experimental Setup of \nameref{sec:eval_baseline}}
     \label{tab:exp_overview_baseline}
-    \begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network} \\
-    \midrule
-        \setexpid{B1}    &  1 Binge is introduced to the default stable network. \newline 
-                            Network bandwidth is at 20 \acs{MBps}.   \\
-%        \dots            & \dots                                     \\
-        \setexpid{B5}    &  5 Binge is introduced to the default stable network. \newline 
-                            Network bandwidth is at 20 \acs{MBps}.   \\
-%        \dots            & \dots                                     \\
-        \setexpid{B10}   &  10 Binge is introduced to the default stable network. \newline 
-                            Network bandwidth is at 20 \acs{MBps}.   \\
-    \bottomrule
-    \end{tabularx}
+    \input{experiments/binge.tex}
 \end{table}
+
+The first experiment consist of the stable network with 10 Binge persona clients added afterwards  (\expid{B10}). It is expected to perform well with almost no stalls or failures, and segments are expected to be retrieved with low latency. Clients are expected to download about 56 \ac{MB} which is the size of the video, which is 90 \ac{s} long.
 
 In the experiment every client stalled exactly once (See \autoref{plot:baseline_stall_time}), which happened when the video was being initially started and the buffer was getting filled, this can therefore not be considered a failure, meaning the users got a good quality of experience.
 
@@ -56,7 +37,7 @@ Since the video segments are the only files being distributed in the network the
 
 \input{data/baseline/network_rx_bytes_time}
 
-In terms of latency in acquiring the files, it is varies greatly between each segment and no pattern can be observed, but for the average latency of every client the best performing client has an average of 1053 \acs{ms} and the worst has an average of 912 \acs{ms} (See \autoref{tab:binge_latency_mean}).
+In terms of latency in acquiring the files, it is varies greatly between each segment and no pattern can be observed, but for the average latency of every client the best performing client has an average of 1053 \ac{ms} and the worst has an average of 912 \ac{ms} (See \autoref{tab:binge_latency_mean}).
 
 \input{data/baseline/video_latency_mean_seg}
 
@@ -70,33 +51,27 @@ The baseline experiment is also repeated with smaller amounts of Binge users in 
 \subsection{Duplicate data}
 Bug\footnote{\url{https://github.com/ipfs/go-ipfs/issues/4588}} illustrated and explained in \autoref{sec:eval_baseline}.
 
-\subsection{Seeder Download?}
-16 \ac{MB} communication over 4 minutes...
+\subsection{Seeder Download}
+In the baseline experiment (\expid{B10}) the Seeder client downloads over 16 \ac{MB} (See \autoref{bar:baseline_network_hist}), which ideally should be close to 0 as it should not request any data. The downloaded data is communication between peers over the duration of the experiment, but the download primarily happens over the 2 minutes in which the Binge clients requests the video, yielding a average download rate of $\approx$124 \ac{kBps}. Using the build in metric tool from \ac{IPFS}' \ac{CLI}\footnote{\texttt{ipfs stats bw} for bandwidth and \texttt{ipfs stats bitswap} for block exchange}, there are no reports of the Seeder downloading any blocks of data.
+
+Since the downloaded data reported both by the \ac{CLI} and externally from the \texttt{network logger} confirms this surprisingly high estimate, the downloaded data must be communication in the \acs{DHT} considering nothing else is running in the container.
 
 
 \section{Leecher population experiments}
 \label{sec:eval_leecher}
+The leecher acts just like a binge user, but rather than using their own \ac{IPFS} gateway, they retrieve segments directly from the gateway of the seeder.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \myfloatalign
-\caption{Experimental Setup of \nameref{sec:eval_leecher}}
+\caption[Experimental Setup of Leecher]{Experimental Setup of \nameref{sec:eval_leecher}}
 \label{tab:exp_overview_leecher}
-\begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network}     \\
-    \midrule
-        \setexpid{L1B9}    & 1 Leecher and 9 Binge is introduced to the default stable network over 60 \acs{s}. Network bandwidth is at 20 \acs{MBps}.   \\
-        \setexpid{L5B5}    & 5 Leecher and 5 Binge is introduced to the default stable network over 60 \acs{s}. Network bandwidth is at 20 \acs{MBps}.   \\
-        \setexpid{L10}     & 10 Leecher is introduced to the default stable network over 60 \acs{s}. Network bandwidth is at 20 \acs{MBps}.   \\
-    \bottomrule
-\end{tabularx}
+\input{experiments/leecher.tex}
 \end{table}
 
 In this experiment we alter the percentage of leechers versus bingers that the network contains, otherwise the conditions are the same as the baseline experiment (See \autoref{tab:exp_overview_leecher} for overview).
-The leecher acts just like a binge user, but rather than using their own \ac{IPFS} gateway, they retrieve segments directly from the gateway of the seeder.
 Based on the first experiment adding leechers to the network should decrease the amount of duplicate data being sent, but it also means more requests to the holders of the video segments potentially as there is fewer sources to get them from. Therefore the network is expected to perform better as long as the Seeder can keep up.
 
-The results however were different from expected, having a single leecher in the network, had no real impact on the Binge clients, but the Leecher clients got very high stall time (See \autoref{bar:leecher_stall_time_hist}), over 17 \acs{s} with stalls spread across the video rather than just at the beginning (See \autoref{plot:leecher_stall_time}). 
+The results however were different from expected, having a single leecher in the network, had no real impact on the Binge clients, but the Leecher clients got very high stall time (See \autoref{bar:leecher_stall_time_hist}), over 17 \ac{s} with stalls spread across the video rather than just at the beginning (See \autoref{plot:leecher_stall_time}). 
 
 %stall_time and stall_time_hist (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_16:21:32.688486)
 
@@ -104,7 +79,7 @@ The results however were different from expected, having a single leecher in the
 
 \input{data/leecher/stall_time_hist_leecher.tex}
 
-Scaling the network to having half of the users being Leecher and the other half Binge (\expid{L5B5}), negatively impacted all the clients, as the 5 bingers now stalled multiple times (See \autoref{bar:leecher_stall_hist}), and had an average stall time of about 13 \acs{s} while the stall time for the leechers became much worse with an average of about 53 \acs{s}. For both types of clients the standard deviation of stall time was around 10 \acs{s} (See \autoref{bar:leecher_stall_hist_role}), meaning the users got vastly different performances, and even two of the binger only stall once at the beginning of the video, meaning they got a good quality of experience.
+Scaling the network to having half of the users being Leecher and the other half Binge (\expid{L5B5}), negatively impacted all the clients, as the 5 bingers now stalled multiple times (See \autoref{bar:leecher_stall_hist}), and had an average stall time of about 13 \ac{s} while the stall time for the leechers became much worse with an average of about 53 \ac{s}. For both types of clients the standard deviation of stall time was around 10 \ac{s} (See \autoref{bar:leecher_stall_hist_role}), meaning the users got vastly different performances, and even two of the binger only stall once at the beginning of the video, meaning they got a good quality of experience.
 
 %stall_hist, stall_hist_role_mean and stall_hist_role_stdev (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:51:32.232356)
 
@@ -116,7 +91,7 @@ Scaling the network to having half of the users being Leecher and the other half
 % added in data/leecher/stall_hist_role_leecher.tex and the stall_time_hist below instead of stall_time
 %\input{data/leecher/stall_time_hist_leecher10.tex}
 
-Scaling the amount of leechers further, to all the clients being leechers, increased the bad quality of experience further, and the total mean stall time became 100 \acs{s}, that occured frequently during the video.
+Scaling the amount of leechers further, to all the clients being leechers, increased the bad quality of experience further, and the total mean stall time became 100 \ac{s}, that occured frequently during the video.
 
 These results show that leeching off of a public \ac{IPFS} gateway is punished compared to the users retrieving the files themselves and using their own gateway. And the tit-for-tat principle is enforced. Unfortunately leechers still impacted the well behaving binge users's quality of experience as they experience more stalling as the percentage of leechers in the network grew.
 
@@ -130,44 +105,31 @@ Having a network of only 5 binger users in comparison gave an average of about 1
 This experiment has another client behaviour in the skipper persona.
 The skipper persona user acts just like the binge user, but they interact with the video player while the video is playing. They repeat the following behaviour, watch the video for a set amount of time (referred to as watch time), and then skip forward in the video a set amount of time (referred to as skip time).
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \myfloatalign
-\caption{Experimental Setup of \nameref{sec:eval_skipper}}
+\caption[Experimental Setup of Skipper]{Experimental Setup of \nameref{sec:eval_skipper}}
 \label{tab:exp_overview_skipper}
-\begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network}     \\
-    \midrule
-        \setexpid{S5B5}    & 
-        5 Skipper and 5 Binge is introduced to the default stable network over 60 \acs{s}. \newline 
-        Skipper watch time is 3 \acs{s} and skip time 10 \acs{s}.\newline
-        Network bandwidth is at 20 \acs{MBps}.   \\
-        \setexpid{S5B5-c}    & 
-        5 Skipper and 5 Binge is introduced to the default stable network over 60 \acs{s}. \newline 
-        Skipper watch time is 1 \acs{s} and skip time 25 \acs{s}.\newline
-        Network bandwidth is at 20 \acs{MBps}.   \\
-        \setexpid{S10}     & 
-        10 Skipper is introduced to the default stable network over 60 \acs{s}.
-        Skipper watch time is 3 \acs{s} and skip time 10 \acs{s}.\newline
-        Network bandwidth is at 20 \acs{MBps}.   \\
-    \bottomrule
-\end{tabularx}
+\input{experiments/skipper.tex}
 \end{table}
 
 
-The goal is to see what kind of impact the skipper has on the network as a whole and if it can negatively impact a Binge user. We also want to see what kind of performance a skipper gets when watching a video, the video should stall every time the client skips in the video. But the amount of time spent in the stalling state should ideally be small, but based on the latency seen in the baseline experiment, it is likely that it stalls for more than a second after every skip as this is the latency seen when acquiring segments. The configuration of the skipper is to have a watch time of 3 \acs{s} and a skip time of 10 \acs{s}. If the only stalls are because of skips, they should have exactly 7 stalls each.
+The goal is to see what kind of impact the skipper has on the network as a whole and if it can negatively impact a Binge user. We also want to see what kind of performance a skipper gets when watching a video, the video should stall every time the client skips in the video. But the amount of time spent in the stalling state should ideally be small, but based on the latency seen in the baseline experiment, it is likely that it stalls for more than a second after every skip as this is the latency seen when acquiring segments. The configuration of the skipper is to have a watch time of 3 \ac{s} and a skip time of 10 \ac{s}. If the only stalls are because of skips, they should have exactly 7 stalls each.
 In the experiments skipper users got around 7 stalls (See \autoref{bar:skipper_stall_mean}), meaning they did not stall more than they were required to do by the persona behaviour, the amount of skippers in the network did not impact the amount of stalls. The time spent stalling is also unaffected as can be seen from the experiment with 5 skippers versus the one with 10. The average time spent stalling for skipper personas were about the same.
+
 \input{data/skipper/stall_hist_role_mean.tex}
 %stall_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_13:21:29.634478) (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_13:41:31.386109)
+
 The quality of experience for the binge users also seemed unaffected, as they like the baseline experiment still only stalled at the start, and infrequently once more after that (See \autoref{bar:skipper_stall_hist}). 
+
 \input{data/skipper/stall_hist.tex}
 %stall_hist (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_13:21:29.634478) (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_12:51:31.043665)
+
 Although the binge users did tend to download more data than the skippers (See \autoref{bar:skipper_bytes_hist}), this can be excused to the skippers going ahead in progress in the video faster than the binge users. Meaning they will have the segments before and as the binge users reach that point in the video and requests segments relevant to it. Those segments are more duplicated in the network resulting in downloading more duplicates.
+
 \input{data/skipper/bytes_hist.tex}
 %rx_bytes_tx_bytes_hist_role_mean (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_13:21:29.634478)
-The only thing that made skippers stand out in comparison to binge users is that when trying to retrieve segments, they got more errors (See \autoref{bar:skipper_fail_hist}). Errors meaning that the request returning a responsecode not corresponding to OK. Bingers almost never got errors but with skippers in the network a fair amount of segments had users get errors when trying to retrieve them. %TODO try to explain why this happens
-\input{data/skipper/failure_hist.tex}
-%failure_hist_video (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_13:21:29.634478)
+
+
 In conclusion skippers have very little impact in relation to the network and the worsened performance is isolated within themselves with little to no negative impact on the other users in the network.
 
 \subsection{Skipper configurations}
@@ -175,30 +137,20 @@ The skipper can be configured in both the amount of time it watches videos in be
 
 The watch time is expected to have little impact as the dash player buffer should be about full at all times. But adjusting skipper length means that potentially more of the buffer has to be replaced and if the skipper length is set high enough. The entirety of the buffer is replaced. %todo find what is dash player buffer length
 
-Increasing the skip length and decreasing watch time (\expid{S5B5-c}) had very little impact, Binges still only stalled around a single time, and skippers still only stalled when they were performing the skip. The only notable change is that a skipper managed to only download 36 \ac{MB} (See 2:SKIPPER in \autoref{bar:skipper_bytes_hist_configuration}) when watching for 1 second and skipping 25. Meaning they skipped enough to avoid downloading some segments, which also means that the previous buffer was unusable after the skip. \input{data/skipper/byte_hist_configuration.tex}
- 
+Increasing the skip length and decreasing watch time (\expid{S5B5-c}) had very little impact, Binges still only stalled around a single time, and skippers still only stalled when they were performing the skip. The only notable change is that a skipper managed to only download 36 \ac{MB} (See 2:SKIPPER in \autoref{bar:skipper_bytes_hist_configuration}) when watching for 1 second and skipping 25. Meaning they skipped enough to avoid downloading some segments, which also means that the previous buffer was unusable after the skip. 
+
+\input{data/skipper/byte_hist_configuration.tex}
  
 \section{Incognito population experiments}
 \label{sec:eval_incognito}
 This experiment has the incognito behaviour in the network.
-The incognito persona user acts just like the binge user, but it immediately skips to the point in the video that is 10 \acs{s} before the end, and continues watching normally from there.
+The incognito persona user acts just like the binge user, but it immediately skips to the point in the video that is 10 \ac{s} before the end, and continues watching normally from there.
 
-\begin{table}[ht]
-\myfloatalign
-\caption{Experimental Setup of \nameref{sec:eval_incognito}}
-\label{tab:exp_overview_incognito}
-\begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network}     \\
-    \midrule
-        \setexpid{I5B5}    & 
-        5 Incognito and 5 Binge is introduced to the default stable network over 60 \acs{s}. \newline 
-        Network bandwidth is at 20 \acs{MBps}.   \\
-        \setexpid{I10}     & 
-        10 Incognito is introduced to the default stable network over 60 \acs{s}.
-        Network bandwidth is at 20 \acs{MBps}.   \\
-    \bottomrule
-\end{tabularx}
+\begin{table}[!htbp]
+    \myfloatalign
+    \caption[Experimental Setup of Incognito]{Experimental Setup of \nameref{sec:eval_incognito}}
+    \label{tab:exp_overview_incognito}
+    \input{experiments/incognito.tex}
 \end{table}
 
 This experiments is expected to only impact a small amount of segment of the video, which is the the segments that are watched by the incognito users.
@@ -208,7 +160,7 @@ In the experiment incognito users performed like binge users that just watched a
 
 \input{data/incognito/network_hist.tex}
 
-Unlike binge users the initial stall was much longer, in the 5 binge users and 5 incognito users experiment. Bingers stalled for an average about 0.4 \acs{s} while incognito was at 2 \acs{s} (See \autoref{bar:incognito_stall_role}). This delay might be because of the incognito user initially downloads the first segments of the video and then skips to the end of the video and starts downloading new ones. The dash player also has to determine which segment correspond to the specific timestamp, which can add to the stalling time.
+Unlike binge users the initial stall was much longer, in the 5 binge users and 5 incognito users experiment. Bingers stalled for an average about 0.4 \ac{s} while incognito was at 2 \ac{s} (See \autoref{bar:incognito_stall_role}). This delay might be because of the incognito user initially downloads the first segments of the video and then skips to the end of the video and starts downloading new ones. The dash player also has to determine which segment correspond to the specific timestamp, which can add to the stalling time.
 
 \input{data/incognito/stall_hist_role.tex}
 
@@ -225,38 +177,25 @@ this experiment functions as a smaller scale global \ac{IPFS} as the irrelevant 
 \label{sec:eval_mobile}
 This experiment in terms of behaviour is the same as the baseline, but the network conditions are worsened  in terms of the bandwidth available and/or latency.
 
-\begin{table}[ht]
-\myfloatalign
-\caption{Experimental Setup of \nameref{sec:eval_mobile}}
-\label{tab:exp_overview_mobile}
-\begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network}     \\
-    \midrule
-        \setexpid{B10-m1}    & 
-        10 Binge is introduced to the default stable network over 60 \acs{s}.
-        Network bandwidth is at 5 \acs{MBps}.   \\
-        \setexpid{B10-m2}     & 
-        10 Binge is introduced to the default stable network over 60 \acs{s}.
-        Network bandwidth is at 20 \acs{MBps} with an add latency of 100$\pm$10 \acs{ms}.   \\
-        \setexpid{B10-m3}     & 
-        10 Binge is introduced to the default stable network over 60 \acs{s}.
-        Network bandwidth is at 5 \acs{MBps} with an add latency of 100 \acs{ms}.   \\
-    \bottomrule
-\end{tabularx}
+\begin{table}[!htbp]
+    \myfloatalign
+    \caption[Experimental Setup of Mobile]{Experimental Setup of \nameref{sec:eval_mobile}}
+    \label{tab:exp_overview_mobile}
+    \input{experiments/mobile.tex}
 \end{table}
 
 \subsection{Low bandwidth network} %todo
 \label{sec:eval_low_bandwidth}
 In these experiments the amount of bandwidth available to the clients is decreased, this should punish \ac{IPFS} more for its excessive amount of data being transmitted between peers. 5 \ac{Mbps} is expected to be the lowest possible usable bandwidth, as decreasing the bandwidth lower than this would result in not having enough for just watching the video alone from a single source, without any other network communication.
-In the experiments lowering the bandwidth to just 10 \ac{Mbps} was enough to get very poor viewing experience as each user got 9 or more stalls throughout the video, with a mean combined stall time of 77 \ac{s}, which is almost the length of the video, which is 90 \ac{s}. This high amount of stalling is likely due to the large amount of duplicate data in the network, ... %todo
+In the experiments lowering the bandwidth to just 10 \ac{Mbps} was enough to get very poor viewing experience as each user got 9 or more stalls throughout the video (see \autoref{bar:mobile_bandwidth_stall_hist}), with a mean combined stall time of 77 \ac{s}, which is almost the length of the video, which is 90 \ac{s}. This high amount of stalling is likely due to the large amount of duplicate data in the network, as the bandwidth is then wasted on getting duplicate segments rather than retrieving what is relevant to the user. %todo
 % low bandwidth (minimum theoretical is (56 /90 *8 = approx 5 MBit)
 
 %stall_hist
+\input{data/mobile/bandwidth/stall_hist.tex}
 
 \subsection{High latency network}
 \label{sec:eval_high_latency}
-High latency is expected to increase the amount of duplicate data the clients receive, as changed in the peers want list take longer to propogate to peers that have segments that are no longer wanted. It could potentially also increase the amount of stalls, since it takes too long for the relevant segments to arrive to the client that needs them. An added latency of 100 \acs{ms} is chosen (based on a ping to Google's data center in Sydney, Australia).
+High latency is expected to increase the amount of duplicate data the clients receive, as changed in the peers want list take longer to propogate to peers that have segments that are no longer wanted. It could potentially also increase the amount of stalls, since it takes too long for the relevant segments to arrive to the client that needs them. An added latency of 100 \ac{ms} is chosen (based on a ping to Google's data center in Sydney, Australia).
 In the experiments the increased latency significantly reduced the quality of experience, as half of the users now had an extra stall (see \autoref{bar:mobile_latency_stall_hist}), which were about half way into the video and lasting multiple seconds (see \autoref{plot:mobile_latency_stall_time}). This in in line with the hypothesis that it takes too long to get relevant pieces.
 \input{data/mobile/latency/stall_hist.tex}
 \input{data/mobile/latency/stall_time.tex}
@@ -264,92 +203,95 @@ But the amount of duplicate data did not increase as much as expected as the ave
 
 \input{data/mobile/latency/bytes_hist_role.tex}
 
-%stall_hist
 
-\subsection{Combination of \nameref{sec:eval_low_bandwidth} and \nameref{sec:eval_high_latency}}
-%todo
-This experiments combines the network configuration of the 2 previous experiments, to test how \ac{IPFS} performs under very bad conditions.
-% results are probably similar to the previous experiments
+\subsection{Jittery network conditions}
+In this experiment the conditions of a mobile users were to be emulated. The conditions should vary between a good connection (high bandwidth such as 4G) and low bandwidth or no connection at all for short amounts of time.
+The results of the experiment where expected to be a good \ac{UX} as long as the conditions are not bad for too long, due to the buffer being filled which should be able to keep the video running smoothly.
 
-
-% \subsection{Jittery network conditions (Discarded due to pumba limitations)}
-% In this experiment the conditions of a mobile users are emulated, where the conditions can sometimes be very good and sometimes become too bad to watch video for short amounts of time, where the buffer being filled should be able to keep the video running smoothly, as long as the conditions are not bad for too long.
+This experiment were not conducted, though highly relevant, due to limitations in the pumba tool, which only enabled jitter for latency and not bandwidth rate.
+This could have been possible given more time, \eg by modifying the run script to accept series of individual bandwidth rates to enforce sequentially upon each particular mobile client.
 
 \section{Leaver impact experiments} %todo
 \label{sec:eval_leaver}
 In this experiment the clients  leave the \ac{IPFS} network after they have finished watching the video, meaning they would no longer provide the video to other peers, when they themselves have finished.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
     \myfloatalign
-    \caption{Experimental Setup of \nameref{sec:eval_leaver}}
+    \caption[Experimental Setup of Leaver]{Experimental Setup of \nameref{sec:eval_leaver}}
     \label{tab:exp_overview_leaver}
-    \begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network} \\
-    \midrule
-        \setexpid{B10-l}  & 10 Binge is introduced to a stable default network over 60 \acs{s}. Each client will leave the network upon finishing the video. Network bandwidth is at 20 \acs{MBps}.  \\
-    \bottomrule
-    \end{tabularx}
+    \input{experiments/leaver.tex}
 \end{table}
 
-The experiment is based on the baseline, but where clients leave when they are done. Based on the results of the baseline this should result in reduced duplicate data as the clients that join the network early, leave before the remaining clients are finished. And when they do that is one less duplicate that the remaining clients receive. In terms of quality of experience there should be no major difference.
+The experiment is based on the baseline (\expid{B10}), but where clients leave when they are done. Based on the results of the baseline this should result in reduced duplicate data as the clients that join the network early, leave before the remaining clients are finished. And when they do that is one less duplicate that the remaining clients receive. In terms of quality of experience there should be no major difference.
+The experiment went very much like expected, the amount of stalls was the same as the baseline, but the mean amount of downloaded data was decreased by 17 \ac{MB} (See \autoref{bar:leaver_bytes_hist}). The difference in received data between the peers also lowered drastically as can be seen by the almost halved standard deviation. This is likely due fewer sources for retrieving data being avaliable to the users that play the video later, meaning these users recieve less duplicates.
+\input{data/leaver/bytes_hist.tex}
 
-
-\section{Lower socialness impact experiments} %todo
+\section{Socialness impact experiments}
 \label{sec:eval_socialness}
-The other experiments focused on having all clients watch the video at the same time with very little difference in when they start the video.
+The other experiments focused on having all clients watch the video at the same time within a 60 \ac{s} startup interval.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
     \myfloatalign
-    \caption{Experimental Setup of \nameref{sec:eval_socialness}}
+    \caption[Experimental Setup of Socialness]{Experimental Setup of \nameref{sec:eval_socialness}}
     \label{tab:exp_overview_socialness}
-    \begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network} \\
-    \midrule
-        \setexpid{B10-s1}  & 10 Binge is introduced to a stable default network over 5 \acs{s}. Network bandwidth is at 20 \acs{MBps}.  \\
-        \setexpid{B10-s2}  & 10 Binge is introduced to a stable default network over 180 \acs{s}. Network bandwidth is at 20 \acs{MBps}.  \\
-    \bottomrule
-    \end{tabularx}
+    \input{experiments/socialness.tex}
 \end{table}
 
-This experiment increases the time between startup effectively lowering the socialness of the video, as it becomes less viral. Although to properly test the impact of socialness the experiments have to last much longer, multiple days, which is omitted and replaced with the smaller timeframe experiment instead.
+This experiment changes the time between startup effectively changing the socialness of the video. \expid{B10-s1} lowers the startup delay to 10 \ac{s}, effectively increasing the socialness. \expid{B10-s2} on the other hand lowers the socialness as the startup delay is 180 \ac{s}
 
-\section{Higher segment length experiments}
-In this experiment the video files are altered so that each segment is around 10 \acs{s} long rather than the default 3 \acs{s}. This is to try to capitalize on the way \ac{IPFS} separates files into blocks itself rather than doing it manually, as having many small segments mean that each segment is only a few blocks. This can however impact the user experience, as users now have to download a larger segment before they can play anything from that segments time frame.
+Although to properly test the impact of socialness the experiments have to last much longer, multiple days, which is omitted and replaced with the smaller timeframe experiment instead.
+
+In the experiments increasing the maximum startup delay gave an universally better performance. With the longer startup delay from \expid{B10-s2} there were only the initial stalls just like the baseline. but lowering it, as done in \expid{B10-s2}, meant stalling became frequent. (See \autoref{bar:social_stall_hist}) The high amount of stalling is likely due to pressure on the seeder as more users now want segments only avaliable at the seeder, as they have not been distributed yet.
+
+Increasing the startup delay, also decreases the amount of duplicate data the users receives (See \autoref{bar:social_bytes_hist}) which is unusual as adding more users with the data available, usually meant more duplicate data. %todo this is odd 
+
+\input{data/social/stall_hist.tex}
+\input{data/social/bytes_hist.tex}
+\section{Increased segment length experiments}
+\label{sec:eval_segment}
+
+In this experiment the video files are altered so that each segment is around 10 \ac{s} long rather than the default 3 \ac{s}. This is to try to capitalize on the way \ac{IPFS} separates files into blocks itself rather than doing it manually, as having many small segments mean that each segment is only a few blocks. This can however impact the user experience, as users now have to download a larger segment before they can play anything from that segments time frame.
+In the experiments all the stalled exactly twice, although the second of these stalls can not be considered bad \ac{UX} because is happens on average 30 \ac{ms} after the video starts. A frame lasts 33 \ac{ms} for the video used in the experiment, so this stall only lasts around a single frame. The length of the second stall is also very small at an average 32 \ac{ms}, which should not be noticeable when it happens a single frame into the video. The time spent stall is however very significant, In the the experiment the intial stall lasted 6.9 \ac{s} longer than the baseline (see \autoref{bar:segment_stall_time_hist}). In terms of downloaded data the experiment performed better than the baseline, the mean amount of received bandwidth was about two thirds and the baseline, with much lower standard deviation too. Signifying that \ac{IPFS} is more efficient at handling larger files where it can utilize the way the files are split into blocks in the bitswap. This however comes at the cost of the initial stall time.
+
+\input{data/segment/stall_time_hist.tex}
+\input{data/segment/bytes_hist.tex}
+
+\begin{table}[!htbp]
+    \myfloatalign
+    \caption[Experimental Setup of Segment size]{Experimental Setup of \nameref{sec:eval_segment}}
+    \label{tab:exp_overview_segment}
+    \input{experiments/segment.tex}
+\end{table}
+
+
 
 \section{Global IPFS experiments}
 \label{sec:eval_global}
 
 In the other experiments all clients in the \ac{IPFS} network were relevant to the video files, contrary to the intended design of \ac{IPFS} where all users of \ac{IPFS} are in a shared network regardless of the content they have.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
     \myfloatalign
-    \caption{Experimental Setup of \nameref{sec:eval_global}}
+    \caption[Experimental Setup of Global \acs{IPFS}]{Experimental Setup of \nameref{sec:eval_global}}
     \label{tab:exp_overview_global}
-    \begin{tabularx}{\textwidth}{lX}
-    \toprule
-        \tableheadline{Exp. ID} & \tableheadline{Experimental Setup of Network} \\
-    \midrule
-        \setexpid{B10-g}  & 10 Binge having global \ac{IPFS} access is introduced to a stable \textit{near} default network over 60 \acs{s}. \newline The stable network differs by the 1 Seeder having global \ac{IPFS} access and no bootstrap being present.\newline Network bandwidth is at 20 \acs{MBps}.  \\
-    \bottomrule
-    \end{tabularx}
+    \input{experiments/global.tex}
 \end{table}
 
 This experiment runs the same configuration as the baseline but operates in the global \ac{IPFS} instead, meaning it is using the default bootstrap addresses to connect to \ac{IPFS} network.
-It is expected to perform similar to the baseline experiment but with an increased latency, as having larger network means larger hash tables, which results in having longer look up times for the video segments, due to the \ac{DHT}'s worst case lookup time being $ O ( \log n)$, where $n$ is the number of peers in the network \cite[p.2]{benet2014ipfs}.
+It is expected to perform similar to the high latency experiment, as having larger network means larger hash tables, which results in having longer look up times for the video segments, due to the \ac{DHT}'s worst case lookup time being $ O ( \log n)$, where $n$ is the number of peers in the network \cite[p.2]{benet2014ipfs}.
 
 
-During the experiments some clients experienced multiple stalls (see \autoref{bar:global_stall_hist}). These stalls where also fairly lengthy, up to 7 \acs{s}), and around the middle of the video (see \autoref{plot:global_stall_time}). Over half of the population suffered of additional stalls and encountered a longer re-buffering event during playback than the initial buffering, which signifies a poor \ac{UX} of the viewing experience.
+During the experiments some clients experienced multiple stalls (see \autoref{bar:global_stall_hist}). These stalls where also fairly lengthy, up to 7 \ac{s}, and around the middle of the video (see \autoref{plot:global_stall_time}). Over half of the population suffered of additional stalls and encountered a longer re-buffering event during playback than the initial buffering, which signifies a poor \ac{UX} of the viewing experience.
 
 \input{data/global/stall_hist.tex}
 
 \input{data/global/stall_time.tex}
 
 
-In terms of bandwidth there were slight improvements compared to the baseline experiment (\expid{B10}) in which 3 users had around 300 \ac{MB} or more received data; this overhead has now evened out between the clients, since the worst case of recieved data is around 250 \ac{MB} (see \autoref{bar:global_bytes_hist} compared to \autoref{bar:baseline_network_hist}).
+In terms of bandwidth there were slight improvements compared to the baseline experiment (\expid{B10}) in which 3 users had around 300 \ac{MB} or more received data; this overhead has now evened out between the clients, since the worst case of received data is around 250 \ac{MB} (see \autoref{bar:global_bytes_hist} compared to \autoref{bar:baseline_network_hist}).
 
 The mean of the accumulated received data however did not improve and was around the same for the experiments compared to the baseline (see \autoref{bar:global_bytes_hist_role}), but the standard deviation decreased as the overhead was more evenly distributed among the clients.
+This results were very similar to that of the increased latency experiment as expected, just like that experiment users get slightly more stalls, and the mean received data increased and the standard deviation decreased.
 
 \input{data/global/bytes_hist.tex}
 \input{data/global/bytes_hist_role.tex}
@@ -359,7 +301,7 @@ The mean of the accumulated received data however did not improve and was around
 
 \section{Summary of \nameref{cha:evaluation}}
 
-\colorbox{yellow}{\textbf{TODO:} Summary of key findings}
+\colorbox{yellow}{\textbf{TODO:} Summary of key findings and discussion}
 
 %%% Local Variables:
 %%% mode: latex
