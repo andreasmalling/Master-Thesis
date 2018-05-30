@@ -7,14 +7,16 @@ All referenced experiments in the following sections are outlined in a table for
 All experimental clients introduced to the stable network, are introduced in a uniform randomized way, with a default delay ranging from 0 and 60 \ac{s} before participating actively in the network.
 The bandwidth rate for the clients is as standard at 20 \ac{Mbps} and with no artificial latency is added on a closed \ac{IPFS} network, meaning that the only peers present are set up by the experiment.
 
-The video used in all experiments is Big Buck Bunny\footnote{\url{https://peach.blender.org/download/}}, shortened to show only the first 90 \ac{s} of playback and thereby making the experiments faster to run. The video is by default divided in a segment size of approximately 3000 \ac{ms} resulting in 30 segments of video data plus an inittial container file. All segments amounts to the size of 55.99 \ac{MB} (55992320 bytes), with individual segments ranging from below 450 \ac{kB} to as high as 4.1 \ac{MB}.
+All clients (except Leechers) use their a local \ac{HTTP} gateway to send requests for retrieving the video segments via their own \ac{IPFS} daemon. This is considered the least complex and most desired usage of the system, and is therefore used as a baseline for the other experiments.
+
+The video used in all experiments is Big Buck Bunny\footnote{\url{https://peach.blender.org/download/}}, shortened to show only the first 90 \ac{s} of playback and thereby making the experiments faster to run. The video is by default divided in a segment size of approximately 3000 \ac{ms} resulting in 30 segments of video data plus an inittial container file. All segments amounts to the size of 55.99 \ac{MB} (55992320 bytes), yielding an average bitrate of 4919 \ac{kbps}, with individual segment sizes ranging from below 450 \ac{kB} to as high as 4.1 \ac{MB}.
 
 % High CPU usage
 Scalabilty is limited to 10 clients due to high CPU usage, even though the experiments are run on a powerful \ac{VM} (See \autoref{sec:setup_vm}). This is done to avoid \textit{false} stalls, with thread scheduling as the cause, and 10 clients have been selected relying on empirical basis. During testing each user used around 100 percent CPU (out of 1600 percent) 40 to 60 percent of this was due to the chrome browser viewing the video, and 30 to 40 percent was because of the \ac{IPFS} daemon. The seeders daemon used less CPU at around 10 to 20 percent. Having a substitute to the \ac{DASH} player that only retrieved the pieces without viewing them could potentially double the number of users, but this has been omitted this this would no longer evaluate the \ac{DASH} component, and the evaluating would be reduced to just how fast the system could retrieve the segments. But this feature could be added with more time available for the project.
 
 \section{Baseline experiments}
 \label{sec:eval_baseline}
-A Binge persona user, is a user that watches a video and does not interact with the player after the video is started, binge users also use send their \ac{HTTP} requests for retrieving the video segments to their own \ac{IPFS} gateway. This is considered the least complex and most desired usage of the system, and is therefore used as a baseline for the other experiments.
+A Binger client, is a user that watches a video and does not interact with the player after the video is started.
 
 \begin{table}[!htbp]
     \myfloatalign
@@ -23,35 +25,41 @@ A Binge persona user, is a user that watches a video and does not interact with 
     \input{experiments/binge.tex}
 \end{table}
 
-The first experiment consist of the stable network with 10 Binge persona clients added afterwards  (\expid{B10}). It is expected to perform well with almost no stalls or failures, and segments are expected to be retrieved with low latency. Clients are expected to download about 56 \ac{MB} which is the size of the video, which is 90 \ac{s} long.
+The first experiment consist of the stable network which is introduced for 10 Binger clients after stabilization (\expid{B10}). It is expected to perform well with almost no stalls or failures, and segments are expected to be retrieved with low latency. Clients are expected to download about 56 \ac{MB} which is the size of the video, plus a small overhead of \ac{DHT} communication and duplicate data.
 
-In the experiment every client stalled exactly once (See \autoref{plot:baseline_stall_time}), which happened when the video was being initially started and the buffer was getting filled, this can therefore not be considered a failure, meaning the users got a good quality of experience.
+In the experiment (\expid{B10}) every client stalled exactly once (See \autoref{plot:baseline_stall_time}), which is expected when the video was initially started and the buffer was getting filled, this can therefore not be considered a failure since an initially empty buffer is unavoidable in the system. From this it is concluded the Bingers had a good \ac{QOE}, due to a session with the entire video and without interruptions for re-buffering.
 
 \input{data/baseline/stall_time}
 
-In terms of amount of data received on the clients, a single peer downloaded about the expected amount, and every other peer downloaded more and more. In the worst case about 7 times more (See \autoref{bar:baseline_network_hist}).
+In terms of the amount of data received by the clients, only a single peer downloaded about the expected amount, while every other client downloaded increasingly more. In the worst case about 7 times more (See \autoref{bar:baseline_network_hist}). This is very unexpected and undesirable, due to the expended bandwidth used on redundant data.
 
 \input{data/baseline/network_hist}
 
-Since the video segments are the only files being distributed in the network the extra data being downloaded must be duplicate data. We can also observe that the ones downloading the least are also the clients that get to watch the video first, where the files are least distributed (See \autoref{plot:baseline_network_rx_bytes_time}).
+Since the video segments are the only files being distributed in the entire \ac{IPFS} network, the extra data downloaded must be duplicate data, which can be confirmed from the \ac{IPFS} \ac{CLI}, in which a metric for duplicated data download through the block exchange can be accessed\footnote{\texttt{\$ipfs stats bitswap}}. It is also observed that the ones downloading the least are also the clients that get to watch the video first, where the files are least distributed since initially only the Seeder is seeding the content, whereas the number of seeding clients increase with the run time of the experiment (See \autoref{plot:baseline_network_rx_bytes_time}). This indicates a correlation between the number of seeding clients and the overhead of duplicate data, which is very problematic.
+
+As a consequence of this, the overhead will seemingly increase with the number of seeders, potentially making the consumption of bandwidth by redundant traffic in the network throttle relevant and time critical exchanges of needed segments and thereby making the system unscalable due the narrowing bottleneck as a result of high availability.
 
 \input{data/baseline/network_rx_bytes_time}
 
-In terms of latency in acquiring the files, it is varies greatly between each segment and no pattern can be observed, but for the average latency of every client the best performing client has an average of 1053 \ac{ms} and the worst has an average of 912 \ac{ms} (See \autoref{tab:binge_latency_mean}).
+In terms of latency in acquiring the files, it varies greatly between each segment and no pattern can be observed, but for the average latency of every client the best performing client has an average of 1053 \ac{ms} and the worst has an average of 912 \ac{ms} (See \autoref{tab:binge_latency_mean}), making it seem evenly distributed.
 
 \input{data/baseline/video_latency_mean_seg}
 
-So even though the worst performing downloads 7 times the data it does not seem to impact it negatively, this might change however as it is expected that the network could get flooded if this factor increases more with even more peers.
+In spite of the worst performing Binger client downloads 7 times the data, it does not seem to impact the clients \ac{UX} negatively. This might however change, as it is expected that the network could get swamped if this factor increases conjointly with a resource's seeders.
 
 \subsection{Smaller network experiments}
-The baseline experiment is also repeated with smaller amounts of Binge users in the network, this is primarily used for comparison in the future experiments. These can be found in \autoref{tab:exp_overview_baseline}.
+The baseline experiment is also repeated with smaller amounts of Binge users in the network, respectively from 1 to 10 Bingers introduced to the default network. Those experiments later referenced for comparison as baseline can be found in \autoref{tab:exp_overview_baseline}.
 
+While these experiments primarily was done for comparison of future setups, they support the theory of a correlation between duplicate data and seeding clients, since same behaviour was observed, but with a smaller maximum overhead depending on the number of peers (See \autoref{bar:baseline_network_hist_b5} in \autoref{app:exp_plots} for example).
 
-\section{Problems encountered}
 \subsection{Duplicate data}
-Bug\footnote{\url{https://github.com/ipfs/go-ipfs/issues/4588}} illustrated and explained in \autoref{sec:eval_baseline}.
+\label{sec:eval_bug_dup}
+Through the baseline experiments, a correlation between number of peers seeding a resource and the size of the duplicated received when requesting said resource. This is a reported bug on the go-ipfs github\footnote{\url{https://github.com/ipfs/go-ipfs/issues/4588}}, where several others experience same behaviour as observed in the baseline experiments.
+
+This bug makes \ac{IPFS} ill-suited for the proposed purpose of effectively serving videos with high demand. In a typical \ac{P2P} network, resources being download, distributes it and makes it more available to the rest of the network. \ac{IPFS}, on the other hand, also distributes the resource, but this currently results in a penalty of redundant data, which increase with the number of seeders of the resource in the network, thereby cancelling the positive effect of the increased throughput.
 
 \subsection{Seeder Download}
+\label{sec:eval_seeder_rx}
 In the baseline experiment (\expid{B10}) the Seeder client downloads over 16 \ac{MB} (See \autoref{bar:baseline_network_hist}), which ideally should be close to 0 as it should not request any data. The downloaded data is communication between peers over the duration of the experiment, but the download primarily happens over the 2 minutes in which the Binge clients requests the video, yielding a average download rate of $\approx$124 \ac{kBps}. Using the build in metric tool from \ac{IPFS}' \ac{CLI}\footnote{\texttt{ipfs stats bw} for bandwidth and \texttt{ipfs stats bitswap} for block exchange}, there are no reports of the Seeder downloading any blocks of data.
 
 Since the downloaded data reported both by the \ac{CLI} and externally from the \texttt{network logger} confirms this surprisingly high estimate, the downloaded data must be communication in the \acs{DHT} considering nothing else is running in the container.
@@ -59,7 +67,7 @@ Since the downloaded data reported both by the \ac{CLI} and externally from the 
 
 \section{Leecher population experiments}
 \label{sec:eval_leecher}
-The leecher acts just like a binge user, but rather than using their own \ac{IPFS} gateway, they retrieve segments directly from the gateway of the seeder.
+The Leecher acts just like a binge user, but rather than using their own \ac{IPFS} gateway, they retrieve segments directly from the gateway of the seeder.
 
 \begin{table}[!htbp]
 \myfloatalign
@@ -68,10 +76,10 @@ The leecher acts just like a binge user, but rather than using their own \ac{IPF
 \input{experiments/leecher.tex}
 \end{table}
 
-In this experiment we alter the percentage of leechers versus bingers that the network contains, otherwise the conditions are the same as the baseline experiment (See \autoref{tab:exp_overview_leecher} for overview).
-Based on the first experiment adding leechers to the network should decrease the amount of duplicate data being sent, but it also means more requests to the holders of the video segments potentially as there is fewer sources to get them from. Therefore the network is expected to perform better as long as the Seeder can keep up.
+In this experiment we alter the percentage of Leechers versus Bingers that the network contains, otherwise the conditions are the same as the baseline experiment (See \autoref{tab:exp_overview_leecher} for overview).
+Based on the first experiment adding Leechers to the network should decrease the amount of duplicate data being sent, but it also means more requests to the holders of the video segments potentially as there is fewer sources to get them from. Therefore the network is expected to perform better as long as the Seeder can keep up.
 
-The results however were different from expected, having a single leecher in the network, had no real impact on the Binge clients, but the Leecher clients got very high stall time (See \autoref{bar:leecher_stall_time_hist}), over 17 \ac{s} with stalls spread across the video rather than just at the beginning (See \autoref{plot:leecher_stall_time}). 
+The results however were different from expected, having a single Leecher in the network, had no real impact on the Binge clients, but the Leecher clients got very high stall time (See \autoref{bar:leecher_stall_time_hist}), over 17 \ac{s} with stalls spread across the video rather than just at the beginning (See \autoref{plot:leecher_stall_time}). 
 
 %stall_time and stall_time_hist (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_16:21:32.688486)
 
@@ -79,7 +87,7 @@ The results however were different from expected, having a single leecher in the
 
 \input{data/leecher/stall_time_hist_leecher.tex}
 
-Scaling the network to having half of the users being Leecher and the other half Binge (\expid{L5B5}), negatively impacted all the clients, as the 5 bingers now stalled multiple times (See \autoref{bar:leecher_stall_hist}), and had an average stall time of about 13 \ac{s} while the stall time for the leechers became much worse with an average of about 53 \ac{s}. For both types of clients the standard deviation of stall time was around 10 \ac{s} (See \autoref{bar:leecher_stall_hist_role}), meaning the users got vastly different performances, and even two of the binger only stall once at the beginning of the video, meaning they got a good quality of experience.
+Scaling the network to having half of the users being Leechers and the other half Bingers (\expid{L5B5}), negatively impacted all the clients, as the 5 Bingers now stalled multiple times (See \autoref{bar:leecher_stall_hist}), and had an average stall time of about 13 \ac{s} while the stall time for the Leechers became much worse with an average of about 53 \ac{s}. For both types of clients the standard deviation of stall time was around 10 \ac{s} (See \autoref{bar:leecher_stall_hist_role}), meaning the users got vastly different performances, and even two of the binger only stall once at the beginning of the video, meaning they got a good quality of experience.
 
 %stall_hist, stall_hist_role_mean and stall_hist_role_stdev (/home/kgoyo/cs_project/home/auuser/flixtube/data/plot/2018-05-15_15:51:32.232356)
 
@@ -91,14 +99,14 @@ Scaling the network to having half of the users being Leecher and the other half
 % added in data/leecher/stall_hist_role_leecher.tex and the stall_time_hist below instead of stall_time
 %\input{data/leecher/stall_time_hist_leecher10.tex}
 
-Scaling the amount of leechers further, to all the clients being leechers, increased the bad quality of experience further, and the total mean stall time became 100 \ac{s}, that occured frequently during the video.
+Scaling the amount of Leechers further, to all the clients being Leechers, increased the bad quality of experience further, and the total mean stall time became 100 \ac{s}, that occured frequently during the video.
 
-These results show that leeching off of a public \ac{IPFS} gateway is punished compared to the users retrieving the files themselves and using their own gateway. And the tit-for-tat principle is enforced. Unfortunately leechers still impacted the well behaving binge users's quality of experience as they experience more stalling as the percentage of leechers in the network grew.
+These results show that leeching off of a public \ac{IPFS} gateway is punished compared to the users retrieving the files themselves and using their own gateway. And the tit-for-tat principle is enforced. Unfortunately Leechers still impacted the well behaving binge users's quality of experience as they experience more stalling as the percentage of Leechers in the network grew.
 
-In terms of data downloaded leecher users were much more efficient, in the half binger half leecher experiment. The leechers only downloaded on average about 60 \ac{MB} which is only slightly higher than the file size of the video files. While the bingers on average downloaded about 140 \ac{MB}, which is more than double of what the leechers did (See \autoref{bar:leecher_network_hist_comparison}). 
+In terms of data downloaded Leecher users were much more efficient, in the half binger half Leecher experiment. The Leechers only downloaded on average about 60 \ac{MB} which is only slightly higher than the file size of the video files. While the Bingers on average downloaded about 140 \ac{MB}, which is more than double of what the Leechers did (See \autoref{bar:leecher_network_hist_comparison}). 
 \input{data/leecher/network_hist_comparison.tex}
 
-Having a network of only 5 binger users in comparison gave an average of about 120 \ac{MB} of downloaded data, as both cases had fairly high standard deviation this is within the margin of error. But adding leechers to the network does not seem to harm the binger users in terms of the amount of data they have to download but instead it might lower it as they get less access to the Seeder, meaning they have to rely on the other users more.
+Having a network of only 5 binger users in comparison gave an average of about 120 \ac{MB} of downloaded data, as both cases had fairly high standard deviation this is within the margin of error. But adding Leechers to the network does not seem to harm the binger users in terms of the amount of data they have to download but instead it might lower it as they get less access to the Seeder, meaning they have to rely on the other users more.
 
 \section{Skipper population experiments}
 \label{sec:eval_skipper}
@@ -164,16 +172,16 @@ Unlike binge users the initial stall was much longer, in the 5 binge users and 5
 
 \input{data/incognito/stall_hist_role.tex}
 
-In terms of downloaded data the binge users had to download slightly more compared to the baseline experiments, for instance 5 binge users with 5 incognito users meant that the bingers downloaded on average 145 \ac{MB}, compared to having 5 bingers alone downloading 84 \ac{MB} (See \autoref{bar:incognito_hist_net}). This can be explained by the later segments of the video being more available, leading to an increase in duplicate data, which is in line with the other results.
+In terms of downloaded data the binge users had to download slightly more compared to the baseline experiments, for instance 5 binge users with 5 incognito users meant that the Bingers downloaded on average 145 \ac{MB}, compared to having 5 Bingers alone downloading 84 \ac{MB} (See \autoref{bar:incognito_hist_net}). This can be explained by the later segments of the video being more available, leading to an increase in duplicate data, which is in line with the other results.
 
 \input{data/incognito/network_rx_bytes_tx_bytes_hist_role_mean.tex}
 
-\section{Idle population experiments} %todo
-In this experiment we measure how adding a few idle users to the network affects bingers.
-Idle persona users do have an \ac{IPFS} daemon running, but do not watch any video or try to retrieve any data. But rather just fill the network with more users.
-this experiment functions as a smaller scale global \ac{IPFS} as the irrelevant peers in that network functions somewhat like the idle users in this test. It is expected that having idle users fill up the \ac{DHT}s on the binge user should increase the amount of latency in the network slightly. But otherwise it should stay about the same.
+% \section{Idle population experiments} %todo
+% In this experiment we measure how adding a few idle users to the network affects Bingers.
+% Idle persona users do have an \ac{IPFS} daemon running, but do not watch any video or try to retrieve any data. But rather just fill the network with more users.
+% this experiment functions as a smaller scale global \ac{IPFS} as the irrelevant peers in that network functions somewhat like the idle users in this test. It is expected that having idle users fill up the \ac{DHT}s on the binge user should increase the amount of latency in the network slightly. But otherwise it should stay about the same.
 
-\section{Mobile population experiments} %todo
+\section{Mobile impact experiments}
 \label{sec:eval_mobile}
 This experiment in terms of behaviour is the same as the baseline, but the network conditions are worsened  in terms of the bandwidth available and/or latency.
 
@@ -184,13 +192,19 @@ This experiment in terms of behaviour is the same as the baseline, but the netwo
     \input{experiments/mobile.tex}
 \end{table}
 
-\subsection{Low bandwidth network} %todo
+\subsection{Low bandwidth network}
 \label{sec:eval_low_bandwidth}
-In these experiments the amount of bandwidth available to the clients is decreased, this should punish \ac{IPFS} more for its excessive amount of data being transmitted between peers. 5 \ac{Mbps} is expected to be the lowest possible usable bandwidth, as decreasing the bandwidth lower than this would result in not having enough for just watching the video alone from a single source, without any other network communication.
-In the experiments lowering the bandwidth to just 10 \ac{Mbps} was enough to get very poor viewing experience as each user got 9 or more stalls throughout the video (see \autoref{bar:mobile_bandwidth_stall_hist}), with a mean combined stall time of 77 \ac{s}, which is almost the length of the video, which is 90 \ac{s}. This high amount of stalling is likely due to the large amount of duplicate data in the network, as the bandwidth is then wasted on getting duplicate segments rather than retrieving what is relevant to the user. %todo
-% low bandwidth (minimum theoretical is (56 /90 *8 = approx 5 MBit)
+In these experiments the amount of bandwidth available to the clients is decreased, this should punish \ac{IPFS} more for its excessive amount of data being transmitted between peers.
 
-%stall_hist
+Due to the video spanning over 90 \ac{s} and have a size of approximately 56 \ac{MB}, a 5 \ac{Mbps} download rate is expected to be the theoretical lowest possible usable bandwidth to avoid stalls, as $\sim56 \text{ \ac{MB}} / 90 \text{ \ac{s}} \times 8 \approx 5 \text{ \ac{Mbps}}$ is the average bitrate of the video.
+Decreasing the bandwidth would result in not having enough for just watching the video alone from a single source, without any other network communication.
+
+In the experiment (\expid{B10-m1}) lowering the bandwidth to just 10 \ac{Mbps} was enough to achieve a very poor viewing experience. Each user got 9 or more stalls throughout the video (see \autoref{bar:mobile_bandwidth_stall_hist}), with a mean accumulated stall time of 77 \ac{s}, which approximates the duration of the desired video.
+
+This high amount of stalling is likely due to the large amount of duplicate data in the network (see \autoref{sec:eval_bug_dup}), as the scarce bandwidth is wasted on getting duplicate segments rather than retrieving future segments relevant to the user. This results in the \ac{DASH} buffer running out of segments due to \ac{IPFS} downloading the same segment multiple times.
+
+Due to the performance of this experiment, there were no need to perform further experimentation with lower download rates.
+
 \input{data/mobile/bandwidth/stall_hist.tex}
 
 \subsection{High latency network}
@@ -224,6 +238,7 @@ In this experiment the clients  leave the \ac{IPFS} network after they have fini
 
 The experiment is based on the baseline (\expid{B10}), but where clients leave when they are done. Based on the results of the baseline this should result in reduced duplicate data as the clients that join the network early, leave before the remaining clients are finished. And when they do that is one less duplicate that the remaining clients receive. In terms of quality of experience there should be no major difference.
 The experiment went very much like expected, the amount of stalls was the same as the baseline, but the mean amount of downloaded data was decreased by 17 \ac{MB} (See \autoref{bar:leaver_bytes_hist}). The difference in received data between the peers also lowered drastically as can be seen by the almost halved standard deviation. This is likely due fewer sources for retrieving data being avaliable to the users that play the video later, meaning these users recieve less duplicates.
+
 \input{data/leaver/bytes_hist.tex}
 
 \section{Socialness impact experiments}
@@ -247,7 +262,8 @@ Increasing the startup delay, also decreases the amount of duplicate data the us
 
 \input{data/social/stall_hist.tex}
 \input{data/social/bytes_hist.tex}
-\section{Increased segment length experiments}
+
+\section{Increased segment duration experiments}
 \label{sec:eval_segment}
 
 In this experiment the video files are altered so that each segment is around 10 \ac{s} long rather than the default 3 \ac{s}. This is to try to capitalize on the way \ac{IPFS} separates files into blocks itself rather than doing it manually, as having many small segments mean that each segment is only a few blocks. This can however impact the user experience, as users now have to download a larger segment before they can play anything from that segments time frame.
@@ -301,7 +317,21 @@ This results were very similar to that of the increased latency experiment as ex
 
 \section{Summary of \nameref{cha:evaluation}}
 
-\colorbox{yellow}{\textbf{TODO:} Summary of key findings and discussion}
+% \begin{itemize}
+%     \item X CPU Usage
+%     \item X Duplicate Data Bug
+%     \item X large segments (more blocks)
+%     \item   Leechers punished most (good users still punished if enough)
+%     \item   Use behaviours isolated
+%     \item X bad at handling large sudden amount of users (refere \ac{DDoS} attack)
+%     \item X network (not usable for mobile user: large overhead in comm. and dup.bug = used data plan, limited bandwidth with poor utilization), global IPFS is like increased latency
+% \end{itemize}
+\ac{IPFS} has several shortcomings when it comes to performance, the first of which is its large \acs{CPU} usage, which significantly limits how many peers that can be simulated, this issue is further worsened by the large \acs{CPU} usage of the \ac{DASH} video player. This \ac{CPU} usage could potentially be lowered using other operating systems as Linux does not have accelerated video decoding available.\footnote{https://bugs.chromium.org/p/chromium/issues/detail?id=137247}
+Despite the small network another scaling issue of \ac{IPFS} was apparent. As the number of peers hosting a file grew, the amount of duplicate data did as well. This overhead meant that lowering the bandwidth to 10 \ac{Mbps} resulted in very poor \ac{QOE}, despite the fact that 5 \ac{Mbps} should have been enough in theory. Combine this with the fact that adding latency and/or using the global \ac{IPFS} network, further increases the amount of duplicate data, and its clear that \ac{IPFS} is ill suited for mobile devices as they have worse network capabilities.
+There are however ways to lessen the amount of duplicate data a user receives, the first is to have users only share their file segments while they are still streaming the video, with this strategy less peers serve the file segments at any given time. However this strategy is also dangerous as the segments corresponding to the later parts of the video, are not stored for very long on a peer before it leaves the network, which means these segments could potentially disappear from the network if there were no one to seed them. Another way to reduce the data duplication was to have the users have larger time between when they start the video, the cause of this is unknown but a possible explanation could be that the bitswap of \ac{IPFS} buts much effort in distributing files that a peer recently received. This phenomenom makes \ac{IPFS} fairly similar to a centralized system as it does not handle sudden large influx in users, similar to a \ac{DDoS} attack.\footnote{DDOS maybe link to wikipedia??????}
+The final way to reduce duplicate was to increase the segment duration of the dashed video files, this comes at the cost of increasing the initial wait time before the video can start playing. This behaviour shows that \ac{IPFS} is more suited for retrieving few large files rather than many small ones.
+In terms of user behaviours the negative experiences caused by these were mostly isolated within the user that caused these. Leeching resulted in frequent stalling on the leecher, while the other users could continue normally until the percentage of leechers was so large that the seeder was overloaded. In terms of viewing patterns skipping in the video resulting in stalls during the skip, but had no negative impact on the other users in the network.
+
 
 %%% Local Variables:
 %%% mode: latex

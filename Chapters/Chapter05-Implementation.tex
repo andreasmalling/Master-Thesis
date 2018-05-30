@@ -32,7 +32,7 @@ All personas function by giving them a hash that functions as a path to an \acs{
 \begin{itemize}
     \item \texttt{Idle} simply does nothing actively, but instead just participates in the network, which is implemented by having the client sleep, while the \acs{IPFS} daemon runs in the background.
     \item \texttt{Seeder} behaves like a Idle persona, but stores the video that the other peers request. When the seeder is started it immediatly adds the video files to the network.
-    \item \texttt{Binge} The binge persona uses splinter to view the video for the \acs{MPD} file, this is done through its local \acs{IPFS} gateway thereby forcing the \acs{IPFS} client to retrieve the video and store it in the peer. The data is not pinned, meaning that if the assigned storage runs out the video data will eventually be deleted.
+    \item \texttt{Binger} uses splinter to view the video for the \acs{MPD} file, this is done through its local \acs{IPFS} gateway thereby forcing the \acs{IPFS} client to retrieve the video and store it in the peer. The data is not pinned, meaning that if the assigned storage runs out the video data will eventually be deleted.
     \item \texttt{Leecher} behaves like the binge persona but instead of using its own local \acs{IPFS} gateway it uses one of the seeder's instead, this way it can download the video files without using \acs{IPFS} to retrieve them and instead does it through the browser
     \item \texttt{Skipper} is like binge, but instead of viewing the entirety of the video without interacting with it, it watches small segments at a time. By watching a small configurable amount of seconds and then skipping forward another configurable amount of seconds  in the video. This pattern is repeated until the end of the video is reached. This is also illustrated in the pseudocode (\autoref{lst:skipper_pseudo}), where skipLength and watchTime are configurable and timeInVideo, is how far into the video the persona are (in seconds).
     \lstinputlisting[
@@ -124,7 +124,7 @@ The containers run Python at version 3.5.2, for running the entrypoints of the c
 
 \subsection{Splinter}
 \label{sec:setup_splinter}
-Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a chrome browser by utilizing this library, and thereby emulating different types of user behaviour.
+Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a chrome browser (version 64.0.3282.140 (Official Build) (64-bit)) by utilizing this library, and thereby emulating different types of user behaviour.
 The package splinter used is at version 0.7.7.
 
 
