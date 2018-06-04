@@ -91,9 +91,7 @@
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \pgfplotsset{compat=1.15}
-
 \usepackage{tikz}
-
 
 % recommended:
 \usepackage{booktabs}
@@ -116,7 +114,9 @@
 
 \newcommand{\expid}[1] {\hyperref[exp:#1]{Exp.ID #1}}
 
-\usepackage{media9}
+\usepackage{media9} % youtube video
+
+\usepackage[section]{placeins}  % floatbarrier
 
 %\usepackage[square,numbers,sort&compress]{natbib}
 %\bibliographystyle{abbrvnat}
@@ -249,6 +249,20 @@
   stringstyle=\color{black},
   morekeywords={SCALE_MONGO,SCALE_METRIC,SCALE_NETWORK,SCALE_HOST,SCALE_BOOT,SCALE_SEED,SCALE_USER_1,SCALE_USER_2,SCALE_USER_3,SCALE_USER_4,SCALE_USER_5,SCALE_USER_6,USER_1,USER_2,USER_3,USER_4,USER_5,USER_6}
   }
+  
+  \lstdefinelanguage{docker-compose}{
+  keywords={version, services},
+  keywordstyle=\color{blue}\bfseries,
+  keywords=[2]{image, environment, ports, container_name, ports, links, build, depends_on, command, volumes},
+  keywordstyle=[2]\color{orange}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{\#},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
 % ****************************************************************************************************             
 
 

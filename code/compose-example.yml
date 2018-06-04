@@ -1,0 +1,13 @@
+version: '3.5'
+services:
+  user_seed:
+    image: andreasmalling/ft_user
+    build: ./user
+    volumes:
+      - ./video_dashed/:/usr/src/app/video_dashed/
+    depends_on:
+      - bootstrap
+      - metric
+      - network
+      - host
+    command: ${USER_SEED:- -r 0 SEEDER}
