@@ -8,21 +8,34 @@ The goal is to create a web based video player using \ac{DASH} that retrieves th
 This section describes how the quality of a video can be defined objectively and perceptually, as well as terms important for understanding videos.
 
 \subsection{Frame types}
-The images of a video is constructed from a series of pictures called frames, many video codecs, a program or device used for encoding or decoding audio and/or video, use a group of pictures frame structure, which consists of 3 different types of frames.
+The images of a video is constructed from a series of pictures called frames, many video codecs, a program or device used for encoding or decoding audio and/or video, use a group of pictures frame structure for compression, which consists of 3 different types of frames (See \autoref{fig:video_compression_frames}).
 
 \begin{itemize}
-    \item I frames: Which is an independently coded reference frame.
-    \item P frames: Describes motion changes dependent from last frame.
-    \item B frames: Describes motion changes from last or next reference I frame.
+    \item \ac{I-frame}: Is an independently coded reference frame, containing the entire picture.
+    \item \ac{P-frame}: Describes motion changes dependent from last reference frame, containing only the differences from the previous frame.
+    \item \ac{B-frame}: Describes motion changes from last and next reference frame, containing only the differences between these frames.
 \end{itemize}
 
-Depending on which type of frame is lost in network traffic, impacts of how many frames are affected vary, i.e. losing an I frame causes all frames until next I frame to lose quality, but losing a P frame only affects all frames until the next I frame. losing a B frame only affects that single frame as no other frame is dependent on it.\\
-These errors are attempted to be concealed during decoding, the portions of the screen where this is done stay in place until the next I frame or motion changes on that segment of the screen. Videos can also require a re-compression in order to fit into the available bandwidth in which case the image can become blocky or blurry if the compression is too high.
-Since I frames contains information on all pixels in the frame, they are always the biggest of the 3 types. Increasing the number of I frames results in fewer prediction errors, but increases the bit-rate due to their size.
+\begin{figure}
+    \myfloatalign
+    \includegraphics[width=\textwidth]{I_P_and_B_frames}
+    \caption{A sequence of compressed video frame types, consisting of two keyframes (\acsp{I-frame}), one forward-predicted frame (\acs{P-frame}) and one bi-directionally predicted frame (\acs{B-frame}).}
+    \source{\url{https://commons.wikimedia.org/wiki/File:I_P_and_B_frames.svg}}
+    \label{fig:video_compression_frames}
+\end{figure}
+
+Depending on which type of frame is lost in network traffic, impacts of how many frames are affected vary, i.e. losing an \ac{I-frame} causes all frames until next \ac{I-frame} to lose quality, but losing a \ac{P-frame} only affects all frames until the next \ac{I-frame}. Losing a \ac{B-frame} only affects that single frame as no other frames are dependent on it.
+
+The size also varies, \acp{P-frame} is about half the size of \acp{I-frame}, and \acp{B-frame} is about a quarter the size of \ac{I-frame}\footnote{\url{https://en.wikipedia.org/wiki/Inter_frame}}.
+
+These errors are attempted to be concealed during decoding, the portions of the screen where this is done stay in place until the next \ac{I-frame} or motion changes on that segment of the screen. Videos can also require a re-compression in order to fit into the available bandwidth in which case the image can become blocky or blurry if the compression is too high.
+Since \acp{I-frame} contains information on all pixels in the frame, they are always the biggest of the 3 types. Increasing the number of \acp{I-frame} results in fewer prediction errors, but increases the bitrate due to their size.
 
 
 \subsection{\acl{MOS}}
-\ac{MOS} is a user evaluated score, that ranges from 1 to 5 used to define the quality of video. \ac{MOS} can be estimated through mathematical analysis, where there are multiple approaches either using a reference where no errors occur (input) and compare it to a video with lost frames (output). Other approaches only analyze output.\\
+\ac{MOS} is a user evaluated score, that ranges from 1 to 5 used to define the quality of video. \ac{MOS} can be estimated through mathematical analysis, where there are multiple approaches either using a reference where no errors occur (input) and compare it to a video with lost frames (output). Other approaches only analyze output.
+
+
 There are two ways that can lead to error when viewing digital video:
 \begin{enumerate}
     \item Errors in the digital transmission path, meaning loss or picture and or audio.
@@ -42,7 +55,8 @@ Though \ac{DASH} is designed for multiple streams of different bit rate and a ad
 
 \section{Personas}
 \label{sec:des-persona}
-Possible user behaviours can be used in the experiment, they wary between collective and individual behaviours.\\
+Possible user behaviours can be used in the experiment, they wary between collective and individual behaviours.
+
 Collective behaviours affect the entire network and how the video is watched over time.
 \subsection{Collective behaviours}
 \begin{itemize}
@@ -110,27 +124,42 @@ Experiments for measuring \ac{QOE}, meaning no re-buffering and stalls of stream
     
     \item \textit{Churn rate:}
     What effect does clients leaving the network have on the video, and can videos partially or entirely disappear from the network, can a video be popular enough that this cannot reasonably occur. IT makes sense to see influence, due to the novelty of IPFS.
-    \item \textit{Segments availability:}
+   
+   \item \textit{Segments availability:}
     How does the socialness and availability of the video impact the user experience and network. The socialness shows the availability over time, while very social videos also have sudden increases in viewership that suddenly drops off. Segments availability alone can be adjusted by the amount of seeders in the network and can be considered seperate from evaluating the impact of different levels of socialness.
+    
     \item \textit{Video Quality:}
     Influence of video resolution, \ac{FPS}, time between I-Frames and bit rate as the testing done by \citeauthor{aloman2015performance}.
+    
     \item \textit{Segments size:}
     How does different segment sizes affect the performance, it is expected that if it is too large, one does not properly load balance the requests but if it is too small, enough bytes are not given for the amount of traffic trying to locate the segment.
     %\item \textit{Buffer size:}
     %Influence of changing \ac{DASH} player's preferred buffer size, meaning that less of the video can be stored in advance putting more pressure on the network for getting the individual segments fast, before the player stalls. %Done dynamically already, so maybe not that interesting. 
     \item \textit{Public IPFS:}
     How does \ac{IPFS} perform in a small environment dedicated only to running the tests versus running the test in the global \ac{IPFS} network that is also used for other unrelated services.
+    
     \textit{Case of "in the wild" performance.} 
     \item \textit{Population behaviour:}
     How does the behaviour of the clients in the network affect the network and clients, both themselves and others, with different populations.
 \end{itemize}
+
 These tests are to be performed by setting up a \ac{P2P} network containing clients with \ac{IPFS} installed. Each client has a persona, and tests can be done with different populations of these personas.
 
 Experiments include:
-Having different percentages of users being seeders, as large amount of Seeders increases the availability of the video segments, without other clients have to get them themselves before others can.
-Different percentages of users being Leechers, a large amount of Leechers is expected to put a high amount of stress on the network as the amount of peers that request files is disproportionally larger than the amount that can supply them.
+\begin{itemize}
+\item Having different percentages of users being seeders, as large amount of Seeders increases the availability of the video segments, without other clients have to get them themselves before others can.
+
+\item Different percentages of users being Leechers, a large amount of Leechers is expected to put a high amount of stress on the network as the amount of peers that request files is disproportionally larger than the amount that can supply them.
 Different percentages of users being idle, this pads the size of the network and can potentially fill up the hash tables of the active peers resulting in slower traffic.
-Different kinds of user behaviours and how they impact the network compared to each other, this can be tested by having similar networks but the active video watching clients wary between them. The users where this would be relevant for are the Binge, Skipper and the Incognito personas. Between these users stalling is more tolerable on the Skipper and Incognito persona as they manually jump to a different point of the video and it is expected upon doing so the video will stall while the buffer is being filled with the relevant segments.
+
+\item Different kinds of user behaviours and how they impact the network compared to each other, this can be tested by having similar networks but the active video watching clients wary between them. The users where this would be relevant for are the Binge, Skipper and the Incognito personas. Between these users stalling is more tolerable on the Skipper and Incognito persona as they manually jump to a different point of the video and it is expected upon doing so the video will stall while the buffer is being filled with the relevant segments.
+\end{itemize}
+
+\section{Summary of Design and Methodology}
+%video quality
+%dash
+%experiments
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../ClassicThesis"

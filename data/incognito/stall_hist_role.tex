@@ -8,7 +8,6 @@
         enlarge x limits={abs=1},
         xtick=data,
         xticklabels from table={./data/incognito/stall_hist_role.csv}{users},
-%        x tick label style={rotate=60, anchor=east},
         ylabel={Mean of accumulated stall time (\acs{ms})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={time}]{./data/incognito/stall_hist_role.csv};

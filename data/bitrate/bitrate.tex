@@ -1,0 +1,19 @@
+\begin{figure}[ht]
+    \myfloatalign
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            ymin=3,
+            bar width = 0.75,
+            enlarge x limits={abs=1},
+            xtick=data,
+            xticklabels from table={./data/bitrate/bitrate.csv}{users},
+            xlabel={Video bitrate (\acs{MBps})},
+            ylabel={Dupliucate data ratio},
+            legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
+            \addplot table [x expr=\coordindex, y={ratio}]{./data/bitrate/bitrate.csv};
+        \end{axis}
+    \end{tikzpicture}
+    \caption[Duplicate data ratio from \expid{B10-c18}]{Mean of accumulated received data from \expid{B10} and \expid{B10-c18}. As the bitrate (and thereby the separate segment size) increases, the amount of duplicate data seems to decrease.}
+    \label{bar:bitrate_bitrate}
+\end{figure}

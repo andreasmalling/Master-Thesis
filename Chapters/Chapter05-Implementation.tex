@@ -74,7 +74,7 @@ Since the hash addresses always will be the same for the content, it is possible
 \lstinputlisting[
     language=MPD,
     caption={
-        [\ac{MPD} snippet with location addresses]
+        [\acs{MPD} snippet with location addresses]
         Snippet of \ac{MPD} using the location addresses based on file path. For the \ac{MPD} in its entirety, see \autoref{app:mpd}},
     firstnumber=25, 
     firstline=25, 
@@ -83,7 +83,7 @@ Since the hash addresses always will be the same for the content, it is possible
 \lstinputlisting[
     language=MPD,
     caption={
-        [\ac{MPD} snippet with content addresses]
+        [\acs{MPD} snippet with content addresses]
         Snippet of \ac{MPD} using the content addresses based on \ac{IPFS} hashing of file},
     firstnumber=25, 
     firstline=25, 
@@ -110,7 +110,7 @@ The \ac{VM} runs Docker at version 18.03\footnote{Docker CE version 18.03.0-ce, 
 \begin{figure}
     \myfloatalign
     \includegraphics[width=\textwidth]{vm.png}
-    \caption{Comparison of the overhead present in virtualization done by \acp{VM} and by Docker}
+    \caption[Comparison of \acp{VM} and Docker]{Comparison of the overhead present in virtualization done by \acp{VM} and by Docker}
     \label{fig:vm_vs_container}
 \end{figure}
 
@@ -132,7 +132,7 @@ Docker Compose is used on the \ac{VM} at version 1.20.1\footnote{docker-compose 
 
 \subsection{Pumba}
 \label{sec:setup_pumba}
-Pumba is a resilience testing tool used to help with the conduction of the experiments. It can manipulate the network condition of docker containers as well as pause and/or stop containers, either chosen randomly or deterministically. Pumba utilizes the Docker \ac{API} for the resilience testing, tc\footnote{traffic control: \url{https://linux.die.net/man/8/tc}} and iproute2\footnote{\url{https://wiki.linuxfoundation.org/networking/iproute2}} for network manipulation. For the experiments to emulate real world network conditions, the network manipulation are the primary focus of this tool.
+Pumba is a resilience testing tool used to help with the conduction of the experiments. It can manipulate the network condition of docker containers as well as pause and/or stop containers, either chosen randomly or deterministically. Pumba utilizes the Docker \ac{API}\footnote{\url{https://docs.docker.com/engine/api/v1.30/}} for the resilience testing, tc\footnote{traffic control: \url{https://linux.die.net/man/8/tc}} and iproute2\footnote{\url{https://wiki.linuxfoundation.org/networking/iproute2}} for network manipulation. For the experiments to emulate real world network conditions, the network manipulation are the primary focus of this tool.
 The \ac{VM} runs pumba at version 0.4.8\footnote{pumba version 0.4.8, build 537d77d}. 
 
 \subsection{IPFS}
@@ -147,16 +147,13 @@ The chosen format for the stream is selected from the DASH-AVC/264 standard\cite
 The standard defines the multimedia container as MP4, the video codec as H.264 and the audio codec as AAC. As a addition separate audio and video streams are required, which means that multiplexing isn't allowed.
 Dash.js manages retrieving of video and audio segments by itself, and no other segment retrieval techniques are implemented. Note audio and video are separated into two different tracks of segments for dash.js to be able to play the video.
 
-\subsection{Python}
+\subsection{Python \& Splinter}
 \label{sec:setup_python}
-The containers run Python at version 3.5.2, for running the entrypoints of the containers (See \autoref{sec:setup_docker}).
-
-
-\subsection{Splinter}
 \label{sec:setup_splinter}
-Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a chrome browser (version 64.0.3282.140 (Official Build) (64-bit)) by utilizing this library, and thereby emulating different types of user behaviour.
-The package splinter used is at version 0.7.7.
+The containers run Python at version 3.5.2, for running the entrypoints (See \autoref{sec:setup_docker}) of the containers.
 
+Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a chrome browser (at version 64.0\footnote{Google Chrome version 64.0.3282.140 (Official Build) (64-bit)}) by utilizing this library, and thereby emulating different behaviours.
+The package splinter used is at version 0.7.7.
 
 
 \section{Experiment flow}
@@ -207,15 +204,7 @@ Finally all services are killed, to stop the data collection of the experiment.
 
 \input{diagram/sequence_run2.tex}
 
-The third stage consists of plotting the results and export the data to an archive (See \autoref{fig:run_sequence_plot}). Since plot isn't a part of the experiment it's defined in a separate compose file (\textit{plot-compose.yml}), which is used with docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when docker compose is asked to run the \texttt{plot} service, the dependencies is also started. Since plot terminates when all plots are done, we wait for it to exit after generating the following:
-
-\begin{itemize}
-    \item Latency and download time for every segment from the perspective of the dash.js player. This data is collected both for video and audio segments.
-    \item Latency and download over time, this is done since not every client requests the segments at the same time. These plots are also generated for the mean and standard deviation of the role.
-    \item The amount of failures is also plotted. The failures logged is the amount of time the video stalls for each segment  and when the response code on retrieving a segment is different from 200\footnote{\url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200}}.
-    \item Plots are also generated for the overall network traffic between containers, where the amount of bytes and packets received and transmitted is plotted.
-    \item \ac{CSV} files with every plot it generates.
-\end{itemize}
+The third stage consists of plotting the results and export the data to an archive (See \autoref{fig:run_sequence_plot}). Since plot isn't a part of the experiment it's defined in a separate compose file (\textit{plot-compose.yml}), which is used with docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when docker compose is asked to run the \texttt{plot} service, the dependencies is also started. Since \texttt{plot} terminates when all plots are done, we wait for it to exit before continuing.
 
 After the termination of \texttt{plot}, the data from the still present \texttt{mongo} service is exported to a gzip\footnote{\url{https://www.gnu.org/software/gzip/}} archive using the utility mongodump\footnote{\url{https://docs.mongodb.com/manual/reference/program/mongodump/}}. 
 
@@ -235,6 +224,25 @@ When the video is finished the browser is then closed and the client either star
 
 \input{diagram/sequence_entrypoint.tex}
 
+\section{Summary of Implementation}
+The realized system contains multiple components, first of there is the Personas that specify how a client acts after video playback has started, these come in multiple varieties.
+\begin{itemize}
+    \item The Seeder shares files.
+    \item The Binger watches video, without any interaction.
+    \item The Leecher watches video through the Seeders \ac{IPFS} gateway.
+    \item The Skipper watches the video but skips forward every couple seconds.
+    \item The Incognito user skips to the end of the video.
+    \item The mobile user has lower bandwidth, which is realized with Pumba.
+\end{itemize}
+For the client to be able to watch the videos the need to be encoded. This is done with a combination of \texttt{FFmpeg} and \texttt{MP4Box}. This is done so that the video is in a \ac{DASH} format suitable for streaming.
+
+The testing setup consists of a local network of \texttt{Docker} \acp{VM}, where network conditions is throttled by Pumba, each client hosts \ac{IPFS} and watches the video using the \texttt{dash.js} library, where the user actions can be manged through the \texttt{Splinter} library.
+
+Experiments are run by setting up a stable network first which has necessary microservices needed for the test to work, such as database and file hosting. Afterwards the clients are added and testing begins for a duration, when this passes all clients shut down and plots from the experiments are generated and the database is exported.
+% personas
+% tools
+% setup
+% experiment
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../ClassicThesis"

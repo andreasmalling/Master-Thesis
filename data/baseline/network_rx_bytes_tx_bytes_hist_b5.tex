@@ -4,25 +4,24 @@
     \begin{axis}[
         ybar,
         ymin=0,
-        bar width = 4pt,
         y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
         xtick=data,
-        xticklabels from table={./data/baseline/network_rx_bytes_tx_bytes_hist_b5}{users},
+        xticklabels from table={./data/baseline/network_rx_bytes_tx_bytes_hist_b5.csv}{users},
         x tick label style={rotate=60, anchor=east},
         ylabel={Accumulated bandwidth (\acs{MB})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [
             x expr=\coordindex,
             y={rx},
-            ]{./data/baseline/network_rx_bytes_tx_bytes_hist_b5};
-        \addplot table [x expr=\coordindex, y={tx}]{./data/baseline/network_rx_bytes_tx_bytes_hist_b5};
+            ]{./data/baseline/network_rx_bytes_tx_bytes_hist_b5.csv};
+        \addplot table [x expr=\coordindex, y={tx}]{./data/baseline/network_rx_bytes_tx_bytes_hist_b5.csv};
         \addplot[black, sharp plot, update limits=false]
                 coordinates{(-1, 55992320) (11, 55992320)};
         \legend{received,transmitted}
     \end{axis}
-    \draw (8,0.75) node {video size};
+    \draw (8,1.75) node {video size};
     \end{tikzpicture}
-    \caption[Total bandwidth from \expid{B5}]{Recieved and transmitted bytes per client, from the baseline experiment (\expid{B5}). \\
-    Download overhead is as large as factor 1:2.5 as exemplified by \textit{5:BINGE} receiving 163 \ac{MB} while asking for a 56 \acs{MB} video.}
+    \caption[Total bandwidth from \expid{B5}]{Received and transmitted bytes per client, from the baseline experiment (\expid{B5}).
+    Download overhead is as large as factor 2.5 as exemplified by \textit{5:BINGE} receiving 163 \ac{MB} while asking for a 56 \acs{MB} video.}
     \label{bar:baseline_network_hist_b5}
 \end{figure}

@@ -1,0 +1,18 @@
+version: '3.5'
+services:
+  # plot service for evaluation of experiments
+  plot:
+    image: andreasmalling/ft_plot
+    build: ./plot
+    volumes:
+      - ./data/plot/:/usr/src/app/output/
+    depends_on:
+      - mongo
+  
+  # copy of mongoDB microservice from experiment compose file
+  mongo:
+    image: mongo:3.6.3
+    volumes:
+      - ./data/db:/data/db
+      - ./data/dump:/data/dump
+    command: --smallfiles --noprealloc

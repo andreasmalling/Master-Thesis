@@ -253,7 +253,7 @@
   \lstdefinelanguage{docker-compose}{
   keywords={version, services},
   keywordstyle=\color{blue}\bfseries,
-  keywords=[2]{image, environment, ports, container_name, ports, links, build, depends_on, command, volumes},
+  keywords=[2]{image, environment, ports, container_name, ports, links, build, depends_on, command, volumes,privileged,restart},
   keywordstyle=[2]\color{orange}\bfseries,
   identifierstyle=\color{black},
   sensitive=false,
@@ -279,7 +279,8 @@
 \PassOptionsToPackage{pdftex}{graphicx}
     \usepackage{graphicx} 
 \graphicspath{ {gfx/} }
-\newcommand{\source}[1]{\vspace{-9pt}\caption*{\textit{Source:} {#1}} }
+
+\newcommand{\source}[1]{\vspace{-8pt}\captionsetup{font={footnotesize,it}}\caption*{\textit{Source: {#1}}} }
 
 % ********************************************************************
 % Hyperreferences
@@ -384,6 +385,8 @@
 %\usepackage[sfdefault]{FiraSans}
 % ****************************************************************************************************
 
+
+\def\compileplots{1}
 
 
 %%% Local Variables:
