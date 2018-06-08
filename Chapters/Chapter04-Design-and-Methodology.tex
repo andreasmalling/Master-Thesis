@@ -1,13 +1,10 @@
 \chapter{Design and Methodology}
 \label{cha:design-and-method}
 
-The goal is to create a web based video player using \ac{DASH} that retrieves the video files through \ac{IPFS}. First the video quality metrics are explained , to give understanding of how videos are constructed and how quality can be evaluated (\autoref{sec:des-video}). This is followed by \autoref{sec:des-dash} which descripes how the video files should be split into \ac{DASH} compatible files. Then the intended design used for evaluation is presented in two seconds, the first of which is \autoref{sec:des-persona} where user behaviours are presented both in terms of individual user but also collective viewing behaviours. Then in \autoref{sec:des-evaluation} the intended experiments are presented, the viewing experience is meant to be evaluated in many different network conditions with different viewing behaviours.
+The goal is to create a web based video player using \ac{DASH} that retrieves the video files through \ac{IPFS}. First, the video quality metrics are explained to give understanding of how videos are constructed (\autoref{sec:des-video}). This is followed by \autoref{sec:des-dash} which descripes how the video files should be split into \ac{DASH} compatible files. Then the intended design used for evaluation is presented in two sections, the first of which is \autoref{sec:des-persona} where user behaviours are presented both in terms of individual user but also collective viewing behaviours. Then in \autoref{sec:des-evaluation} the intended experiments are presented, the viewing experience is meant to be evaluated in many different network conditions with different viewing behaviours.
 
-\section{Video quality metrics}
+\section{Frame types and video quality}
 \label{sec:des-video}
-This section describes how the quality of a video can be defined objectively and perceptually, as well as terms important for understanding videos.
-
-\subsection{Frame types}
 The images of a video is constructed from a series of pictures called frames, many video codecs, a program or device used for encoding or decoding audio and/or video, use a group of pictures frame structure for compression, which consists of 3 different types of frames (See \autoref{fig:video_compression_frames}).
 
 \begin{itemize}
@@ -19,29 +16,17 @@ The images of a video is constructed from a series of pictures called frames, ma
 \begin{figure}
     \myfloatalign
     \includegraphics[width=\textwidth]{I_P_and_B_frames}
-    \caption{A sequence of compressed video frame types, consisting of two keyframes (\acsp{I-frame}), one forward-predicted frame (\acs{P-frame}) and one bi-directionally predicted frame (\acs{B-frame}).}
+    \caption[Frame types used in video compression]{A sequence of compressed video frame types, consisting of two keyframes (\acsp{I-frame}), one forward-predicted frame (\acs{P-frame}) and one bi-directionally predicted frame (\acs{B-frame}).}
     \source{\url{https://commons.wikimedia.org/wiki/File:I_P_and_B_frames.svg}}
     \label{fig:video_compression_frames}
 \end{figure}
 
-Depending on which type of frame is lost in network traffic, impacts of how many frames are affected vary, i.e. losing an \ac{I-frame} causes all frames until next \ac{I-frame} to lose quality, but losing a \ac{P-frame} only affects all frames until the next \ac{I-frame}. Losing a \ac{B-frame} only affects that single frame as no other frames are dependent on it.
+Depending on which type of frame is lost in network traffic, impacts of how many frames are affected vary, i.e. losing an \ac{I-frame} or an \ac{P-frame} causes all frames until next \ac{I-frame} to lose quality, but losing a \ac{B-frame} only affects that single frame as no other frames are dependent on it.
 
 The size also varies, \acp{P-frame} is about half the size of \acp{I-frame}, and \acp{B-frame} is about a quarter the size of \ac{I-frame}\footnote{\url{https://en.wikipedia.org/wiki/Inter_frame}}.
 
 These errors are attempted to be concealed during decoding, the portions of the screen where this is done stay in place until the next \ac{I-frame} or motion changes on that segment of the screen. Videos can also require a re-compression in order to fit into the available bandwidth in which case the image can become blocky or blurry if the compression is too high.
 Since \acp{I-frame} contains information on all pixels in the frame, they are always the biggest of the 3 types. Increasing the number of \acp{I-frame} results in fewer prediction errors, but increases the bitrate due to their size.
-
-
-\subsection{\acl{MOS}}
-\ac{MOS} is a user evaluated score, that ranges from 1 to 5 used to define the quality of video. \ac{MOS} can be estimated through mathematical analysis, where there are multiple approaches either using a reference where no errors occur (input) and compare it to a video with lost frames (output). Other approaches only analyze output.
-
-
-There are two ways that can lead to error when viewing digital video:
-\begin{enumerate}
-    \item Errors in the digital transmission path, meaning loss or picture and or audio.
-    \item The video is compressed too much, leading to a noticeable quality loss.
-\end{enumerate}
-
 
 \section{DASH'ing}
 \label{sec:des-dash}
@@ -51,8 +36,6 @@ This is possible due to the \ac{DASH} live profile, which support multiple files
 
 Though \ac{DASH} is designed for multiple streams of different bit rate and a adaptive behaviour to maximize the quality of the downloaded content, this aspect won't be examined. Due to the back-end being \ac{P2P}, a single stream of video and audio is chosen to maximize availability of these files. As part of the hypothesis, it is also expected that a single high quality source on \ac{IPFS} can be served equally satisfactorily as several streams in a centralized setup.
 
-%everything below this line is pretty good ---------------------------------------------
-
 \section{Personas}
 \label{sec:des-persona}
 Possible user behaviours can be used in the experiment, they wary between collective and individual behaviours.
@@ -61,7 +44,7 @@ Collective behaviours affect the entire network and how the video is watched ove
 \subsection{Collective behaviours}
 \begin{itemize}
     \item \textit{Social:}
-    Videos accessed through direct link (shared socially). Candidates for becoming viral, these videos tend to peak in views and then fall of drastically
+    Videos accessed through direct link (shared socially). Candidates for becoming viral, these videos tend to peak in views and then fall off drastically
     \item \textit{Non-social:}
     Videos found through searching or related videos internally on site, these videos have more stable views over time in comparison to social.
 \end{itemize}
@@ -71,23 +54,25 @@ Collective behaviours affect the entire network and how the video is watched ove
 Behaviours can also vary depending on the individual user. The following are possible kinds of users that could use the system.
 \begin{itemize}
     \item \textit{Seeder:}
-    Is the user that is sharing content, either being the origin poster of said content or re-hosting it after having watched it themselves.
+    Is the user that is sharing content, either being the original poster of said content or re-hosting it after having watched it themselves.
     \item \textit{Leecher:}
     Is a user that tries to exploit the system, by minimizing the content shared with the other peers %use a different peer as gateway, maybe bootstrap
-    \item \textit{Binge:}
+    \item \textit{Binger:}
     Is a user that watches all content in chronological order
     \item \textit{Skipper:}
     Is a user that watches many small segments of the video, by watching a small segment and then skipping forwards to watch another small segment.
     \item \textit{Incognito:}
     Is a user only available in the network for a short time, watching a single video (or part of video) and deletes all of their content afterwards
     \item \textit{Idle:}
-    Is a user that is inside the network but does not actively interact with video content, and as such instead fulfills the roll of padding the other clients \acp{DHT}
+    Is a user that is inside the network but does not actively interact with video content, and as such instead fulfills the role of padding the other clients \acp{DHT}
 \end{itemize}
 
 \subsection{Viewing Conditions}
 \label{sec:viewing-conmditions}
 Behaviours can also vary depending on the network conditions of the user. The following are different conditions that could influence the usage.
 \begin{itemize}
+    \item \textit{Normal:}
+    Good bandwidth and low latency.
     \item \textit{Mobile:}
     Unreliable due to fluctuating network connections and low bandwidth.
     \item \textit{Remote:}
@@ -133,8 +118,7 @@ Experiments for measuring \ac{QOE}, meaning no re-buffering and stalls of stream
     
     \item \textit{Segments size:}
     How does different segment sizes affect the performance, it is expected that if it is too large, one does not properly load balance the requests but if it is too small, enough bytes are not given for the amount of traffic trying to locate the segment.
-    %\item \textit{Buffer size:}
-    %Influence of changing \ac{DASH} player's preferred buffer size, meaning that less of the video can be stored in advance putting more pressure on the network for getting the individual segments fast, before the player stalls. %Done dynamically already, so maybe not that interesting. 
+
     \item \textit{Public IPFS:}
     How does \ac{IPFS} perform in a small environment dedicated only to running the tests versus running the test in the global \ac{IPFS} network that is also used for other unrelated services.
     
@@ -143,7 +127,7 @@ Experiments for measuring \ac{QOE}, meaning no re-buffering and stalls of stream
     How does the behaviour of the clients in the network affect the network and clients, both themselves and others, with different populations.
 \end{itemize}
 
-These tests are to be performed by setting up a \ac{P2P} network containing clients with \ac{IPFS} installed. Each client has a persona, and tests can be done with different populations of these personas.
+These tests are to be performed by setting up a \ac{P2P} network containing clients with \ac{IPFS} installed. Each client has a Persona, and tests can be done with different populations of these Personas.
 
 Experiments include:
 \begin{itemize}
@@ -152,14 +136,15 @@ Experiments include:
 \item Different percentages of users being Leechers, a large amount of Leechers is expected to put a high amount of stress on the network as the amount of peers that request files is disproportionally larger than the amount that can supply them.
 Different percentages of users being idle, this pads the size of the network and can potentially fill up the hash tables of the active peers resulting in slower traffic.
 
-\item Different kinds of user behaviours and how they impact the network compared to each other, this can be tested by having similar networks but the active video watching clients wary between them. The users where this would be relevant for are the Binge, Skipper and the Incognito personas. Between these users stalling is more tolerable on the Skipper and Incognito persona as they manually jump to a different point of the video and it is expected upon doing so the video will stall while the buffer is being filled with the relevant segments.
+\item Different kinds of user behaviours and how they impact the network compared to each other, this can be tested by having similar networks but the active video watching clients wary between them. The users where this would be relevant for are the Binge, Skipper and the Incognito Personas. Between these users stalling is more tolerable on the Skipper and Incognito Persona as they manually jump to a different point of the video and it is expected upon doing so the video will stall while the buffer is being filled with the relevant segments.
 \end{itemize}
 
 \section{Summary of Design and Methodology}
-%video quality
-%dash
-%experiments
+This chapter explained the design of the intended system, where simulated users can view videos through a \ac{DASH} video player. Video compression consists of three different types of frames, \acp{I-frame}, \acp{P-frame} and \acp{B-frame}. These frame types impact the size and quality of a video. The videos can then be split up into segments using the \ac{DASH} standard, so clients can then retrieve only the wanted segments, thereby potentially reducing the downloaded data size.
 
+The experiments are intended to be performed with a focus of simulating user behaviours, of which there are two types: Collective and individual. The former describes how viral a video is, and the latter how a user interact with the video player, characterized in the form of a Persona.
+
+The experiments will evaluate the \ac{UX} gained from the video session by adjusting certain viewing parameters of a user, such as different network conditions, video quality and varying populations of Personas wanting the same video. The experiments are to be done in a simulated \ac{P2P} network.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../ClassicThesis"

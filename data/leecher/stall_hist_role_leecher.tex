@@ -4,28 +4,31 @@
     \begin{axis}[
             ybar,
             ymin=0,
-            bar width=0.3,
-            y filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
+            bar width=0.35,
             enlarge x limits={abs=0.4},
             xtick=data,
             xticklabels from table={./data/leecher/stall_hist_role_leecher.csv}{users},
-    %        x tick label style={rotate=60, anchor=east},
-            ylabel={Accumulated stall time (seconds)},
+            ylabel={Mean accumulated stall time (\acs{s})},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
         ]
-        \addplot table [x expr=\coordindex, y={mean}]{./data/leecher/stall_hist_role_leecher.csv};
-        \addplot table [x expr=\coordindex, y={stddev}]{./data/leecher/stall_hist_role_leecher.csv};
-        \addlegendimage{empty legend}
-        \addlegendimage{empty legend}
 
-        \addlegendentry{Mean}
-        \addlegendentry{Std. Dev.}
-        \addlegendentry{\hspace{-20pt}(1) \hspace{6pt} L5B5}
-        \addlegendentry{\hspace{-24pt}(2) \hspace{9pt} L10}
+        \addplot[
+            fill=blue!30,
+            draw=blue,
+            error bars,
+            y dir=both,
+            y explicit,
+            error bar style={red},
+        ] 
+        table [
+            x expr=\coordindex,
+            y expr=\thisrow{mean}/1000,
+            y error expr=\thisrow{stddev}/1000
+        ]{./data/leecher/stall_hist_role_leecher.csv};
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Stall time per client from Leecher exps.]{Total stall time per each type of client for Leechers. \\(1) is a network with 5 Leecher and 5 Binge (\expid{L5B5}). \\(2) is a network with 10 Leecher (\expid{L10}).\\
+    \caption[Stall time per client from \expid{L5B5} and \expid{L10}]{Total stall time per each type of client for Leechers. \\(1) is a network with 5 Leecher and 5 Binge (\expid{L5B5}). \\(2) is a network with 10 Leecher (\expid{L10}).\\
     Adding more leechers gives more stall time for each leecher, while binge users are less affected.}
     \label{bar:leecher_stall_hist_role}
 \end{figure}

@@ -4,25 +4,30 @@
     \begin{axis}[
             ybar,
             ymin=50,
-            bar width=0.3,
-            y filter/.code={\pgfmathparse{#1/1024^2}\pgfmathresult},
+            bar width=0.35,
             enlarge x limits={abs=0.75},
             xtick=data,
             xticklabels from table={./data/global/bytes_hist_role.csv}{users},
-    %        x tick label style={rotate=60, anchor=east},
-            ylabel={Accumulated received bandwidth (\acs{MB})},
+            ylabel={Mean accumulated received data (\acs{MB})},
             xlabel={\ac{IPFS} network},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
         ]
-        \addplot table [x expr=\coordindex, y={mean}]{./data/global/bytes_hist_role.csv};
-        \addplot table [x expr=\coordindex, y={stddev}]{./data/global/bytes_hist_role.csv};
-
-        \addlegendentry{Mean}
-        \addlegendentry{Std. Dev.}
+        \addplot[
+            fill=blue!30,
+            draw=blue,
+            error bars,
+            y dir=both,
+            y explicit,
+            error bar style={red},
+        ] table [
+            x expr=\coordindex, 
+            y expr=\thisrow{mean}/1024^2,
+            y error expr=\thisrow{stddev}/1024^2
+        ]{./data/global/bytes_hist_role.csv};
 
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Received bandwidth per client from \expid{B10} and \expid{B10-g}]{Received bandwidth per client from \expid{B10} compared to \expid{B10-g}, the mean amount of received data is increased slightly, while the standard deviation lowers.}
+    \caption[Received data per client from \expid{B10} and \expid{B10-g}]{Mean of received data per client with std. dev. from \expid{B10} compared to \expid{B10-g}. The mean amount of received data is increased slightly, while the standard deviation lowers.}
     \label{bar:global_bytes_hist_role}
 \end{figure}

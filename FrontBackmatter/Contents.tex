@@ -50,7 +50,7 @@
       %\phantomsection 
     \refstepcounter{dummy}
     %\addcontentsline{toc}{chapter}{\lstlistlistingname}
-    \pdfbookmark[1]{\lstlistlistingname}{lol}
+    \pdfbookmark[1]{\lstlistlistingname}{lol} %lmao
     \lstlistoflistings 
 
     \vspace{8ex}
@@ -58,14 +58,13 @@
     %*******************************************************
     % Acronyms
     %*******************************************************
-    %\phantomsection 
     \refstepcounter{dummy}
     \pdfbookmark[1]{Acronyms}{acronyms}
     \markboth{\spacedlowsmallcaps{Acronyms}}{\spacedlowsmallcaps{Acronyms}}
     \chapter*{Acronyms}
-    \begin{acronym}[UMLX]
+    \begin{acronym}[B-frame]    % Longest acronym, used for margin
         \acro{API}{Application Programming Interface}
-        \acro{B-frame}{Bi-predicted frame}
+        \acro{B-frame}{Bi-directional predicted frame}
         \acro{CLI}{Command-line Interface}
         \acro{CPU}{Central processing unit}
         \acro{CSV}{Comma-separated Values}
@@ -79,6 +78,8 @@
         \acro{HTTP}{Hypertext Transfer Protocol}
         \acro{I-frame}{Intra-coded frame}
         \acro{IPFS}{InterPlanetary File System}
+        \acro{IPLD}{InterPlanetary Linked Data}
+        \acro{IPNS}{InterPlanetary Name Space}
         \acro{kB}{Kilobyte}
         \acro{kBps}{\aclp{kB} per Second}
         \acro{kb}{Kilobit}

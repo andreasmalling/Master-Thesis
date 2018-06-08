@@ -43,7 +43,7 @@
 % 2. Personal data and user ad-hoc commands
 % ****************************************************************************************************
 \newcommand{\myTitle}{Utilizing IPFS as content provider for DASH video streaming\xspace}
-\newcommand{\mySubtitle}{Evaluating UX and performance of DASH streaming with decentralized video content delivered through IPFS\xspace}
+\newcommand{\mySubtitle}{Evaluating user experience and performance of DASH streaming with decentralized video content delivered through IPFS\xspace}
 \newcommand{\myDegree}{Master's Thesis\xspace}
 \newcommand{\myName}{Andreas Østergaard Nielsen\xspace}
 \newcommand{\myStudentId}{201303609\xspace}
@@ -110,12 +110,15 @@
 \definecolor{lightyellow}{rgb}{1,1,0.85}
 
 % custom:
-\newcommand{\setexpid}[1] {\label{exp:#1}#1}
 
-\newcommand{\expid}[1] {\hyperref[exp:#1]{Exp.ID #1}}
+% Exp. ID
+\usepackage{suffix}
+\newcommand{\expidprefix}{Exp.ID\xspace}                    %Prefix
+\newcommand{\setexpid}[1] {\label{exp:#1}#1}                %Set ID
+\newcommand\expid[1] {\hyperref[exp:#1]{\expidprefix #1}}   %Hyperref ID
+\WithSuffix\newcommand\expid*[1] {\expidprefix #1}          %Nameref ID
 
-\usepackage{media9} % youtube video
-
+% Restrain floats
 \usepackage[section]{placeins}  % floatbarrier
 
 %\usepackage[square,numbers,sort&compress]{natbib}
