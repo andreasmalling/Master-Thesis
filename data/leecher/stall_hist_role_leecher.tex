@@ -25,10 +25,13 @@
             y expr=\thisrow{mean}/1000,
             y error expr=\thisrow{stddev}/1000
         ]{./data/leecher/stall_hist_role_leecher.csv};
+        
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Stall time per client from \expid{L5B5} and \expid{L10}]{Total stall time per each type of client for Leechers. \\(1) is a network with 5 Leecher and 5 Binge (\expid{L5B5}). \\(2) is a network with 10 Leecher (\expid{L10}).\\
+    \caption[Stall time per client from \expid{L5B5} and \expid{L10}]{Total stall time per each type of client for Leechers. \\ 
+    {[1]} is a network with 5 Leecher and 5 Binge (\expid{L5B5}). \\ 
+    {[2]} is a network with 10 Leecher (\expid{L10}).\\
     Adding more leechers gives more stall time for each leecher, while binge users are less affected.}
     \label{bar:leecher_stall_hist_role}
 \end{figure}

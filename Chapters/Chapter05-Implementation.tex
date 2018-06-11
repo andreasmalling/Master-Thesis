@@ -60,7 +60,7 @@ The commandline program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was u
 The tool MP4Box from the GPAC framework\footnote{\url{https://github.com/gpac/gpac}} was used to split the streams into segment files and generate a \ac{MPD}.
 
 \subsection{encode.py}
-The Python script can take a number of options, in which it, among others, is possible to alter the quality (and thereby bitrate) of the produced video and also set the duration of the segments dashed.
+The Python script can take a number of options, in which it, among others, is possible to alter the quality (and thereby bitrate) of the produced video, change the number of \acp{I-frame} and also set the duration of the segments dashed.
 
 The script operates in 4 steps:
 \begin{enumerate}
@@ -159,14 +159,14 @@ The orchestration of this is handled by the run script \texttt{run.py}, as descr
 \label{sec:experiment_env}
 Each experiment is designed by creating two environment files, describing which services should run, which options should they run with and how many instances shall be created. The reason two environment files is needed is that one defines the steady state network and the other defines the clients add for the experiment. An example of a environment files can be seen at \autoref{lst:env_steady} and \ref{lst:env_exp}.
 
-\noindent\begin{minipage}[t]{.35\textwidth}
+\noindent\begin{minipage}[t]{.40\textwidth}
 \lstinputlisting[language=env,
                  caption={Steady state env file},
                  label={lst:env_steady}]
                 {code/env_steady.env}
 \end{minipage}
 \hfill
-\begin{minipage}[t]{.52\textwidth}
+\begin{minipage}[t]{.51\textwidth}
 \lstinputlisting[language=env,
                  caption={Experiment env file},
                  label={lst:env_exp}]
@@ -207,30 +207,32 @@ After the termination of \texttt{plot}, the data from the still present \texttt{
 
 The entrypoint is illustrated in \autoref{fig:entrypoint_sequence} the client starts by performing the initialization of the \ac{IPFS} peer, here the peer solves a crypto-puzzle in order to generate a peer id, and key-pairs used for secure communication.
 Next the client starts a local daemon and connects to the peers listed in it's list of bootstrap peers, which can either be ones limited to a small network entirely for the experiment or the bootstrap peers that one would use to connect to the global \ac{IPFS} network.
-Starting a daemon also starts a new thread that handles \ac{IPFS} related requests, these are not illustrated in the figure. In order to preserve clarity. These two \ac{IPFS} \ac{API} calls are not performed by the clients with the entrypoint Persona, as they do not need it to retrieve the video segments.\\
+Starting a daemon also starts a new thread that handles \ac{IPFS} related requests, these are not illustrated in the figure. In order to preserve clarity. These two \ac{IPFS} \ac{API} calls are not performed by the clients with the entrypoint Persona, as they do not need it to retrieve the video segments.
+
 The client then launches a Google Chrome\footnote{\url{https://www.google.com/chrome/}} browser that is controlled through Splinter and requests the website containing the video player from the Host container, the website is stored in a separate container to ease modifications during development.
 After receiving the website, Splinter starts the video player, which requests the \ac{MPD} file, from other peers in the \ac{IPFS} network, through its own gateway, or the seeder's in the case of the leecher.
 After receiving the \ac{MPD} the video can start and Persona behaviour is then performed. While watching the video the client requests the necessary segments as it needs them until all segments have been received.
-When the video is finished the browser is then closed and the client either starts busy waiting or terminates. If the client busy waits the daemon thread is kept alive meaning other peers can retrieve data from the client.\\
+When the video is finished the browser is then closed and the client either starts busy waiting or terminates. If the client busy waits the daemon thread is kept alive meaning other peers can retrieve data from the client.
 
 \input{diagram/sequence_entrypoint.tex}
 
 \section{Summary of Implementation}
 The realized system contains multiple components, first of there is the Personas that specify how a client acts after video playback has started, these come in multiple varieties.
 \begin{itemize}
-    \item The Seeder shares files.
-    \item The Binger watches video, without any interaction.
-    \item The Leecher watches video through the Seeders \ac{IPFS} gateway.
-    \item The Skipper watches the video but skips forward every couple seconds.
-    \item The Incognito user skips to the end of the video.
-    \item The Leaver watches the video and then terminates.
-    \item The mobile user has lower bandwidth, which is realized with Pumba.
+    \item Seeder shares files.
+    \item Binger watches video, without any interaction.
+    \item Leecher watches video through the Seeders \ac{IPFS} gateway.
+    \item Skipper watches the video but skips forward every couple seconds.
+    \item Incognito user skips to the end of the video.
+    \item Leaver watches the video and then terminates.
+    \item Mobile user has lower bandwidth, which is realized with Pumba.
 \end{itemize}
-For the client to be able to watch the videos the need to be encoded. This is done with a combination of \texttt{FFmpeg} and \texttt{MP4Box}. This is done so that the video is in a \ac{DASH} format suitable for streaming.
 
-The testing setup consists of a local network of \texttt{Docker} \acp{VM}, where network conditions is throttled by Pumba, each client hosts \ac{IPFS} and watches the video using the \texttt{dash.js} library, where the user actions can be manged through the \texttt{Splinter} library.
+For the client to be able to watch the videos the need to be encoded. This is done with a combination of \texttt{FFmpeg} and \texttt{MP4Box}. This is done so that the video is in a format suitable for \ac{DASH} streaming.
 
-Experiments are run by setting up a steady state network first which has necessary microservices needed for the test to work, such as database and file hosting. Afterwards the clients are added and testing begins for a duration, when this passes all clients shut down and plots from the experiments are generated and the database is exported.
+The testing setup consists of a local network of \texttt{Docker} containers, where network conditions is throttled by Pumba. Each client hosts \ac{IPFS} and watches the video using the \texttt{dash.js} library, where the user actions can be manged through the \texttt{Splinter} library in the Google chrome browser.
+
+Experiments are run by setting up a steady state network first which consists of the necessary microservices needed for the experiment to work, such as metric loggers, a database for storing the collected metrics and file hosting of the website and video content. Afterwards the clients are added and testing begins for a chosen duration. When the time is up, all clients are shut down and various plots are generated from the experiments metrics, which finally gets exported for possible future inspection.
 % Personas
 % tools
 % setup

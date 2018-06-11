@@ -13,12 +13,13 @@
         ylabel=\shortstack{Mean of accumulated stall time (\acs{s})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={time}]{./data/skipper/stall_hist_role_mean.csv};
+        
     \end{axis}
 
     \end{tikzpicture}
     \caption[Mean stall time for Skipper exps.]{Mean of accumulated stall time for;\newline 
-    (1) a network with 5 Skipper and 5 Binge (\expid{S5B5}),\newline
-    (2) a network with 10 Skipper (\expid{S10}).\newline
+     {[1]} a network with 5 Skipper and 5 Binge (\expid{S5B5}),\newline
+     {[2]} a network with 10 Skipper (\expid{S10}).\newline
     Stall time is almost identical regardless of the amount of skippers.}
     \label{bar:skipper_stall_mean}
 \end{figure}
