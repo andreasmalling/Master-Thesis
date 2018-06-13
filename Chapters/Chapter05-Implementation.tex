@@ -16,7 +16,7 @@ The system  contains multiple microservices realized in a Docker network:
     \item \texttt{host} hosts the \ac{HTML} website that the dash.js player resides on. Each client could host this themselves, but having it a single place makes the system more mutable.
     \item \texttt{metric} is a client to the Mongo database that is contacted by the client. The clients regularly report data regarding their viewing session to Metric which then forwards this to the database, this data includes latency for getting a segment, whether the video stalled and more.
     \item \texttt{network} accesses the Docker \ac{API} to get network stats for all the clients. These stats are then stored in the database
-    \item \texttt{mongo} is a dockerized Mongo database.
+    \item \texttt{mongo} is a containerized MongoDB database.
     \item \texttt{plot} is a Mongo client that processes the data stored in the Mongo database and presents it with various plots. It can also export this to a \ac{CSV} format.
     \item \texttt{pumba} is a chaos engineering tool that is used to manipulate the \texttt{client} instances in terms of their download and upload speed, latency and even shutting them down. While \texttt{pumba} could be used as a container, it is opted to use as a binary for ease of automation through scripting.
 \end{itemize}
@@ -187,34 +187,42 @@ Each experiment is designed by creating two environment files, describing which 
 The experiments are run with a default steady state network which includes one instance of every role listed in \autoref{sec:impl-overview} except \texttt{client} and \texttt{plot}, which is handled differently. The \texttt{client}s are initialized based on their Persona, and only the Seeder Personas are added to the steady part of the network.
 The Seeder holds the \ac{MPD} file as well as the video segments in the \ac{IPFS} network, for the other users to retrieve. 
 
+
+\input{diagram/sequence_run1.tex}
+\input{diagram/sequence_run3.tex}
+\input{diagram/sequence_run2.tex}
+
 \subsection{run.py}
 \label{sec:experiment_run}
 The experiments are executed using the the script \texttt{run.py}, which takes the two environment files (See \autoref{sec:experiment_env}) as arguments. The run script consists of three overall stages.
+\\
 
-The first stage consists of the database being dropped, should there be any data left from a previous or failed experiment (See \autoref{fig:run_sequence_clean}). 
-This is done by running the \texttt{mongo} service solely, followed by a docker-compose exec command which runs a mongo shell command, dropping the database. This has to be done, due to the data being stored on the host machine of Docker, to ease access and ensure persistence. 
-Since the \texttt{mongo} service needs time to start before the command can be executed, we have to try multiple times until  we receive a correct return code. 
+
+\noindent The first stage consists of the database being dropped, should there be any data left from a previous or failed experiment (See \autoref{fig:run_sequence_clean}). 
+This is done by running the \texttt{mongo} service solely, followed by a docker-compose exec command which runs a mongo shell command, dropping the database. This has to be done, due to the data being stored on the host machine of Docker, to ease access and ensure persistence.
+
+Since the \texttt{mongo} service needs time to start before the command can be executed, we have to try multiple times until  we receive a correct return code.
+
 Afterwards all services are killed, to stop the mongo instance, avoiding other hanging services interference and ensure a fresh start for the new experiment. This stage is also run at the end of each experiment.
+\\
 
 
-\input{diagram/sequence_run1.tex}
+\noindent The second stage consists of the set up of the steady state network, followed by the experiment after its stabilization (See \autoref{fig:run_sequence_exp}). First the scales defined in the environment file for the steady network are extracted. The scales are needed by \texttt{run.py}, since the scaling is done through the \ac{CLI} of docker-compose's up command, which has a scale option \footnote{\url{https://docs.docker.com/compose/reference/up/}}. As default \textit{run.py} sets the scale of all services to 0, which is then overwritten by environmental files in two sittings.
 
-The second stage consists of the set up of the steady state network, followed by the experiment after its stabilization (See \autoref{fig:run_sequence_exp}). First the scales defined in the environment file for the steady network are extracted. The scales are needed by \texttt{run.py}, since the scaling is done through the \ac{CLI} of docker-compose's up command, which has a scale option \footnote{\url{https://docs.docker.com/compose/reference/up/}}. As default \textit{run.py} sets the scale of all services to 0, which is then overwritten by environmental files in two sittings.
 After importing the scales, the environment file is soft linked to \texttt{.env}, which is as an environment for the compose file used by docker-compose\footnote{\url{https://docs.docker.com/compose/env-file/}}.
-The user behaviours from the environment file is then used along with the compose file by docker-compose when calling the run command on docker.
+The user behaviours from the environment file is then used along with the compose file by docker-compose when calling the run command on Docker.
+
 When the scaling of the steady network has begun, \textit{run.py} busy waits for a configurable amount of time until all services are running and are stabilized, which is based on empirical data from the \ac{VM}.
-After the stabilization the \textit{clients} are added to measure their influence on the network and their individual \ac{UX}. This is mainly done with the same procedure as the steady state network, but from another environment file. The only difference in the procedure is pumba (See \autoref{sec:framework_pumba}
- and \ref{sec:setup_pumba}) is run to influence the network for all clients, before busy waiting for the length of the experiment.
+
+After the stabilization the \textit{clients} are added to measure their influence on the network and their individual \ac{UX}. This is mainly done with the same procedure as the steady state network, but from another environment file. The only difference in the procedure is pumba (See \autoref{sec:framework_pumba} and \ref{sec:setup_pumba}) is run to influence the network for all clients, before busy waiting for the length of the experiment.
+
 Finally all services are killed, to stop the data collection of the experiment.
+\\
 
-\input{diagram/sequence_run2.tex}
 
-The third stage consists of plotting the results and export the data to an archive (See \autoref{fig:run_sequence_plot}). Since plot is not a part of the experiment it is defined in a separate compose file (\textit{plot-compose.yml}), which is used with Docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when Docker compose is asked to run the \texttt{plot} service, the dependencies are also started. Since \texttt{plot} terminates when all plots are done, we wait for it to exit before continuing.
+\noindent The third stage consists of plotting the results and exporting the data to an archive (See \autoref{fig:run_sequence_plot}). Since \texttt{plot} is not a part of the experiment it is defined in a separate compose file (\textit{plot-compose.yml}), which is used with docker-compose to generate the plots. Because the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when docker-compose is asked to run the \texttt{plot} service, the dependencies are also started. Since \texttt{plot} terminates when all plots are done, we wait for it to exit before continuing.
 
 After the termination of \texttt{plot}, the data from the still present \texttt{mongo} service is exported to a gzip\footnote{\url{https://www.gnu.org/software/gzip/}} archive using the utility mongodump\footnote{\url{https://docs.mongodb.com/manual/reference/program/mongodump/}}. 
-
-
-\input{diagram/sequence_run3.tex}
 
 \subsection{entrypoint}
 \label{sec:experiment_entrypoint}
