@@ -10,7 +10,7 @@
         xtick=data,
         xticklabels from table={./data/segment/stall_time_hist.csv}{users},
         xlabel={Approx. Segment duration (\acs{s})},
-        ylabel=\shortstack{Mean of accumulated stall time (\acs{s})},
+        ylabel={Mean accumulated stall time (\acs{s})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={time}]{./data/segment/stall_time_hist.csv};
     \end{axis}

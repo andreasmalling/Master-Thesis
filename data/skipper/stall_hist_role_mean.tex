@@ -10,7 +10,7 @@
         xtick=data,
         xticklabels from table={./data/skipper/stall_hist_role_mean.csv}{users},
 %        x tick label style={rotate=60, anchor=east},
-        ylabel=\shortstack{Mean of accumulated stall time (\acs{s})},
+        ylabel=\shortstack{Mean accumulated stall time (\acs{s})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={time}]{./data/skipper/stall_hist_role_mean.csv};
         

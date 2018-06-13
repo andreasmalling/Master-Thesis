@@ -3,7 +3,7 @@
     \begin{tikzpicture}
         \begin{axis} [
             xlabel={Experiment Time (\acs{s})},
-            ylabel={Stall time (\acs{s})},
+            ylabel={Accumulated stall time (\acs{s})},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
             x filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},
             y filter/.code={\pgfmathparse{#1/1000}\pgfmathresult},

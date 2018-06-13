@@ -10,7 +10,7 @@
         xtick=data,
         xticklabels from table={./data/social/bytes_hist.csv}{users},
         xlabel={Maximum startup delay (\acs{s})},
-        ylabel={Mean Accumulated bandwidth (\acs{MB})},
+        ylabel={Mean accumulated bandwidth (\acs{MB})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         \addplot table [x expr=\coordindex, y={mean}]{./data/social/bytes_hist.csv};
     \end{axis}
