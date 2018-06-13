@@ -1,4 +1,4 @@
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \myfloatalign
     \begin{tikzpicture}
     \begin{axis}[
@@ -13,6 +13,6 @@
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Total number stalls from \expid*{S5B5}]{Total number of stalls per client, from the 5 Skipper experiment (\expid{S5B5}).\newline Skippers only stalled when they were forced by a skip, meaning they should have 7 skips, if no other stalls occur.}
+    \caption[Total number stalls from \expid*{S5B5}]{Total number of stalls per client, from the 5 Skippers experiment (\expid{S5B5}).\newline Skippers only stalled when they were forced by a skip, meaning they should have 7 skips, if no other stalls occur. The only client deviating from the optimal number of stalls is \textit{3:BINGER}, which encounters a single re-buffering event after the initial buffering.}
     \label{bar:skipper_stall_hist}
 \end{figure}
