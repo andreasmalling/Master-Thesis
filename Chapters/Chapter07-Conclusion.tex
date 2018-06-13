@@ -1,24 +1,24 @@
 \chapter{Conclusion}
 \label{cha:conclusion}
 
-By utilizing containerization of users accessing a video sharing website from a chrome browser and running an \ac{IPFS} daemon as a back-end, it was made possible to examine a \ac{UX} under various circumstances, and determine what influence other user and network conditions have on \ac{DASH} streaming fetching it's video content from \ac{IPFS} addresses.
+By utilizing containerization of users accessing a video sharing website from a Chrome browser and running an \ac{IPFS} daemon as a back-end, it was made possible to examine a \ac{UX} under various circumstances, and determine what influence other users and network conditions have on \ac{DASH} streaming fetching its video content from \ac{IPFS} addresses.
 
 The experiments where performed by simulating a steady state running network, with services hosting the video resource over \ac{IPFS} and various logging services for collecting metrics of the experiment.
 Using the Chaos Engineering Principles, the steady network would then be introduced to different conditions, such as certain user behaviours in different populations as well as network conditions.
 
 The population could easily be scaled after need, but due to a high \ac{CPU} usage of both the \ac{IPFS} daemon and the web player, a maximum of 10 clients were introduced to the steady network. Should the number of clients be increased, Docker starts to throttle the containers, resulting in artificial stalls for the video playback. This prevented a large scale evaluation of the project despite having a powerful host machine for the Docker environment.
 
-Through evaluation of the system a major bug in \ac{IPFS} was discovered, which resulted in a transmission of duplicate data that increased with the number of peers seeding a resource. The overhead of duplicated data was several times the size of the original video file, though the scale of the seeding peers were relative small due to the \ac{CPU} limitation. As a result of this, it could be confirmed that \ac{IPFS} was unfit for the use of lowering bandwidth and would scale badly, therefore potentially flooding a network if high demand of the same resource arose.
+Through evaluation of the system a major bug in \ac{IPFS} was discovered, which resulted in a transmission of duplicate data that increased with the number of peers seeding a resource. The overhead of duplicated data was several times the size of the original video file, though the scale of the seeding peers were relatively small due to the \ac{CPU} limitation. As a result of this, it could be confirmed that \ac{IPFS} was unfit for the use of lowering bandwidth and would scale badly, therefore potentially flooding a network if high demand of the same resource arose.
 
 The \ac{UX} was not affected by the bug, so the experimentation of various behaviours and conditions were still conducted, to see if this would have an impact on the bug, for better or worse.
 
 It was found that increasing the file size of any shared resource, the duplication would decrease. This is possibly due to \ac{IPFS} being more suited for sharing larger files as each file then consist of more blocks (of fixed size), giving \ac{IPFS} a larger influence in the coordination of downloads. Additionally, distributing the demand over a larger period of time also yielded a reduction in duplicated data, in contrary to the hypothesis stating that \ac{IPFS} should be able to handle a surge in traffic and mitigate the burden.
 
-As the duplication of data correlated with the number of seeders, changing the ratio of the seeders and the rest of the population seemed ineffectual and was therefore omitted. As a result of this and the limited scale of the network, churn rate were also omitted since having a single seed and removing it, only would result in a complete halt of the video playback.
+As the duplication of data correlated with the number of Seeders, changing the ratio of the Seeders and the rest of the population seemed ineffectual and was therefore omitted. As a result of this and the limited scale of the network, churn rate was also omitted since having a single seed and removing it, only would result in a complete halt of the video playback.
 
-In terms of user behaviours, the negative impact of these were largely isolated in the performing user's \ac{UX}. The only exception to this being a large amount of leeching users, that took the resource without giving back to the network. When there were few of the leechers, only these received very poor \ac{UX}, while the other well behaving users still had a passable viewing experience.
+In terms of user behaviours, the negative impact of these were largely isolated in the performing user's \ac{UX}. The only exception to this being a large amount of leeching users that took the resource without giving back to the network. When there were few of the Leechers, only these received very poor \ac{UX}, while the other well behaving users still had a passable viewing experience.
 
-In conclusion, the use case of streaming video on demand from an \ac{IPFS} hosted resource is ill suited at it's current state.
+In conclusion, the use case of streaming video on demand from an \ac{IPFS} hosted resource is ill suited at its current state.
 
 \section{Future Work}
 To decrease the high \ac{CPU} usage, it should be considered to change the browser, operating system (to gain hardware acceleration) or the \ac{DASH} player implementation.

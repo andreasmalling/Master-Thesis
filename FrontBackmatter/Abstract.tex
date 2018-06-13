@@ -9,10 +9,15 @@
 \let\cleardoublepage\relax
 
 \chapter*{Abstract}
-By simulating video player use behaviours and different network conditions in a Docker environment, storing a video in the distributed \acs{IPFS} system for \acs{DASH} streaming is ill suited at it's current state. 
+The purpose of this study is to determine the suitability of using \acs{IPFS} as a way to stream videos in a distributed network, with the purpose of off loading  high sudden demand that can occur on viral videos.
 
-This is due to a transmission of duplicated data, that increases with the number of seeds on a given resource.
-Furthermore the experimentation was done on a limited scale due to high CPU usage of the video player and the distributed back-end.
+The study is performed by simulating users with different behaviours and network conditions, in a Docker environment, and having them stream videos in a real \acs{DASH} video player while using \acs{IPFS} to retrieve the relevant video files. Results are obtained by having the users report metrics regarding viewing experience and network performance.
+
+A large weakness of \acs{IPFS} was discovered by experimentation, as the largest amount of data received by each user was duplicate data with a correlation to the number of seeding peers on said data. However the amount of duplicate data fell when sharing larger file segments. In terms of users, the impact of their behaviour was mostly isolated within themselves, and leeching was punished by a bad \acl{UX}. Performance did however become bad for everyone when the amount of leeching users grew large enough.
+
+\acs{IPFS} also had very high \acs{CPU} usage, meaning the amount of users that could be simulated was severely limited.
+
+The results show that \acs{IPFS} is ill suited for streaming in its current state, as this involves sharing many small files which it is ill suited for. The amount of duplicate data also made \acs{IPFS} a poor choice for mobile users as their limited bandwidth would be used on duplicates instead of relevant data.
 
 \vfill
 

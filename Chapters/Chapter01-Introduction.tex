@@ -1,6 +1,6 @@
 \chapter{Introduction}
 \label{cha:introduction}
-Many videos require a lot of space, and with an ever going stream of new content, the videos, hosted on sites such as YouTube, only generate a large amount of traffic for a short time. Resulting in a potential high amount of access in a short time span, exemplified in viral videos. 
+Many videos require a lot of space, and with an evergoing stream of new content, the videos, hosted on sites such as YouTube, only generate a large amount of traffic for a short time, resulting in a potential high amount of access in a short time span, exemplified in viral videos. 
 
 This means that a high hosting capacity is needed in both space and bandwidth to meet potential demand and avoid a flooding in page requests that exceeds the resource's available bandwidth or the ability of its servers to respond, and render the resource temporarily unreachable.
 
@@ -19,12 +19,12 @@ This is a somewhat common problem, and is often associated with social platforms
 
 A server-less video hosting website will be implemented, by utilizing the \ac{IPFS}, a content-addressable, distributed file-sharing protocol, for storing and sharing the video content.
 
-The \ac{DASH} protocol which is used be many major streaming service (\eg \textit{Netflix} and \textit{YouTube}) to achieve adaptive bitrate streaming, will be tested as the player of the distributed video content. This will be done in simulation of different demands, with different segments of the videos watched and different bitrates for the videos. The simulation will be without multiple bitrate sources of the video content, forcing \ac{IPFS} to only download from a single stream of video and audio. By relying solely on a single bitrate stream, for audio and video respectively, the segments should be more available in the \ac{P2P} network due to all clients sharing the same stream, and should also make the results easier to interpret due to the static demand in the network.
+The \ac{DASH} protocol which is used by many major streaming service (\eg \textit{Netflix} and \textit{YouTube}) to achieve adaptive bitrate streaming, will be tested as the player of the distributed video content. This will be done with simulations of different demands, with different segments of the videos watched and different bitrates for the videos. The simulation will be without multiple bitrate sources of the video content, forcing \ac{IPFS} to only download from a single stream of video and audio respectively, by relying solely on a single bitrate. The segments should be more available in the \ac{P2P} network due to all clients sharing the same stream, and should also make the results easier to interpret due to the static demand in the network.
 
-The feasibility of the system will be assessed by the \ac{UX} in the experiments, where as a measurement for \ac{UX} the focus lies on the viewing experience of the video such as the number of interruptions for needed buffering and the duration of such. This will be done by a number of \emph{Personas} with different use behaviors, to assess the impact a client have on the entire network and others \ac{UX}.
+The feasibility of the system will be assessed by the \ac{UX} in the experiments, where as a measurement for \ac{UX} the focus lies on the viewing experience of the video such as the number of interruptions for needed buffering and the duration of such. This will be done by a number of \emph{Personas} with different use behaviors, to assess the impact a client has on the entire network and the \ac{UX} of the other clients.
 
 
-The network setup will be exposed to various network obstacles, such as low bandwidth, high latency and others. This will all be done with inspiration from Chaos Engineering, by creating a hypothesis, setting up a \emph{steady state} network and introduce the variables for the experiment, to either confirm or dismiss said hypothesis.
+The network setup will be exposed to various network obstacles, such as low bandwidth, high latency and others. This will all be done with inspiration from Chaos Engineering, by creating a hypothesis, setting up a \emph{steady state} network and then introducing the variables for the experiment, to either confirm or dismiss said hypothesis.
 
 
 It is expected that popular content will perform better than lesser known, and thereby lesser watched videos, which should make it suitable to avoid unreachability when a sudden surge of traffic occurs.

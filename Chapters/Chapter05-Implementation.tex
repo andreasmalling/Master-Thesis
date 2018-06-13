@@ -2,8 +2,8 @@
 \label{cha:implementation}
 
 The system is realized through a local network of Docker instances, each running a microservice needed for the purpose of evaluating the system from the point of view of the users. This network has multiple services which are described in \autoref{sec:impl-overview}
-One of these components are the clients watching the video. Whose view patterns are determined by their Persona, which are described in \autoref{sec:impl-personas}.
-The videos had to be processed into a \ac{DASH} format suited for streaming, how this is implemented is presented in \autoref{sec:impl-video}.
+One of these components are the clients watching the video, whose view patterns are determined by their Persona, which are described in \autoref{sec:impl-personas}.
+The videos have to be processed into a \ac{DASH} format suited for streaming, which is presented in \autoref{sec:impl-video}.
 Then the setup for the experiment is presented in two parts. First, the tools that are used (\autoref{sec:impl-setup}), and second, the sequence of the individual steps that are performed during the experiments (\autoref{sec:impl-flow}) including how the network is initialized, how data is extracted and more.
 
 \section{Overview}
@@ -11,15 +11,14 @@ Then the setup for the experiment is presented in two parts. First, the tools th
 The system  contains multiple microservices realized in a Docker network:
 
 \begin{itemize}
-    \item \texttt{bootstrap} runs an \ac{IPFS} daemon and is responsible for initializing the \ac{IPFS} network, all other participants in the network connect through this node. 
-    The Go implementation of \ac{IPFS} (go-ipfs\footnote{\url{https://github.com/ipfs/go-ipfs}}) is used as back-end instead of the JavaScript implementation, due to performance. This is due to the goal being performance measurements, where Go should perform better. The go-ipfs runs as a daemon in the background. This is tolerable, due to the vision of having \ac{IPFS} implemented and running natively in the browser.
-    \item \texttt{client} represents the users of the system, and there can be arbitrarily many of them depending on the test. The clients run an \ac{IPFS} daemon and a browser that is controlled through Splinter, they then play various videos hosted in the network through the \ac{IPFS} \ac{API} from the \texttt{dash.js} video player with different viewing patterns and connection conditions.
-    \item \texttt{host} hosts the \ac{HTML} website that the dash.js player resides on, each client could host this themselves, but having it a single place makes the system more mutable.
-    \item \texttt{metric} is a client to the Mongo database that is contacted by the client, the clients reguarly report data regarding their viewing session to Metric which then forwards this to the database, this data includes latency for getting a segment, whether the video stalled and more.
-    \item \texttt{network} accesses the Docker \ac{API} to get network stats for all the clients, these stats are then stored in the database
+    \item \texttt{bootstrap} runs an \ac{IPFS} daemon and is responsible for initializing the \ac{IPFS} network. All other participants in the network connect through this node.
+    \item \texttt{client} represents the users of the system, and there can be arbitrarily many of them depending on the test. The clients run an \ac{IPFS} daemon and a browser that is controlled through Splinter. They then play various videos hosted in the network through the \ac{IPFS} \ac{API} from the \texttt{dash.js} video player with different viewing patterns and connection conditions.
+    \item \texttt{host} hosts the \ac{HTML} website that the dash.js player resides on. Each client could host this themselves, but having it a single place makes the system more mutable.
+    \item \texttt{metric} is a client to the Mongo database that is contacted by the client. The clients regularly report data regarding their viewing session to Metric which then forwards this to the database, this data includes latency for getting a segment, whether the video stalled and more.
+    \item \texttt{network} accesses the Docker \ac{API} to get network stats for all the clients. These stats are then stored in the database
     \item \texttt{mongo} is a dockerized Mongo database.
-    \item \texttt{plot} is a Mongo client that processes the data stored in the Mongo database and presents it with various plots, it can also export this to a \ac{CSV} format.
-    \item \texttt{pumba} is a chaos engineering tool that is used to manipulate the \texttt{client} instances in terms of their download and upload speed, latency and even shutting them down. While \texttt{pumba} could be use as a container, it's opted to use as a binary for ease of automation. 
+    \item \texttt{plot} is a Mongo client that processes the data stored in the Mongo database and presents it with various plots. It can also export this to a \ac{CSV} format.
+    \item \texttt{pumba} is a chaos engineering tool that is used to manipulate the \texttt{client} instances in terms of their download and upload speed, latency and even shutting them down. While \texttt{pumba} could be used as a container, it is opted to use as a binary for ease of automation through scripting.
 \end{itemize}
 Relation between these services is also illustrated in \autoref{fig:uml_docker-compose}.
 
@@ -31,30 +30,38 @@ Relation between these services is also illustrated in \autoref{fig:uml_docker-c
 
 \section{Personas}
 \label{sec:impl-personas}
-The clients viewing patterns are determined by their Persona, the different types of Personas are described in \autoref{sec:individual-behavious}, in these section how these Personas are realised will be described.
-All Personas function by giving them a hash that functions as a path to an \ac{MPD} file
+The client viewing patterns are determined by their Persona, with the different types of Personas described in \autoref{sec:individual-behavious}. How these Personas are realized will be described in these sections.
+All Personas function by giving them a hash that acts as a path to an \ac{MPD} file
 \begin{itemize}
     \item \texttt{Idle} simply does nothing actively, but instead just participates in the network, which is implemented by having the client sleep, while the \ac{IPFS} daemon runs in the background.
-    \item \texttt{Seeder} behaves like a Idle Persona, but stores the video that the other peers request. When the seeder is started it immediatly adds the video files to the network.
-    \item \texttt{Binger} uses splinter to view the video for the \ac{MPD} file, this is done through its local \ac{IPFS} gateway thereby forcing the \ac{IPFS} client to retrieve the video and store it in the peer. The data is not pinned, meaning that if the assigned storage runs out the video data will eventually be deleted. After watching the video the user waits until the experiment is over.
-    \item \texttt{Leecher} behaves like the Binge Persona but instead of using its own local \ac{IPFS} gateway it uses one of the seeder's instead, this way it can download the video files without using \ac{IPFS} to retrieve them and instead does it through the browser
-    \item \texttt{Skipper} is like binge, but instead of viewing the entirety of the video without interacting with it, it watches small segments at a time. By watching a small configurable amount of seconds and then skipping forward another configurable amount of seconds  in the video. This pattern is repeated until the end of the video is reached. This is also illustrated in the pseudocode (\autoref{lst:skipper_pseudo}), where skipLength and watchTime are configurable and timeInVideo, is how far into the video the Persona are (in seconds).
+    
+    \item \texttt{Seeder} behaves like an Idle Persona, but stores the video that the other peers request. When the Seeder is started it immediately adds the video files to the network.
+    
+    \item \texttt{Binger} uses Splinter to view the video for the \ac{MPD} file. This is done through its local \ac{IPFS} gateway thereby forcing the \ac{IPFS} client to retrieve the video and store it in the peer. The data is not pinned, meaning that if the assigned storage runs out the video data will eventually be deleted. After watching the video the user waits until the experiment is over.
+    
+    \item \texttt{Leecher} behaves like the Binger Persona but instead of using its own local \ac{IPFS} gateway it uses one of the seeder's instead. This way it can download the video files without using \ac{IPFS} to retrieve them and instead does it through the browser
+    
+    \item \texttt{Skipper} is like Binger, but instead of viewing the entirety of the video without interacting with it, it watches small segments at a time, by watching a small configurable amount of seconds and then skipping forward another configurable amount of seconds  in the video. This pattern is repeated until the end of the video is reached. 
+    
+    This is also illustrated in the pseudocode (\autoref{lst:skipper_pseudo}), where \texttt{skipLength} and \texttt{watchTime} are configurable and \texttt{timeInVideo} is how far into the video the Persona are (in seconds).
     \lstinputlisting[
     language=pseudo,
     caption={Skipper pseudocode},label={lst:skipper_pseudo}]
     {code/skipper.txt}
-    \item \texttt{Incognito} is very similar to Skipper but instead of watching many segments each a few seconds long. It instead immediatly on startup skips to a configurable amount of seconds before the end of the video, that it watches without any further skips.
+    
+    \item \texttt{Incognito} is very similar to Skipper but instead of watching many segments each a few seconds long, it instead immediately on startup skips to a configurable amount of seconds before the end of the video, that it watches without any further skips.
+    
     \item \texttt{Leaver} behaves like the Binger, but rather than waiting for the experiment to be over when it has finished watching it instead terminates. Resulting in the container hosting the user and its \ac{IPFS} Daemon being stopped.
 \end{itemize}
-The remaining Mobile user Persona is achieved differently as it is not necessarily a different view pattern but instead different network conditions. Mobile user is then achieved by using one of the above Personas but giving it reduced bandwith through Pumba.
+The remaining Mobile user Persona is achieved differently as it is not necessarily a different view pattern but instead different network conditions. Mobile user is thus achieved by using one of the above Personas but giving it reduced bandwidth through \texttt{pumba}.
 
 \section{Video Content Tools}
 \label{sec:impl-video}
-Using the Python script \texttt{encode.py}, video content for testing were generated for sharing and streaming in the experimentation. The following tools were used to generate the content.
+Using the Python script \texttt{encode.py}, video content for testing was generated for sharing and streaming in the experimentation. The following tools were used to generate the content.
 
 \subsection{FFmpeg}
-The commandline program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was used for transcoding videos to the proper codecs. The used codecs is chossen to H.264 for video and AAC for audio. 
-\texttt{ffmpeg} also makes it possible to change the number of I-frames, which could be necessary due to the segmentation of the streams into multiple files in the DASHing process.
+The \ac{CLI} program \texttt{ffmpeg}\footnote{\url{https://ffmpeg.org}} was used for transcoding videos to the proper codecs. The used codecs are H.264 for video and AAC for audio. 
+\texttt{ffmpeg} also makes it possible to change the number of \acp{I-frame}, which could be necessary due to the segmentation of the streams into multiple files in the DASHing process.
 
 \subsection{MP4Box multimedia packager}
 The tool MP4Box from the GPAC framework\footnote{\url{https://github.com/gpac/gpac}} was used to split the streams into segment files and generate a \ac{MPD}.
@@ -65,12 +72,12 @@ The Python script can take a number of options, in which it, among others, is po
 The script operates in 4 steps:
 \begin{enumerate}
     \item Encode video and audio to correct media container and codecs using \texttt{ffmpeg}.
-    \item Format the newly encoded media container to the wanted DASH profile of specified segment length using \texttt{MP4Box}.
+    \item Format the newly encoded media container to the wanted DASH profile of a specified segment length using \texttt{MP4Box}.
     \item Generate \ac{IPFS} hash addresses of the formatted media using \texttt{ipfs}.
     \item Replace location of segments in \ac{MPD} with hash addresses.
 \end{enumerate}
 
-Since the hash addresses always will be the same for the content, it is possible to pre-generate and add the addresses to the \ac{MPD} before any files are shared in \ac{IPFS}, no matter which client latter will add them (See \autoref{sec:ipfs-objects} for more information).
+Since the hash addresses always will be the same for the content, it is possible to pre-generate and add the addresses to the \ac{MPD} before any files are shared in \ac{IPFS}, no matter which clients adds them later in time (See \autoref{sec:ipfs-objects} for more information).
 
 \lstinputlisting[
     language=MPD,
@@ -105,10 +112,11 @@ Experimentation is performed on a VMware \ac{VM} with 16 cores\footnote{Intel\te
 \subsection{Docker}
 \label{sec:setup_docker}
 \label{sec:setup_docker-compose}
-The experimentation is done by emulating clients in a closed network using Docker virtualization. To orchestrate the initialization of the Docker containers, a compose file is used (A Snippet of which can be seen in \autoref{lst:compose-example}). Within this file the dependencies of the containers is also specified as some containers cannot work probably without others, for example the Seeder requires the bootstrap, host and the metric services to be running before it starts. Which can be seen on line 8-12.
+The experimentation is done by emulating clients in a closed network using Docker virtualization. To orchestrate the initialization of the Docker containers, a compose file is used (A Snippet of which can be seen in \autoref{lst:compose-example}). Within this file the dependencies of the containers are also specified, as some containers cannot work properly without others.
+For example the Seeder requires the bootstrap, host and the metric services to be running before it starts, which can be seen on line 8-12.
 
-Besides defining dependencies, the compose file is also used for other options. In the case of the Seeder a local directory is mounted, containing the files to be seeded in \ac{IPFS} (See \autoref{lst:compose-example}, line 6-7), so if the service \texttt{user\_seed} was scaled to multiple instances, the video wouldn't need duplication.
-Finally the command option defines the client behavior, and the Seeder have the default role of a Seeder Persona with 0 seconds start up (See \autoref{lst:compose-example}, line 13), but with the ability to change the behaviour by utilizing an env file containing the variable \texttt{USER\_SEED} defined (See \autoref{lst:env_steady} or \ref{lst:env_exp} for example). 
+Besides defining dependencies, the compose file is also used for other options. In the case of the Seeder a local directory is mounted, containing the files to be seeded in \ac{IPFS} (See \autoref{lst:compose-example}, line 6-7), so if the service \texttt{user\_seed} was scaled to multiple instances, the video would not need duplication.
+Finally the command option defines the client behavior, and the Seeder has the default role of a Seeder Persona with 0 seconds start up (See \autoref{lst:compose-example}, line 13), but with the ability to change the behaviour by utilizing an env file containing the variable \texttt{USER\_SEED} defined (See \autoref{lst:env_steady} or \ref{lst:env_exp} for example). 
 Docker compose checks on run time if a \emph{.env} file is present in the working directory, and if so, substitutes all defined variables in the compose file. This allows for manipulating the setup at each compose run, by serving Docker compose new environment files.
 
 The \ac{VM} runs Docker at version 18.03\footnote{Docker CE version 18.03.0-ce, build 0520e24} and Docker Compose is used on the \ac{VM} at version 1.20.1\footnote{docker-compose version 1.20.1, build 5d8c71b}.
@@ -123,41 +131,44 @@ The \ac{VM} runs Docker at version 18.03\footnote{Docker CE version 18.03.0-ce, 
 
 \subsection{Pumba}
 \label{sec:setup_pumba}
-Pumba is a resilience testing tool used to help with the conduction of the experiments. It can manipulate the network condition of Docker containers as well as pause and/or stop containers, either chosen randomly or deterministically. Pumba utilizes the Docker \ac{API}\footnote{\url{https://docs.docker.com/engine/api/v1.30/}} for the resilience testing, tc\footnote{traffic control: \url{https://linux.die.net/man/8/tc}} and iproute2\footnote{\url{https://wiki.linuxfoundation.org/networking/iproute2}} for network manipulation. For the experiments to emulate real world network conditions, the network manipulation are the primary focus of this tool.
+Pumba is a resilience testing tool used to help with conducting the experiments. It can manipulate the network condition of Docker containers as well as pause and/or stop containers, either chosen randomly or deterministically. Pumba utilizes the Docker \ac{API}\footnote{\url{https://docs.docker.com/engine/api/v1.30/}} for the resilience testing, tc\footnote{traffic control: \url{https://linux.die.net/man/8/tc}} and iproute2\footnote{\url{https://wiki.linuxfoundation.org/networking/iproute2}} for network manipulation. For the experiments to emulate real world network conditions, the network manipulation is the primary focus of this tool.
 The \ac{VM} runs pumba at version 0.4.8\footnote{pumba version 0.4.8, build 537d77d}. 
 
 \subsection{IPFS}
 \label{sec:setup_ipfs}
-The containers run \ac{IPFS} at version 0.4.14\footnote{go-ipfs version 0.4.14, build 5db3846}.
+The implementation go-ipfs\footnote{\url{https://github.com/ipfs/go-ipfs}} is used as back-end, though the protocol have been implemented using other languages (Such as JavaScript). 
+This is due to the goal being performance measurements, and the Go implementation is the official reference project of \ac{IPFS} \footnote{\url{https://github.com/ipfs/ipfs/blob/master/README.md\#protocol-implementations}}.
+
+The containers run \ac{IPFS} at version 0.4.14\footnote{go-ipfs version 0.4.14, build 5db3846} as a daemon in the background. This is tolerable, due to the vision of having \ac{IPFS} implemented and running natively in the browser.
 
 
 \subsection{dash.js}
 \label{sec:setup_dash.js}
-The \texttt{website} container uses dash.js\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js/}} at version v2.6.8\footnote{dash.all.min.js version 2.6.8, build 888cdcc4}, which adds the \ac{DASH} compatibility to the \ac{HTML}5 video player using JavaScript, which is needed to accomplice the intended design.
-The chosen format for the stream is selected from the DASH-AVC/264 standard\cite{dash264}, due to its interoperability and because it's supported by the \texttt{dash.js} player.
-The standard defines the multimedia container as MP4, the video codec as H.264 and the audio codec as AAC. As a addition separate audio and video streams are required, which means that multiplexing isn't allowed.
-Dash.js manages retrieving of video and audio segments by itself, and no other segment retrieval techniques are implemented. Note audio and video are separated into two different tracks of segments for dash.js to be able to play the video.
+The \texttt{website} container uses dash.js\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js/}} at version v2.6.8\footnote{dash.all.min.js version 2.6.8, build 888cdcc4}, which adds the \ac{DASH} compatibility to the \ac{HTML} video player using JavaScript, which is needed to accomplish the intended design.
+The chosen format for the stream is selected from the DASH-AVC/264 standard\cite{dash264}, due to its interoperability and because it is supported by the \texttt{dash.js} player.
+The standard defines the multimedia container as MP4, the video codec as H.264 and the audio codec as AAC. As an addition separate audio and video streams are required, which means that multiplexing is not allowed.
+Dash.js manages retrieval of video and audio segments by itself, and no other segment retrieval techniques are implemented. Note audio and video are separated into two different tracks of segments for dash.js to be able to play the video.
 
 \subsection{Python \& Splinter}
 \label{sec:setup_python}
 \label{sec:setup_splinter}
 The containers run Python at version 3.5.2, for running the entrypoints (See \autoref{sec:setup_docker}) of the containers.
 
-Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various Personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a chrome browser (at version 64.0\footnote{Google Chrome version 64.0.3282.140 (Official Build) (64-bit)}) by utilizing this library, and thereby emulating different behaviours.
-The package splinter used is at version 0.7.7.
+Splinter\footnote{\url{https://github.com/cobrateam/splinter}} is a Python library used for emulating user input through a browser. Various Personas (See \autoref{sec:individual-behavious}) will be interacting with the website through a Chrome browser (at version 64.0\footnote{Google Chrome version 64.0.3282.140 (Official Build) (64-bit)}) by utilizing this library, and thereby emulating different behaviours.
+Splinter is used at version 0.7.7.
 
 
 \section{Experiment flow}
 \label{sec:impl-flow}
-Experiments are first started by setting up a steady state network of the required services for the experiment. This steady setup is given an initialization time to ensure it's stabilized, meaning that an \ac{IPFS} network has formed and seeders have added their files to the network.
-After a configurable delay the clients are added to the network, and start performing the actions that their Persona and the entrypoint program describes (As described in \autoref{sec:experiment_entrypoint} and \autoref{fig:entrypoint_sequence}).
-The experiment then runs for a configurable amount of time that should give enough time for all clients to finish viewing the video. When the time is up every microservice is terminated and the plot service is started to graph the collected from the experiment (As seen in \autoref{fig:run_sequence_plot}).
+Experiments are first started by setting up a steady state network of the required services for the experiment. This steady setup is given an initialization time to ensure it is stable, meaning that an \ac{IPFS} network has formed and seeders have added their files to the network.
+After a configurable delay the clients are added to the network, and start performing the actions that their Persona and the entrypoint program describe (As outlined in \autoref{sec:experiment_entrypoint} and \autoref{fig:entrypoint_sequence}).
+The experiment then runs for a configurable amount of time that should give enough time for all clients to finish viewing the video. When the time is up every microservice is terminated and the plot service is started to graph the collected data from the experiment (As seen in \autoref{fig:run_sequence_plot}).
 
-The orchestration of this is handled by the run script \texttt{run.py}, as described in the following \autoref{sec:experiment_run} and can be seen in the sequence diagrams; \autoref{fig:run_sequence_clean}, \ref{fig:run_sequence_exp} and \ref{fig:run_sequence_plot}.
+The orchestration of this is handled by the run script \texttt{run.py}, as described in the following \autoref{sec:experiment_run} and can be seen in the sequence diagrams in \autoref{fig:run_sequence_clean}, \ref{fig:run_sequence_exp} and \ref{fig:run_sequence_plot}.
 
 \subsection{Experimental Environments}
 \label{sec:experiment_env}
-Each experiment is designed by creating two environment files, describing which services should run, which options should they run with and how many instances shall be created. The reason two environment files is needed is that one defines the steady state network and the other defines the clients add for the experiment. An example of a environment files can be seen at \autoref{lst:env_steady} and \ref{lst:env_exp}.
+Each experiment is designed by creating two environment files, describing which services should run, which options should they run with and how many instances should be created. The reason two environment files is needed is that one defines the steady state network and the other defines the clients added for the experiment. An example of an environment file can be seen at \autoref{lst:env_steady} and \ref{lst:env_exp}.
 
 \noindent\begin{minipage}[t]{.40\textwidth}
 \lstinputlisting[language=env,
@@ -173,29 +184,32 @@ Each experiment is designed by creating two environment files, describing which 
                 {code/env_exp.env}
 \end{minipage}\bigskip
 
-The experiments are run with a default steady state network which includes one instance of every role listed in \autoref{sec:impl-overview} except \texttt{client} and \texttt{plot}, which is handled differently. The \texttt{client}s are initialized based on their Persona, and only the seeder Personas are added to the steady part of the network.
-The seeder holds the \ac{MPD} file as well as the video segments in the \ac{IPFS} network, for the other users to retrieve. 
+The experiments are run with a default steady state network which includes one instance of every role listed in \autoref{sec:impl-overview} except \texttt{client} and \texttt{plot}, which is handled differently. The \texttt{client}s are initialized based on their Persona, and only the Seeder Personas are added to the steady part of the network.
+The Seeder holds the \ac{MPD} file as well as the video segments in the \ac{IPFS} network, for the other users to retrieve. 
 
 \subsection{run.py}
 \label{sec:experiment_run}
-The experiments are executed using the the script \texttt{run.py}, which takes the two environment files (See \autoref{sec:experiment_env}) as arguments. The run script consists of 3 overall stages.
+The experiments are executed using the the script \texttt{run.py}, which takes the two environment files (See \autoref{sec:experiment_env}) as arguments. The run script consists of three overall stages.
 
-The first stage consists of the database being dropped, should there be any data left from a previous or failed experiment (See \autoref{fig:run_sequence_clean}). This is done by running the \texttt{mongo} service solely, followed by an docker-compose exec command which runs mongo shell command, dropping the database. This have to be done, due to the data being stored on the host machine of Docker, to easy access and ensure persistence. Since the \texttt{mongo} service needs time to start before the command can be executed, we have to try multiple times until  we receive a correct return code. Afterwards all services are killed, to stop the mongo instance, avoid other hanging services interference and ensure a fresh start for the new experiment. This stage is also run at the end of each experiment.
+The first stage consists of the database being dropped, should there be any data left from a previous or failed experiment (See \autoref{fig:run_sequence_clean}). 
+This is done by running the \texttt{mongo} service solely, followed by a docker-compose exec command which runs a mongo shell command, dropping the database. This has to be done, due to the data being stored on the host machine of Docker, to ease access and ensure persistence. 
+Since the \texttt{mongo} service needs time to start before the command can be executed, we have to try multiple times until  we receive a correct return code. 
+Afterwards all services are killed, to stop the mongo instance, avoiding other hanging services interference and ensure a fresh start for the new experiment. This stage is also run at the end of each experiment.
 
 
 \input{diagram/sequence_run1.tex}
 
-The second stage consists of the set up of the steady state network, followed by the experiment after it's stabilization (See \autoref{fig:run_sequence_exp}). First the scales defined in the environment file for the steady network are extracted. The scales are needed by \texttt{run.py}, since the scaling is done through the \ac{CLI} of docker-compose's up command, which have a scale option \footnote{\url{https://docs.docker.com/compose/reference/up/}}. As default \textit{run.py} sets the scale of all services to 0, which is then overwritten by environmental files in two sittings.
-After importing the scales, the environmental file as soft linked to \texttt{.env}, which is as an environment for the compose file used by docker-compose\footnote{\url{https://docs.docker.com/compose/env-file/}}.
+The second stage consists of the set up of the steady state network, followed by the experiment after its stabilization (See \autoref{fig:run_sequence_exp}). First the scales defined in the environment file for the steady network are extracted. The scales are needed by \texttt{run.py}, since the scaling is done through the \ac{CLI} of docker-compose's up command, which has a scale option \footnote{\url{https://docs.docker.com/compose/reference/up/}}. As default \textit{run.py} sets the scale of all services to 0, which is then overwritten by environmental files in two sittings.
+After importing the scales, the environment file is soft linked to \texttt{.env}, which is as an environment for the compose file used by docker-compose\footnote{\url{https://docs.docker.com/compose/env-file/}}.
 The user behaviours from the environment file is then used along with the compose file by docker-compose when calling the run command on docker.
-When the scaling of the steady network have begun, \textit{run.py} busy waits for a configurable amount of time until all services are running and are stabilized, which is based on empirical data from the \ac{VM}.
-After the stabilization the \textit{clients} are added to measure their influence on the network and their individual \ac{UX}. This is mainly done with the same procedure as the steady state network, but from another environment file. The only difference in the procedure are pumba (See \autoref{sec:framework_pumba}
+When the scaling of the steady network has begun, \textit{run.py} busy waits for a configurable amount of time until all services are running and are stabilized, which is based on empirical data from the \ac{VM}.
+After the stabilization the \textit{clients} are added to measure their influence on the network and their individual \ac{UX}. This is mainly done with the same procedure as the steady state network, but from another environment file. The only difference in the procedure is pumba (See \autoref{sec:framework_pumba}
  and \ref{sec:setup_pumba}) is run to influence the network for all clients, before busy waiting for the length of the experiment.
 Finally all services are killed, to stop the data collection of the experiment.
 
 \input{diagram/sequence_run2.tex}
 
-The third stage consists of plotting the results and export the data to an archive (See \autoref{fig:run_sequence_plot}). Since plot isn't a part of the experiment it's defined in a separate compose file (\textit{plot-compose.yml}), which is used with Docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when Docker compose is asked to run the \texttt{plot} service, the dependencies is also started. Since \texttt{plot} terminates when all plots are done, we wait for it to exit before continuing.
+The third stage consists of plotting the results and export the data to an archive (See \autoref{fig:run_sequence_plot}). Since plot is not a part of the experiment it is defined in a separate compose file (\textit{plot-compose.yml}), which is used with Docker compose to generate the plots. Since the data is kept in a mongoDB, the \texttt{plot} service is dependent on the \texttt{mongo} service. This effectively means that when Docker compose is asked to run the \texttt{plot} service, the dependencies are also started. Since \texttt{plot} terminates when all plots are done, we wait for it to exit before continuing.
 
 After the termination of \texttt{plot}, the data from the still present \texttt{mongo} service is exported to a gzip\footnote{\url{https://www.gnu.org/software/gzip/}} archive using the utility mongodump\footnote{\url{https://docs.mongodb.com/manual/reference/program/mongodump/}}. 
 
@@ -205,34 +219,34 @@ After the termination of \texttt{plot}, the data from the still present \texttt{
 \subsection{entrypoint}
 \label{sec:experiment_entrypoint}
 
-The entrypoint is illustrated in \autoref{fig:entrypoint_sequence} the client starts by performing the initialization of the \ac{IPFS} peer, here the peer solves a crypto-puzzle in order to generate a peer id, and key-pairs used for secure communication.
-Next the client starts a local daemon and connects to the peers listed in it's list of bootstrap peers, which can either be ones limited to a small network entirely for the experiment or the bootstrap peers that one would use to connect to the global \ac{IPFS} network.
+The entrypoint is illustrated in \autoref{fig:entrypoint_sequence}. The client starts by performing the initialization of the \ac{IPFS} peer. Here the peer solves a crypto-puzzle in order to generate a peer id, and key-pairs used for secure communication.
+Next the client starts a local daemon and connects to the peers listed in its list of bootstrap peers, which can either be ones limited to a small network entirely for the experiment or the bootstrap peers that one would use to connect to the global \ac{IPFS} network.
 Starting a daemon also starts a new thread that handles \ac{IPFS} related requests, these are not illustrated in the figure. In order to preserve clarity. These two \ac{IPFS} \ac{API} calls are not performed by the clients with the entrypoint Persona, as they do not need it to retrieve the video segments.
 
-The client then launches a Google Chrome\footnote{\url{https://www.google.com/chrome/}} browser that is controlled through Splinter and requests the website containing the video player from the Host container, the website is stored in a separate container to ease modifications during development.
-After receiving the website, Splinter starts the video player, which requests the \ac{MPD} file, from other peers in the \ac{IPFS} network, through its own gateway, or the seeder's in the case of the leecher.
+The client then launches a Google Chrome\footnote{\url{https://www.google.com/chrome/}} browser that is controlled through Splinter and requests the website containing the video player from the Host container. The website is stored in a separate container to ease modifications during development.
+After receiving the website, Splinter starts the video player, which requests the \ac{MPD} file from other peers in the \ac{IPFS} network, through its own gateway, or the Seeder's in the case of the Leecher.
 After receiving the \ac{MPD} the video can start and Persona behaviour is then performed. While watching the video the client requests the necessary segments as it needs them until all segments have been received.
 When the video is finished the browser is then closed and the client either starts busy waiting or terminates. If the client busy waits the daemon thread is kept alive meaning other peers can retrieve data from the client.
 
 \input{diagram/sequence_entrypoint.tex}
 
 \section{Summary of Implementation}
-The realized system contains multiple components, first of there is the Personas that specify how a client acts after video playback has started, these come in multiple varieties.
+The realized system contains multiple components, first of these are the Personas that specify how a client acts after video playback has started. These come in multiple varieties:
 \begin{itemize}
     \item Seeder shares files.
     \item Binger watches video, without any interaction.
     \item Leecher watches video through the Seeders \ac{IPFS} gateway.
-    \item Skipper watches the video but skips forward every couple seconds.
+    \item Skipper watches the video but skips forward every couple of seconds.
     \item Incognito user skips to the end of the video.
     \item Leaver watches the video and then terminates.
     \item Mobile user has lower bandwidth, which is realized with Pumba.
 \end{itemize}
 
-For the client to be able to watch the videos the need to be encoded. This is done with a combination of \texttt{FFmpeg} and \texttt{MP4Box}. This is done so that the video is in a format suitable for \ac{DASH} streaming.
+For the client to be able to watch the videos they need to be encoded. This is done with a combination of \texttt{FFmpeg} and \texttt{MP4Box}, so that the video is in a format suitable for \ac{DASH} streaming.
 
-The testing setup consists of a local network of \texttt{Docker} containers, where network conditions is throttled by Pumba. Each client hosts \ac{IPFS} and watches the video using the \texttt{dash.js} library, where the user actions can be manged through the \texttt{Splinter} library in the Google chrome browser.
+The testing setup consists of a local network of \texttt{Docker} containers, where network conditions are throttled by \texttt{Pumba}. Each client hosts \ac{IPFS} and watches the video using the dash.js library, where the user actions can be managed through the \texttt{Splinter} library in the Google Chrome browser.
 
-Experiments are run by setting up a steady state network first which consists of the necessary microservices needed for the experiment to work, such as metric loggers, a database for storing the collected metrics and file hosting of the website and video content. Afterwards the clients are added and testing begins for a chosen duration. When the time is up, all clients are shut down and various plots are generated from the experiments metrics, which finally gets exported for possible future inspection.
+Experiments are run by setting up a steady state network first which consists of the necessary microservices needed for the experiment to work, such as metric loggers, a database for storing the collected metrics and file hosting of the website and video content. Afterwards the clients are added and testing begins for a chosen duration. When the time is up, all clients are shut down and various plots are generated from the experiments metrics, which finally get exported for possible future inspection.
 % Personas
 % tools
 % setup
