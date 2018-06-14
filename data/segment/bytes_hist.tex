@@ -8,8 +8,8 @@
         enlarge x limits={abs=0.75},
         xtick=data,
         xticklabels from table={./data/segment/bytes_hist.csv}{users},
-        xlabel={Approx. Segment duration (\acs{s})},
-        ylabel={Mean accumulated received data (\acs{MB})},
+        xlabel={Approx. Segment duration (\acs{ms})},
+        ylabel={Mean accumulated data received (\acs{MB})},
         legend style={at={(1.05,1)}, anchor=north west,legend columns=1},]
         
         \addplot[
@@ -28,7 +28,7 @@
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Mean received data from \expid*{B10-v9}]{Mean of accumulated received data with std. dev. from the baseline experiment with 3 \acs{s} segments (\expid{B10}) and the segment experiment with 9 \acs{s} (\expid{B10-v9}).\\
+    \caption[Mean of data received from \expid*{B10-v9}]{Mean of accumulated data received with std. dev. from the baseline experiment with 3 \acs{s} segments (\expid{B10}) and the segment experiment with 9 \acs{s} (\expid{B10-v9}).\\
     A larger segment size results in a significant reduction of received duplicate data.}
     \label{bar:segment_bytes_hist}
 \end{figure}

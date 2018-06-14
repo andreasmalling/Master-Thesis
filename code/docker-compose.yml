@@ -14,23 +14,24 @@ x-user: &user-template
     - host
 
 services:
+  # EXP NETWORK:
   # user for debugging, with sound and display pass-through
   user_debug:
     <<: *user-template
-    privileged: true
+    privileged: true                    # for sound
     environment:
-      - DISPLAY=${DISPLAY:- :0}
+      - DISPLAY=${DISPLAY:- :0}         # for display
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /dev/snd:/dev/snd
+      - /tmp/.X11-unix:/tmp/.X11-unix   # for display
+      - /dev/snd:/dev/snd               # for sound
     command: ${USER_DEBUG:- -r 0 --head BINGE}
 
-  # user which adds content from videos_dashed to local IPFS network
+  # user adding content from /videos_dashed to IPFS network
   user_seed:
     <<: *user-template
     command: ${USER_SEED:- -r 0 SEEDER}
   
-  # users for persona clients
+  # 3 users for persona client setup (expand as seen fit)
   user_1:
     <<: *user-template
     command: ${USER_1:- IDLE}
@@ -43,9 +44,8 @@ services:
     <<: *user-template
     command: ${USER_3:- IDLE}
 
-  # Main network: 
-  # =============
-  # IPFS node used for bootstraping local network
+  # MAIN NETWORK: 
+  # node used for bootstraping local IPFS network
   bootstrap:
     image: andreasmalling/ft_bootstrap
 
@@ -56,11 +56,11 @@ services:
     volumes:
       - ./website:/usr/src/app/
 
-  # client that stores user reported Dash metrics in mongoDB
+  # client that stores user reported DASH metrics in a mongoDB
   metric:
     image: andreasmalling/ft_metric
     build: ./metric_server
-    restart: always #due to failure if mongo boot is slow
+    restart: always     # due to failure if mongo boot is slow
     depends_on:
         - mongo
   

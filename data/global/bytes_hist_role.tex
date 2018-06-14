@@ -8,7 +8,7 @@
             enlarge x limits={abs=0.75},
             xtick=data,
             xticklabels from table={./data/global/bytes_hist_role.csv}{users},
-            ylabel={Mean accumulated received data (\acs{MB})},
+            ylabel={Mean accumulated data received (\acs{MB})},
             xlabel={\ac{IPFS} network},
             legend style={at={(1.05,1)}, anchor=north west,legend columns=1},
         ]
@@ -28,7 +28,7 @@
     \end{axis}
 
     \end{tikzpicture}
-    \caption[Received data per client from \expid*{B10} and \expid*{B10-g}]{Mean of received data per client with std. dev. from \expid{B10} compared to \expid{B10-g}.\\
+    \caption[Received data per client from \expid*{B10} and \expid*{B10-p}]{Mean of received data per client with std. dev. from \expid{B10} compared to \expid{B10-p}.\\
     The mean amount of received data is increased slightly, while the standard deviation lowers.}
     \label{bar:global_bytes_hist_role}
 \end{figure}

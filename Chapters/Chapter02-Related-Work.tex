@@ -9,7 +9,8 @@ Multiple authors have already evaluated \ac{DASH} video streaming both in relati
 
 \citet{aloman2015performance} have evaluated \ac{DASH} (which will be explained in detail in \autoref{sec:rel-dash}) and two other streaming protocols (\ac{RTSP} and \ac{RTMP}) for on-demand and live video streaming in both 4G and WiFi conditions. Evaluation is done in terms of \ac{QOE} metrics with a large amount of parameters including: Resolution, bitrate, framerate, interval between \acsp{I-frame} (which will be explained in \autoref{sec:des-video}), packet loss rate and delay. \ac{QOE} was estimated through the quality of service with an algorithmic model, rather than user based scores.
 
-In terms of results, when introducing packet loss and delays \ac{DASH} sacrifices throughput in order to maintain good \ac{QOE} whereas the other protocols resort to re-buffering. \ac{DASH} does however have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \ac{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video stream played. They claim this is due to \ac{RTSP} being a \ac{UDP} based protocol where \ac{DASH} is \ac{TCP}. They claim the extra time buffering is worth it as re-buffering events are almost entirely eliminated. In their results, \ac{QOE} (measured in \ac{MOS}) is noticeably higher when using \ac{DASH} in the same scenarios. In their testing, packet loss affected \ac{QOE} more than delay.
+In terms of results, when introducing packet loss and delays \ac{DASH} sacrifices throughput in order to maintain good \ac{QOE} whereas the other protocols resort to re-buffering. \ac{DASH} does however have larger initial buffering time, when starting the video, and as packet loss and delay increases more time is required to fill the buffer initially. They conclude that \ac{RTSP} is more efficient for starting the video initially but at the expense of packet loss in the video stream played. They claim this is due to \ac{RTSP} being a \ac{UDP} based protocol where \ac{DASH} is \ac{TCP} based.
+They claim the extra time buffering is worth it as re-buffering events are almost entirely eliminated. In their results, \ac{QOE} (measured in \ac{MOS}) is noticeably higher when using \ac{DASH} in the same scenarios. In their testing, packet loss affected \ac{QOE} more than delay.
 \\
 
 
@@ -19,7 +20,7 @@ For tests in the system they focused on segment missing rate and \ac{UX}, with a
 \\
 
 
-\citet{nguyen2009p2p} argue that 60\% of the commonly used bandwidth cost can be saved using a \ac{P2P} system as opposed to a client-server model. The \ac{P2P} system uses the \ac{DHT} chord as its network architecture, and the video files are broken into multiple smaller pieces which are then dispersed across peers in the network with redundant copies. To ensure that files are not lost as peers leave and join the network, the new peers share the burden of storing files of the rare pieces, so that it is always possible to reconstruct the video. When streaming a video the system prefers pieces from different peers as this creates multiple internet routes, resulting in increased bitrate. In their testing they store the packets in two ways and compared these. The first is to distribute the packets as is (non-\ac{NC}) and the other is having the packets be random linear combinations of the original packets (\ac{RNC}). The results focused on the probability of being able to retrieve a piece and the latency to do so, and the \ac{RNC} scheme performed best in both cases.
+\citet{nguyen2009p2p} argue that 60\% of the commonly used bandwidth cost can be saved using a \ac{P2P} system as opposed to a client-server model. Their \ac{P2P} system uses the \ac{DHT} chord as its network architecture, and the video files are broken into multiple smaller pieces which are then dispersed across peers in the network with redundant copies. To ensure that files are not lost as peers leave and join the network, the new peers share the burden of storing files of the rare pieces, so that it is always possible to reconstruct the video. When streaming a video the system prefers pieces from different peers as this creates multiple internet routes, resulting in increased bitrate. In their testing they store the packets in two ways and compared these. The first is to distribute the packets as is (non-\ac{NC}) and the other is having the packets be random linear combinations of the original packets (\ac{RNC}). The results focused on the probability of being able to retrieve a piece and the latency to do so, and the \ac{RNC} scheme performed best in both cases.
 \\
 
 
@@ -37,7 +38,7 @@ Based on these issues a flow model of a BitTorrent network was constructed, from
 \\
 
 
-\citet{broxton2013catching} have analyzed the characteristics of viral videos on YouTube in terms of how such are viewed in respect to a socialness level defined in the article. To qualify as a social video, it has to be viewed through sharing, meaning that access to the video is done through an external link, instead of pasting the URL directly. An unsocial video is instead found through a search or some discovery mechanism within the site itself. The socialness level can then be defined by how many of the videos views come from social sources versus nonsocial. The socialness of a video also evolves over time and the percentage of social views drop over time, e.g. if the video is shared more when it is new. It is noted that highly shared videos tend to generate more views than less shared videos. It is also stated that the socialness of a video varies depending on the genre of the video. The behaviour of social views also depend on the source, social views generated through the website \textit{Twitter} drop off harder and peak more in views compared to social views generated through a social network like \textit{Facebook}.
+\citet{broxton2013catching} have analyzed the characteristics of viral videos on YouTube in terms of how such are viewed in respect to a socialness level defined in the article. To qualify as a social video, it has to be viewed through sharing, meaning that access to the video is done through an external link. An unsocial video is instead found through a search or some discovery mechanism within the site itself. The socialness level can then be defined by how many of the videos views come from social sources versus nonsocial. The socialness of a video also evolves over time and the percentage of social views drop over time, e.g. the video is shared more when it is new. It is noted that highly shared videos tend to generate more views than less shared videos. It is also stated that the socialness of a video varies depending on the genre of the video. The behaviour of social views also depend on the source, social views generated through the website \textit{Twitter} drop off harder and peak more in views compared to social views generated through a social network like \textit{Facebook}.
 
 
 \section{Frameworks and Technologies}
@@ -45,20 +46,20 @@ Based on these issues a flow model of a BitTorrent network was constructed, from
 In this section frameworks and technologies relevant to or crucial for the project are presented.
 
 \subsection{\acl{IPFS}}
-The \ac{IPFS} is a \ac{P2P} distributed file system, as specified in \citet{benet2014ipfs} and implemented by Protocol Labs\footnote{\url{https://ipfs.io/}}.
+The \acf{IPFS} is a distributed \ac{P2P} file system, as specified in \citet{benet2014ipfs} and implemented by Protocol Labs\footnote{\url{https://ipfs.io/}}.
 
-It consists of several different properties of successful \ac{P2P} systems such as \ac{DHT}, BitTorrent, Git and \ac{SFS}. The \ac{IPFS} protocol constructed consists of the following sub-protocols, among others.
+It consists of several different properties of successful \ac{P2P} systems such as \ac{DHT}, BitTorrent, Git and \ac{SFS}. The \ac{IPFS} protocol consists of the following sub-protocols, among others.
 
 \subsubsection{Identity}
 All nodes are identified by a public key of a SHA-256 cryptographic hash. To instantiate a new identity, the node must solve a static crypto puzzle as utilized in S/Kademlia\cite{baumgart2007skademlia}.
 
 \subsubsection{Routing}
-The routing system is capable of finding other peers' addresses in the network and determine which peers serves a wanted object. Using a \ac{DSHT} based on S/Kademlia and Coral \cite{baumgart2007skademlia, freedman2004coral}. A distinction of object's size and usage patterns determines where values are stored. If they are less than 1KB they are stored directly on the \ac{DHT}, otherwise a reference of the identity of peers serving the block is stored instead. 
+The routing system is capable of finding other peers' addresses in the network and determine which peers serves a wanted object. Using a \ac{DSHT} based on S/Kademlia and Coral \cite{baumgart2007skademlia, freedman2004coral}. A distinction of object's size and usage patterns determines where values are stored. If they are less than 1KB in size they are stored directly on the \ac{DHT}, otherwise a reference of the identity of peers serving the block is stored instead. 
 
 
 \begin{table}[ht]
 \myfloatalign
-\caption{\acs{IPFS} Overview.}
+\caption{\acl{IPFS} Layer Overview.}
 \label{tab:ipfs_overview}
 %\begin{tabularx}{\textwidth}{l|r|r|r}\toprule
 \begin{tabularx}{\textwidth}{cccc}\toprule
@@ -96,7 +97,7 @@ Nodes also keep ledgers accounting transfers with the other nodes, to track hist
 
 \subsubsection{Objects}
 \label{sec:ipfs-objects}
-The individual blocks are linked together using Merkle \acp{DAG}, which is a directed acyclic graph where each node has a cryptographic hash, and the hash of the parent verifies the children (See \autoref{fig:merkle_tree}). This structure is a generalization of the git data structure and provides: addressing of content using the hashes, tamper resistance since it can be detected and de-duplication as data that holds the same content will also hash to the same thereby only needing to be stored once. From the hash addresses files can also be traversed with a traditional UNIX file system path if the hash is that of a folder.
+The individual blocks are linked together using Merkle \acp{DAG}, which is a directed acyclic graph where each node has a cryptographic hash, and the hash of the parent verifies the children (See \autoref{fig:merkle_tree}). This structure is a generalization of the git data structure and provides the following: Addressing of content using the hashes, tamper resistance since it can be detected and de-duplication as data that holds the same content will also hash to the same thereby only needing to be stored once. From the hash addresses files can also be traversed with a traditional UNIX file system path if the hash is that of a folder.
 Since hashes are used to address files, newer versions of a file will hash differently, which means that tracking these is done using additional versioning.
 
 
@@ -106,17 +107,17 @@ Since hashes are used to address files, newer versions of a file will hash diffe
 
 \begin{figure}
     \includegraphics[width=\textwidth]{mpd}
-    \caption[The structure of an \acs{MPD}.]{The structure of an \acs{MPD}.}
+    \caption[Structure of an \acl{MPD}.]{The structure of an \acs{MPD}.}
     \label{fig:mpd_structure}
-    \source{Adaption of citet[Figure 3 on p. 65]{sodagar2011mpeg}}
+    \source{Adaption of \citet[Figure 3 on p. 65]{sodagar2011mpeg}}
 \end{figure}
 
 \ac{DASH} is an adaptive bitrate streaming technique that enables high quality streaming over \ac{HTTP}. This is done by breaking the content into smaller file segments, each containing a short playback interval. The standard defines that each of these segments can be served at different bitrates, allowing the \ac{DASH}-client to choose the next segment to download, based on its current network conditions.
 This makes it possible to serve a stream that adapts seamlessly to deliver streams with high quality and few stalls and re-bufferings, based on the changing conditions of the network.
 
-The segments are described by an \ac{MPD} file, in which information about the files, such as timing, \acp{URL}, bitrates and resolution resides. From the \ac{MPD} the multimedia selection can then be made based on user preferences (such as specific language audio streams), device capabilities (such as hardware decoding) and the previous mentioned conditions of the network.
+The segments are described by an \ac{MPD} file (See \autoref{fig:mpd_structure}), in which information about the files, such as timing, \acp{URL}, bitrates and resolution resides. From the \ac{MPD} the multimedia selection can then be made based on user preferences (such as specific language audio streams), device capabilities (such as hardware decoding) and the previous mentioned conditions of the network.
 
-The \ac{DASH} Industry Forum (DASH-IF), consisting of Netflix, Google and Microsoft among others, helps push to implementation of the specification\cite{ISO23009}. This is done by creating guidelines for usage and libraries such as \texttt{dash.js}\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js}} that adds \ac{DASH} compatibility in a \ac{HTML} video player using JavaScript.
+The \ac{DASH} Industry Forum (DASH-IF), consisting of Netflix, Google, Microsoft and more, helps push the implementation of the specification\cite{ISO23009}. This is done by creating guidelines for usage and libraries such as \texttt{dash.js}\footnote{\url{https://github.com/Dash-Industry-Forum/dash.js}} that adds \ac{DASH} compatibility in a \ac{HTML} video player using JavaScript.
 
 \section{Testing Framework}
 In this section the technologies used to create the testing framework are presented.
@@ -126,14 +127,16 @@ In this section the technologies used to create the testing framework are presen
  
  \begin{figure}[ht]
     \myfloatalign
-    \includegraphics[width=\textwidth]{vm.png}
-    \caption[Comparison of \acs{VM} and Docker]{Comparison of the overhead present in virtualization done by a \acl{VM} and by Docker}
+    \includegraphics[width=\textwidth]{vm}
+    \caption[Comparison of \aclp{VM} and Docker]{Comparison of the overhead present in virtualization done by a \acl{VM} and by Docker}
     \label{fig:vm_vs_container}
 \end{figure}
  
- Individual user spaces are also provided to the containers, meaning that it looks like a real computer, from the point of view of the applications running inside.
-The shared kernel results in less overhead per container when compared to other virtualization approaches, but is less flexible since it cannot host an \ac{OS} different from the host machines. Due to the low resource cost of containers, Docker promotes an application-centric container model\cite{merkel2014docker}, so only individual applications or services are run inside, resulting in a loose coupling of the components in the system, as seen with microservices. 
-By running programs in containers hardware independence is achieved due to the abstraction layer of Docker, while also gaining easy access to CPU and memory management.
+ Individual user spaces are also provided to the containers, meaning that it looks like a real computer from the point of view of the applications running inside.
+The shared kernel results in less overhead per container when compared to other virtualization approaches, but it is less flexible since it cannot host an \ac{OS} different from the host machines.
+
+Due to the low resource cost of containers, Docker promotes an application-centric container model\cite{merkel2014docker}, so only individual applications or services are run inside, resulting in a loose coupling of the components in the system, as seen with microservices. 
+By running programs in containers hardware independence is achieved due to the abstraction layer of Docker, while also gaining easy access to \ac{CPU} and memory management.
 
 \subsubsection{Glossary}
 \begin{itemize}
